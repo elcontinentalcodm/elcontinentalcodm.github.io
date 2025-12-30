@@ -67,7 +67,7 @@
         <h2>⭐ Clanes Destacados</h2>
         <div class="clanes-grid">
             <div class="clan-card-mini">
-                <img src="Continental/logo de pagina .jpg" alt="Renegate Sports" class="clan-logo-mini">
+                <img src="logo de sala/logo de pagina .jpg" alt="Renegate Sports" class="clan-logo-mini">
                 <div class="clan-name-mini"></div>
                 <div class="clan-tag-mini">[]</div>
                 <div class="clan-stats">
@@ -87,7 +87,7 @@
             </div>
 
             <div class="clan-card-mini">
-                <img src="Continental/logo de pagina .jpg" alt="Fuerza de Titanes" class="clan-logo-mini">
+                <img src="logo de sala/logo de pagina .jpg" alt="Fuerza de Titanes" class="clan-logo-mini">
                 <div class="clan-name-mini"></div>
                 <div class="clan-tag-mini">[]</div>
                 <div class="clan-stats">
@@ -107,7 +107,7 @@
             </div>
 
             <div class="clan-card-mini">
-                <img src="Continental/logo de pagina .jpg" alt="Team La Chapiza" class="clan-logo-mini">
+                <img src="logo de sala/logo de pagina .jpg" alt="Team La Chapiza" class="clan-logo-mini">
                 <div class="clan-name-mini"></div>
                 <div class="clan-tag-mini">[]</div>
                 <div class="clan-stats">
@@ -181,6 +181,30 @@
     </footer>
 
      <!-- Navbar hamburger script -->
+         <script>
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 
 </html>
+
