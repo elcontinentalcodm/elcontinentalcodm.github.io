@@ -83,7 +83,16 @@ function showDashboard() {
                 loadAsistencia();
             }
             if (tab.dataset.tab === 'contactos') renderContactos();
+            if (tab.dataset.tab === 'top3') renderTop3();
+            if (tab.dataset.tab === 'semanal') initSemanalTabs();
         });
+    });
+
+    document.getElementById('btnShareTop3')?.addEventListener('click', exportTop3AsImage);
+    document.getElementById('btnRefreshTop3')?.addEventListener('click', renderTop3);
+    document.getElementById('btnRefreshSemanal')?.addEventListener('click', () => {
+        const activeSala = document.querySelector('.semanal-subtab.active')?.dataset.sala || 'alcatraz';
+        loadSemanal(activeSala, true);
     });
 
     loadAdminData();
@@ -137,6 +146,7 @@ async function loadAdminData() {
         document.getElementById('totalTrofeos').textContent   = trofeos;
 
         applyFilter();
+        renderTop3(); // Actualizar Top 3 en cuanto llegue la data
     } catch (err) {
         console.error(err);
         document.getElementById('tablaBody').innerHTML =
@@ -550,4 +560,251 @@ async function descargarLogo(logoUrl, nombreArchivo) {
         // Si falla CORS, abrir en nueva pestaña para que el usuario guarde manualmente
         window.open(logoUrl, '_blank');
     }
+}
+
+/* ══ TOP 3 MEDALLEROS ══ */
+function calcMedallas(clan) {
+    return (parseInt(clan[CONFIG.COLUMNS.ORO])    || 0)
+         + (parseInt(clan[CONFIG.COLUMNS.PLATA])  || 0)
+         + (parseInt(clan[CONFIG.COLUMNS.BRONCE]) || 0);
+}
+
+function renderTop3() {
+    const cards = document.getElementById('top3Cards');
+    if (!cards || !allData.length) {
+        if (cards) cards.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ Primero carga los datos de clanes.</p>';
+        return;
+    }
+
+    // Usar solo clanes activos (igual que index.html) y ordenar por medallas, desempate por puntos de salas
+    const active = filterActiveClans(allData);
+    const sorted = [...active].sort((a, b) =>
+        calcMedallas(b) - calcMedallas(a) || calcPts(b) - calcPts(a)
+    ).slice(0, 3);
+
+    const medals = ['🥇', '🥈', '🥉'];
+    const podioOrder = [1, 0, 2]; // plata, oro, bronce (orden visual: 2° izquierda, 1° centro, 3° derecha)
+    const heights   = ['top3-plata', 'top3-oro', 'top3-bronce'];
+
+    let html = '';
+    podioOrder.forEach(idx => {
+        const clan = sorted[idx];
+        if (!clan) return;
+        const nombre   = clan[CONFIG.COLUMNS.NOMBRE_DE_CLAN] || '—';
+        const tag      = clan[CONFIG.COLUMNS.TAG_DEL_CLAN]   || '';
+        const oro      = parseInt(clan[CONFIG.COLUMNS.ORO])    || 0;
+        const plata    = parseInt(clan[CONFIG.COLUMNS.PLATA])  || 0;
+        const bronce   = parseInt(clan[CONFIG.COLUMNS.BRONCE]) || 0;
+        const total    = oro + plata + bronce;
+        const logo     = getLogoUrl(clan[CONFIG.COLUMNS.ID], clan[CONFIG.COLUMNS.LOGO]);
+        const pos      = idx + 1;
+
+        html += `
+        <div class="top3-card top3-pos${pos} ${heights[idx]}">
+            <div class="top3-medal">${medals[idx]}</div>
+            <div class="top3-clan-logo">
+                <img src="${logo}" alt="${nombre}" onerror="this.src='${CONFIG.LOGO_DEFAULT}'">
+            </div>
+            <div class="top3-clan-nombre">${nombre}</div>
+            <div class="top3-clan-tag">[${tag}]</div>
+            <div class="top3-clan-pts">${total} <span class="top3-pts-label">medallas</span></div>
+            <div class="top3-medallas-detalle">
+                🥇 ${oro} &nbsp; 🥈 ${plata} &nbsp; 🥉 ${bronce}
+            </div>
+        </div>`;
+    });
+
+    cards.innerHTML = html;
+}
+
+async function exportTop3AsImage() {
+    const podio = document.getElementById('top3Podio');
+    if (!podio) return;
+
+    const btn = document.getElementById('btnShareTop3');
+    if (btn) { btn.textContent = '⏳ Generando...'; btn.disabled = true; }
+
+    try {
+        const canvas = await html2canvas(podio, {
+            backgroundColor: '#1a1a1a',
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+        });
+
+        const link = document.createElement('a');
+        link.download = 'top3-el-continental.png';
+        link.href     = canvas.toDataURL('image/png');
+        link.click();
+    } catch (err) {
+        console.error('html2canvas error:', err);
+        alert('❌ No se pudo generar la imagen. Verifica que los logos no bloqueen CORS.');
+    } finally {
+        if (btn) { btn.textContent = '📸 Compartir como imagen'; btn.disabled = false; }
+    }
+}
+
+/* ══ PUNTOS SEMANALES (multi-sala) ══ */
+const SALAS_SEMANAL = {
+    alcatraz:  { label: 'Alcatraz',        url: () => CONFIG.SEMANAL_ALCATRAZ_URL },
+    alcatraz2: { label: 'Alcatraz 2.0',    url: () => CONFIG.SEMANAL_ALCATRAZ2_URL },
+    zguerra:   { label: 'Zona de Guerra',  url: () => CONFIG.SEMANAL_ZGUERRA_URL },
+    zletal:    { label: 'Zona Letal',      url: () => CONFIG.SEMANAL_ZLETAL_URL },
+    zxtreme:   { label: 'Zona Xtreme',     url: () => CONFIG.SEMANAL_ZXTREME_URL },
+};
+const semanalCargado = {}; // { alcatraz: bool, alcatraz2: bool }
+
+function initSemanalTabs() {
+    document.querySelectorAll('.semanal-subtab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.semanal-subtab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.semanal-wrapper').forEach(w => w.style.display = 'none');
+            btn.classList.add('active');
+            const sala = btn.dataset.sala;
+            const wrapper = document.getElementById('semanalWrapper-' + sala);
+            if (wrapper) wrapper.style.display = '';
+            loadSemanal(sala);
+        });
+    });
+    // Cargar la primera sala al abrir la pestaña
+    loadSemanal('alcatraz');
+}
+
+async function loadSemanal(sala, forceRefresh = false) {
+    const cfg     = SALAS_SEMANAL[sala];
+    if (!cfg) return;
+    const wrapper = document.getElementById('semanalWrapper-' + sala);
+    if (!wrapper) return;
+
+    if (forceRefresh) {
+        const url   = cfg.url();
+        const keyId = url.replace(/[^a-zA-Z0-9]/g, '').slice(-24);
+        localStorage.removeItem('elcontinental_data_' + keyId);
+        localStorage.removeItem('elcontinental_time_' + keyId);
+        semanalCargado[sala] = false;
+    }
+    if (semanalCargado[sala] && !forceRefresh) return;
+
+    wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando ' + cfg.label + '...</p>';
+    try {
+        const data = await fetchSheetData(cfg.url());
+        renderSemanal(data, wrapper, cfg.label);
+        semanalCargado[sala] = true;
+    } catch (err) {
+        console.error('Semanal error (' + sala + '):', err);
+        wrapper.innerHTML = '<p style="color:#ff4d4d;text-align:center;padding:2rem">❌ No se pudo cargar la hoja de ' + cfg.label + '.</p>';
+    }
+}
+
+function renderSemanal(data, wrapper, salaLabel) {
+    if (!data || !data.length) {
+        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ La hoja de puntos semanales está vacía.</p>';
+        return;
+    }
+
+    // Fila de sala: col 1 es una fecha DD/MM
+    const salaRow = data.find(r => /^\d{2}\/\d{2}$/.test((r[1] || '').trim()));
+    // Fila de cabecera de columnas: contiene "Total"
+    const headRow = data.find(r => r.some(c => (c || '').trim().toLowerCase() === 'total'));
+
+    if (!salaRow) {
+        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ No se encontró la fila de fechas en la hoja.</p>';
+        return;
+    }
+
+    const salaName = (salaRow[0] || '').trim();
+    const totalIdx = headRow ? headRow.findIndex(c => (c || '').trim().toLowerCase() === 'total') : -1;
+    // Número de columnas de sesión (entre la col del clan y la col Total)
+    const numSessions = totalIdx > 1 ? totalIdx - 1 : salaRow.filter((c, i) => i > 0 && (c || '').trim()).length;
+
+    // Filas de clanes: col 0 no vacía, no es la fila de sala, no de cabecera, no "lista de espera"
+    const skipSet = new Set([
+        (salaRow[0] || '').toLowerCase(),
+        headRow ? (headRow[0] || '').toLowerCase() : '',
+    ]);
+    const clanRows = data.filter(r => {
+        const name = (r[0] || '').trim();
+        if (!name) return false;
+        if (skipSet.has(name.toLowerCase())) return false;
+        if (/lista de espera/i.test(name)) return false;
+        if (/^[-–—]$/.test(name)) return false;
+        return true;
+    });
+
+    if (!clanRows.length) {
+        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ No hay clanes en la hoja esta semana.</p>';
+        return;
+    }
+
+    // Parsear cada clan
+    const clanes = clanRows.map(r => {
+        const nombre = (r[0] || '').trim();
+        const sessions = [];
+        for (let i = 1; i <= numSessions; i++) {
+            sessions.push(parseFloat(r[i]) || 0);
+        }
+        const total = totalIdx > 0
+            ? (parseFloat(r[totalIdx]) || 0)
+            : sessions.reduce((s, v) => s + v, 0);
+        return { nombre, sessions, total };
+    }).sort((a, b) => b.total - a.total);
+
+    // Etiqueta de semana (rango de fechas únicas)
+    const dates = [];
+    for (let i = 1; i <= numSessions; i++) {
+        const d = (salaRow[i] || '').trim();
+        if (d && !dates.includes(d)) dates.push(d);
+    }
+    const weekLabel = dates.length
+        ? `Semana del ${dates[0]} al ${dates[dates.length - 1]}`
+        : '';
+
+    // Cabeceras de sesión: fecha (salaRow) + día (headRow)
+    let thSessions = '';
+    for (let i = 1; i <= numSessions; i++) {
+        const date = (salaRow[i] || '').trim();
+        const day  = headRow ? (headRow[i] || '').trim() : '';
+        thSessions += `<th class="semanal-th-sesion" title="${date} ${day}">${day}<br><small>${date}</small></th>`;
+    }
+
+    // Filas de clanes
+    let tbodyHtml = '';
+    clanes.forEach((c, idx) => {
+        const rank    = idx + 1;
+        const rankCls = rank === 1 ? 'semanal-rank-1' : rank === 2 ? 'semanal-rank-2' : rank === 3 ? 'semanal-rank-3' : '';
+        const medal   = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+        let tdSessions = '';
+        c.sessions.forEach(pts => {
+            const cls = pts > 0 ? 'semanal-pts-activo' : 'semanal-pts-vacio';
+            tdSessions += `<td class="semanal-td-sesion ${cls}">${pts > 0 ? pts : '—'}</td>`;
+        });
+        tbodyHtml += `
+        <tr class="${rankCls}">
+            <td class="semanal-td-rank">${medal || '#' + rank}</td>
+            <td class="semanal-td-nombre">${c.nombre}</td>
+            ${tdSessions}
+            <td class="semanal-td-total">${c.total}</td>
+        </tr>`;
+    });
+
+    wrapper.innerHTML = `
+    <div class="semanal-info">
+        <span class="semanal-sala-badge">🏟️ ${salaName}</span>
+        <span class="semanal-week-label">📅 ${weekLabel}</span>
+        <span class="semanal-clanes-count">${clanes.length} clanes</span>
+    </div>
+    <div class="semanal-table-wrap">
+        <table class="semanal-table">
+            <thead>
+                <tr>
+                    <th class="semanal-th-rank">#</th>
+                    <th class="semanal-th-nombre">Clan</th>
+                    ${thSessions}
+                    <th class="semanal-th-total">Total</th>
+                </tr>
+            </thead>
+            <tbody>${tbodyHtml}</tbody>
+        </table>
+    </div>`;
 }

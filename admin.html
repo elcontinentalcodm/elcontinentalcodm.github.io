@@ -102,6 +102,8 @@
         <button class="admin-tab" data-tab="asistencia">📅 Asistencia</button>
         <button class="admin-tab only-master" data-tab="contactos">📞 Contactos</button>
         <button class="admin-tab" data-tab="medallas">🏅 Medallas</button>
+        <button class="admin-tab only-master" data-tab="top3">🏆 Top 3</button>
+        <button class="admin-tab only-master" data-tab="semanal">📊 Puntos Semanales</button>
     </div>
 
     <!-- ══ PANEL: CLANES ══ -->
@@ -192,8 +194,71 @@
     </div>
     </div><!-- /panel-medallas -->
 
+    <!-- ══ PANEL: TOP 3 (solo CEO) ══ -->
+    <div class="admin-panel only-master" id="panel-top3" style="display:none">
+        <div class="top3-section">
+            <div class="top3-header">
+                <h3>🏆 Top 3 Destacados</h3>
+                <p class="top3-desc">Los 3 clanes con más puntos de salas. Puedes compartir el podio como imagen.</p>
+            </div>
+
+            <!-- Tarjeta del podio (se captura esta para la imagen) -->
+            <div class="top3-podio-wrap">
+                <div class="top3-podio" id="top3Podio">
+                    <div class="top3-podio-title">
+                        <img src="logo de sala/logo de pagina.png" alt="Logo" class="top3-logo" onerror="this.style.display='none'">
+                        <span>EL CONTINENTAL · TOP 3</span>
+                    </div>
+                    <div class="top3-cards" id="top3Cards">
+                        <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="top3-actions">
+                <button class="btn-export" id="btnShareTop3">📸 Compartir como imagen</button>
+                <button class="btn-refresh" id="btnRefreshTop3">🔄 Actualizar</button>
+            </div>
+        </div>
+    </div><!-- /panel-top3 -->
+
+    <!-- ══ PANEL: PUNTOS SEMANALES (solo CEO) ══ -->
+    <div class="admin-panel only-master" id="panel-semanal" style="display:none">
+        <div class="semanal-section">
+            <div class="semanal-header">
+                <h3>📊 Puntos Semanales</h3>
+                <button class="btn-refresh" id="btnRefreshSemanal">🔄 Actualizar</button>
+            </div>
+            <p class="semanal-desc">Puntos acumulados por sala esta semana · Solo visible para el CEO · Fuente: Google Sheets.</p>
+            <!-- Sub-tabs de sala -->
+            <div class="semanal-subtabs">
+                <button class="semanal-subtab active" data-sala="alcatraz">🏟️ Alcatraz</button>
+                <button class="semanal-subtab" data-sala="alcatraz2">🏟️ Alcatraz 2.0</button>
+                <button class="semanal-subtab" data-sala="zguerra">⚔️ Zona de Guerra</button>
+                <button class="semanal-subtab" data-sala="zletal">💥 Zona Letal</button>
+                <button class="semanal-subtab" data-sala="zxtreme">⚡ Zona Xtreme</button>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-alcatraz">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-alcatraz2" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-zguerra" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-zletal" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-zxtreme" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+        </div>
+    </div><!-- /panel-semanal -->
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="config-global.js"></script>
 <script src="admin.js"></script>
 </body>

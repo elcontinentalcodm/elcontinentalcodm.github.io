@@ -1328,3 +1328,304 @@ tbody td { padding:0.85rem 1rem;color:var(--text);vertical-align:middle; }
   .nav-center     { display: none; }
   .btn-logout     { font-size: 0.75rem; padding: 0.35rem 0.7rem; }
 }
+
+/* ══════════════════════════════════════════════
+   TOP 3 DESTACADOS — Admin CEO
+   ══════════════════════════════════════════════ */
+.top3-section {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+.top3-header h3 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 0.3rem;
+}
+.top3-desc {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 1.8rem;
+}
+.top3-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+/* Wrap que rodea el podio (para que la captura sea limpia) */
+.top3-podio-wrap {
+    display: flex;
+    justify-content: center;
+}
+
+/* Tarjeta del podio que se captura como imagen */
+.top3-podio {
+    background: linear-gradient(145deg, #111 0%, #1c1c1c 60%, #0d0d0d 100%);
+    border: 1.5px solid rgba(255,215,0,0.3);
+    border-radius: 20px;
+    padding: 2rem 2.5rem 2.5rem;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 0 40px rgba(255,215,0,0.12);
+}
+
+.top3-podio-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.1rem;
+    letter-spacing: 5px;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    opacity: 0.85;
+}
+.top3-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+/* Fila de 3 cards (orden: 2°, 1°, 3°) */
+.top3-cards {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* Card individual */
+.top3-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 16px;
+    padding: 1.2rem 1rem 1.5rem;
+    border: 1px solid rgba(255,215,0,0.15);
+    flex: 1;
+    max-width: 200px;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+/* Alturas del podio */
+.top3-oro    { background: linear-gradient(160deg, rgba(255,215,0,0.15), rgba(255,165,0,0.08)); border-color: rgba(255,215,0,0.45); min-height: 260px; }
+.top3-plata  { background: linear-gradient(160deg, rgba(180,180,200,0.10), rgba(140,140,160,0.05)); border-color: rgba(200,200,220,0.3); min-height: 220px; }
+.top3-bronce { background: linear-gradient(160deg, rgba(180,100,40,0.12), rgba(140,80,30,0.06)); border-color: rgba(205,127,50,0.3); min-height: 200px; }
+
+.top3-medal {
+    font-size: 2rem;
+    margin-bottom: 0.6rem;
+    line-height: 1;
+}
+.top3-pos1 .top3-medal { font-size: 2.5rem; }
+
+.top3-clan-logo {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgba(255,215,0,0.3);
+    background: rgba(0,0,0,0.3);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.top3-pos1 .top3-clan-logo { width: 76px; height: 76px; border-color: rgba(255,215,0,0.6); }
+.top3-clan-logo img { width: 100%; height: 100%; object-fit: cover; }
+
+.top3-clan-nombre {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 0.2rem;
+}
+.top3-pos1 .top3-clan-nombre { font-size: 1.2rem; color: var(--gold); }
+
+.top3-clan-tag {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.top3-clan-pts {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 12px rgba(255,215,0,0.5);
+}
+.top3-pts-label {
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    font-weight: 400;
+}
+.top3-medallas-detalle {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 0.35rem;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 600px) {
+    .top3-cards { gap: 0.5rem; }
+    .top3-card  { padding: 0.8rem 0.5rem 1rem; }
+    .top3-clan-logo { width: 48px; height: 48px; }
+    .top3-pos1 .top3-clan-logo { width: 58px; height: 58px; }
+    .top3-podio { padding: 1.2rem 1rem 1.5rem; }
+}
+
+/* ══ PUNTOS SEMANALES ══ */
+.semanal-subtabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.semanal-subtab {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.55);
+    padding: 0.35rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all .18s;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.semanal-subtab:hover {
+    border-color: rgba(255,215,0,0.4);
+    color: rgba(255,255,255,0.85);
+}
+.semanal-subtab.active {
+    background: rgba(255,215,0,0.12);
+    border-color: rgba(255,215,0,0.5);
+    color: var(--gold);
+}
+.semanal-section { margin: 1.5rem 0; }
+.semanal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+}
+.semanal-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+}
+.semanal-desc {
+    color: var(--muted);
+    font-size: 0.82rem;
+    margin-bottom: 1rem;
+}
+.semanal-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+}
+.semanal-sala-badge {
+    background: rgba(255,215,0,0.12);
+    border: 1px solid rgba(255,215,0,0.35);
+    color: var(--gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.22rem 0.7rem;
+    border-radius: 20px;
+    letter-spacing: 1px;
+}
+.semanal-week-label {
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+.semanal-clanes-count {
+    color: rgba(255,255,255,0.35);
+    font-size: 0.75rem;
+}
+.semanal-table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+.semanal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+.semanal-table thead tr {
+    background: rgba(255,215,0,0.07);
+}
+.semanal-table th,
+.semanal-table td {
+    padding: 0.5rem 0.6rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.055);
+    white-space: nowrap;
+}
+.semanal-th-nombre,
+.semanal-td-nombre {
+    text-align: left;
+    min-width: 150px;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.semanal-th-total,
+.semanal-td-total {
+    font-weight: 800;
+    color: var(--gold);
+    min-width: 58px;
+    font-size: 0.9rem;
+}
+.semanal-th-rank,
+.semanal-td-rank {
+    color: var(--muted);
+    font-size: 0.78rem;
+    min-width: 34px;
+}
+.semanal-th-sesion {
+    font-size: 0.7rem;
+    min-width: 50px;
+    color: rgba(255,255,255,0.75);
+}
+.semanal-th-sesion small {
+    font-size: 0.6rem;
+    color: var(--muted);
+    display: block;
+}
+.semanal-pts-activo {
+    color: #4dff91;
+    font-weight: 700;
+    background: rgba(77,255,145,0.07);
+}
+.semanal-pts-vacio {
+    color: rgba(255,255,255,0.18);
+}
+.semanal-rank-1 td { background: rgba(255,215,0,0.06); }
+.semanal-rank-2 td { background: rgba(180,180,200,0.04); }
+.semanal-rank-3 td { background: rgba(180,100,40,0.05); }
+.semanal-table tbody tr:hover td {
+    background: rgba(255,255,255,0.04) !important;
+    cursor: default;
+}
+@media (max-width: 600px) {
+    .semanal-th-sesion { min-width: 40px; font-size: 0.62rem; }
+    .semanal-td-nombre { min-width: 120px; max-width: 160px; }
+}
