@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneo BR - El Continental</title>
+    <link rel="icon" type="image/png" href="logo de sala/logo de pagina.png">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ── Hero ── */
+        .tbr-hero {
+            text-align: center;
+            padding: 70px 24px 48px;
+            background: linear-gradient(160deg, #0d0d0d 0%, #1a1a2e 60%, #16213e 100%);
+        }
+        .tbr-hero h1 {
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #fff;
+            text-transform: uppercase;
+            margin: 0 0 10px;
+        }
+        .tbr-hero p { color: #aaa; font-size: 1rem; margin: 0; }
+
+        /* ── Grid ── */
+        .tbr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+            max-width: 1100px;
+            margin: 44px auto 64px;
+            padding: 0 24px;
+        }
+
+        /* ── Tarjeta ── */
+        .tbr-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 36px rgba(0,0,0,0.45);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .tbr-card:hover { transform: translateY(-4px); box-shadow: 0 18px 48px rgba(0,0,0,0.6); }
+        .tbr-card.es-proximo { border-color: rgba(46,213,115,0.35); box-shadow: 0 10px 36px rgba(46,213,115,0.08); }
+        .tbr-card.es-proximo:hover { box-shadow: 0 18px 48px rgba(46,213,115,0.15); }
+
+        /* ── Imagen ── */
+        .tbr-img { width:100%; height:auto; object-fit:contain; display:block; background:#111; }
+
+        /* ── Cuerpo ── */
+        .tbr-body { padding: 20px 22px 24px; display:flex; flex-direction:column; gap:14px; flex:1; }
+        .tbr-num  { font-size:.7rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#666; }
+        .tbr-fecha { display:flex; align-items:center; gap:8px; font-size:1.05rem; font-weight:700; color:#fff; }
+        .tbr-fecha span:first-child { font-size:1.1rem; }
+
+        /* ── Badge ── */
+        .tbr-badge {
+            display:inline-flex; align-items:center; gap:7px;
+            padding:7px 16px; border-radius:50px;
+            font-size:.78rem; font-weight:700; letter-spacing:1.5px;
+            text-transform:uppercase; width:fit-content; margin-top:auto;
+        }
+        .tbr-badge.proximo   { background:rgba(46,213,115,0.12); border:1px solid rgba(46,213,115,0.45); color:#2ed573; }
+        .tbr-badge.finalizado{ background:rgba(180,180,180,0.08); border:1px solid rgba(180,180,180,0.22); color:#888; }
+        .tbr-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+        .proximo   .tbr-dot { background:#2ed573; box-shadow:0 0 7px #2ed573; animation:pdot 1.6s infinite; }
+        .finalizado .tbr-dot { background:#666; }
+        @keyframes pdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(1.35)} }
+
+        /* ── Volver ── */
+        .tbr-back {
+            display:block; text-align:center; margin:0 auto 64px; width:fit-content;
+            padding:12px 32px; border:1px solid rgba(255,255,255,0.2); border-radius:8px;
+            color:#bbb; text-decoration:none; font-size:.9rem; transition:border-color .2s,color .2s;
+        }
+        .tbr-back:hover { border-color:rgba(255,255,255,.5); color:#fff; }
+
+        @media (max-width: 520px) {
+            .tbr-grid { grid-template-columns:1fr; padding:0 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="logo de sala/logo de pagina.png" alt="Logo" class="nav-logo-img"> EL CONTINENTAL
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="clanes.html">Clanes</a></li>
+                <li><a href="ranking.html">Ranking</a></li>
+                <li><a href="salas.html">Salas</a></li>
+                <li><a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" class="cta-button">✚ Registrar Clan</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <div class="tbr-hero">
+        <h1>🎯 Torneos Battle Royale</h1>
+        <p>El Continental · Historial y próximas fechas de competencia BR</p>
+    </div>
+
+    <!-- GRID DE TORNEOS -->
+    <div class="tbr-grid" id="tbrGrid">
+        <!-- Las tarjetas se generan desde el array TORNEOS_BR en el script -->
+    </div>
+
+    <a href="salas.html" class="tbr-back">← Volver a Salas</a>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>El Continental</h3>
+                <p>Comunidad Élite de Call of Duty Mobile</p>
+            </div>
+            <div class="footer-section">
+                <h3>Enlaces Rápidos</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="clanes.html">Clanes</a></li>
+                    <li><a href="ranking.html">Ranking</a></li>
+                    <li><a href="salas.html">Salas</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Redes Sociales</h3>
+                <div class="footer-social">
+                    <a href="https://www.tiktok.com/@elcontinentalcodm" target="_blank">TikTok</a>
+                    <a href="https://www.instagram.com/elcontinentalcodm" target="_blank">Instagram</a>
+                    <a href="https://discord.com/invite/BFgupYEYUq" target="_blank">Discord</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 El Continental - Comunidad Call of Duty Mobile</p>
+        </div>
+    </footer>
+
+    <script src="config-global.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initHamburger);
+
+        /* ══════════════════════════════════════════════════════
+           LISTA DE TORNEOS BR
+           Para agregar un nuevo torneo, añade un objeto al array.
+           fecha: "YYYY-MM-DD"  →  determina PRÓXIMO / FINALIZADO automáticamente
+        ══════════════════════════════════════════════════════ */
+        const TORNEOS_BR = [
+            {
+                imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (3).jpeg",
+                fecha:  "2026-03-03",
+                fechaTexto: "3 de Marzo 2026"
+            },
+            {
+                imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM.jpeg",
+                fecha:  "2026-02-27",
+                fechaTexto: "27 de Febrero 2026"
+            },
+            {
+                imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (1).jpeg",
+                fecha:  "2026-02-14",
+                fechaTexto: "14 de Febrero 2026"
+            },
+            {
+                imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (2).jpeg",
+                fecha:  "2025-11-23",
+                fechaTexto: "23 de Noviembre 2025"
+            }
+        ];
+        /* ══════════════════════════════════════════════════════ */
+
+        (function renderTorneos() {
+            const grid = document.getElementById('tbrGrid');
+            const hoy  = new Date();
+
+            TORNEOS_BR.forEach((t, i) => {
+                const pasado    = new Date(t.fecha + 'T23:59:59') < hoy;
+                const estado    = pasado ? 'finalizado' : 'proximo';
+                const estadoTxt = pasado ? 'FINALIZADO'  : 'PRÓXIMO';
+
+                const card = document.createElement('div');
+                card.className = 'tbr-card' + (pasado ? '' : ' es-proximo');
+                card.innerHTML = `
+                    <img class="tbr-img"
+                         src="${t.imagen}"
+                         alt="Torneo BR ${i + 1}"
+                         onerror="this.style.background='#111';this.style.minHeight='160px';">
+                    <div class="tbr-body">
+                        <div class="tbr-num">Torneo BR · #${i + 1}</div>
+                        <div class="tbr-fecha"><span>📅</span><span>${t.fechaTexto}</span></div>
+                        <div class="tbr-badge ${estado}">
+                            <span class="tbr-dot"></span>
+                            <span>${estadoTxt}</span>
+                        </div>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        })();
+    </script>
+</body>
+</html>

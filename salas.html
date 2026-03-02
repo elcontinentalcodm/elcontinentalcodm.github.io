@@ -1,44 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Continental</title>
-    <link src rel="stylesheet" href="salas.css">
-    <link src rel="script" href="script.js">
-    <link rel="icon" type="image/png" href="logo de sala/logo de pagina .png">
+    <title>Salas - El Continental</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="logo de sala/logo de pagina.png">
 </head>
 
 <body>
      <nav>
         <div class="nav-container">
-            <a href="index.html" class="logo">
-                乇ᑕ ᑕOᑎTIᑎᗴᑎTᗩᑕ
-            </a>
+            <a href="index.html" class="logo"><img src="logo de sala/logo de pagina.png" alt="Logo" class="nav-logo-img"> EL CONTINENTAL</a>
             <ul class="nav-links" id="navLinks">
                 <li><a href="index.html">Inicio</a></li>
                 <li><a href="clanes.html">Clanes</a></li>
                 <li><a href="ranking.html">Ranking</a></li>
                 <li><a href="salas.html">Salas</a></li>
-                             <li><a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" class="cta-button">
-                    <span></span> Registrar Clan
-                </a></li>
+                <li><a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" class="cta-button">✚ Registrar Clan</a></li>
             </ul>
             <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+                <span></span><span></span><span></span>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        <h1>🎮 Salas de Juego</h1>
+    <section class="hero">
+        <h1>🎮 SALAS DE JUEGO</h1>
+        <p>Elige tu sala, entra al campo de batalla y demuestra quién manda</p>
+    </section>
+
+    <div class="salas-container">
         <div class="rooms-grid">
+
             <!-- Sala 1: Alcatraz -->
             <div class="room-card">
-                <div class="time">🕖 7:00 p.m.</div>
+                <div class="room-time">🕖 7:00 p.m.</div>
                 <div class="room-name">Alcatraz</div>
+                <div class="room-divider"></div>
                 <div class="host-info">
                     <div class="player-icon">👤</div>
                     <div class="host-details">
@@ -46,29 +45,29 @@
                         <div class="host-name">Michi</div>
                     </div>
                 </div>
-
-         <!--        <div class="tiktok-section">
-                    <div class="tiktok-label">📱 Transmisiones en vivo</div>
-                    <div class="tiktok-links">
-                        <a href="https://www.tiktok.com/@michi_cod" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@michi_cod</span>
-                            <span class="live-badge">LIVE</span>
-                        </a>
-                        <a href="https://www.tiktok.com/@alcatraz_oficial" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@alcatraz_oficial</span>
-                        </a>
-                    </div>
-                </div> -->
-
                 <a href="Alcatraz.html" class="btn-ingresar">Ingresar a la Sala</a>
             </div>
 
-            <!-- Sala 2: Mixta -->
+            <!-- Sala 2: Alcatraz 2.0 -->
             <div class="room-card">
-                <div class="time">🕗 8:00 p.m.</div>
-                <div class="room-name">Zona de guerra </div>
+                <div class="room-time">🕖 7:00 p.m.</div>
+                <div class="room-name">Alcatraz 2.0</div>
+                <div class="room-divider"></div>
+                <div class="host-info">
+                    <div class="player-icon">👤</div>
+                    <div class="host-details">
+                        <div class="host-label">Host</div>
+                        <div class="host-name">Gabriel</div>
+                    </div>
+                </div>
+                <a href="Alcatraz 2.0.html" class="btn-ingresar">Ingresar a la Sala</a>
+            </div>
+
+            <!-- Sala 3: Zona de Guerra -->
+            <div class="room-card">
+                <div class="room-time">🕗 8:00 p.m.</div>
+                <div class="room-name">Zona de Guerra</div>
+                <div class="room-divider"></div>
                 <div class="host-info">
                     <div class="player-icon">👤</div>
                     <div class="host-details">
@@ -76,29 +75,14 @@
                         <div class="host-name">Samantha</div>
                     </div>
                 </div>
-
-            <!--     <div class="tiktok-section">
-                    <div class="tiktok-label">📱 Transmisiones en vivo</div>
-                    <div class="tiktok-links">
-                        <a href="https://www.tiktok.com/@samantha_gaming" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@samantha_gaming</span>
-                            <span class="live-badge">LIVE</span>
-                        </a>
-                        <a href="https://www.tiktok.com/@mixta_codm" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@mixta_codm</span>
-                        </a>
-                    </div>
-                </div> -->
-
                 <a href="Zona de Guerra.html" class="btn-ingresar">Ingresar a la Sala</a>
             </div>
 
-            <!-- Sala 3: Amateur -->
+            <!-- Sala 4: Zona Letal -->
             <div class="room-card">
-                <div class="time">🕘 9:00 p.m.</div>
-                <div class="room-name">Zona Letal </div>
+                <div class="room-time">🕘 9:00 p.m.</div>
+                <div class="room-name">Zona Letal</div>
+                <div class="room-divider"></div>
                 <div class="host-info">
                     <div class="player-icon">👤</div>
                     <div class="host-details">
@@ -106,29 +90,14 @@
                         <div class="host-name">Eva</div>
                     </div>
                 </div>
-
-             <!--   <div class="tiktok-section">
-                    <div class="tiktok-label">📱 Transmisiones en vivo</div>
-                    <div class="tiktok-links">
-                        <a href="https://www.tiktok.com/@eva_codm" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@eva_codm</span>
-                            <span class="live-badge">LIVE</span>
-                        </a>
-                        <a href="https://www.tiktok.com/@amateur_streams" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@amateur_streams</span>
-                        </a>
-                    </div>
-                </div> -->
-
                 <a href="Zona Letal.html" class="btn-ingresar">Ingresar a la Sala</a>
             </div>
 
-            <!-- Sala 4: Xtreme -->
+            <!-- Sala 5: Zona Xtreme -->
             <div class="room-card">
-                <div class="time">🕘 9:00 p.m.</div>
+                <div class="room-time">🕘 9:00 p.m.</div>
                 <div class="room-name">Zona Xtreme</div>
+                <div class="room-divider"></div>
                 <div class="host-info">
                     <div class="player-icon">👤</div>
                     <div class="host-details">
@@ -136,58 +105,49 @@
                         <div class="host-name">Tóxica</div>
                     </div>
                 </div>
-
-                <div class="tiktok-section">
-                    <div class="tiktok-label">📱 Transmisiones en vivo</div>
-                    <div class="tiktok-links">
-                        <a href="https://www.tiktok.com/@toxii?is_from_webapp=1&sender_device=pc" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@LaToxica 🖤</span>
-                        </a>
-                        <!--<a href="" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@xtreme_gaming</span>
-                        </a> -->
-                    </div>
-                </div> 
-
+                <div class="sala-tiktok">
+                    <span class="sala-tiktok-label">📹 Stream</span>
+                    <a href="https://www.tiktok.com/@toxii?is_from_webapp=1&sender_device=pc" target="_blank" class="sala-tiktok-link">
+                        @LaToxica 🖤
+                    </a>
+                </div>
                 <a href="Zona Xtreme.html" class="btn-ingresar">Ingresar a la Sala</a>
             </div>
 
-            <!-- Sala 5: Competitiva 
-            <div class="room-card">
-                <div class="time">🕙 10:00 p.m.</div>
-                <div class="room-name">Liga Suprema</div>
+            <!-- Sala 6: Multijugador -->
+            <div class="room-card room-card-especial">
+                <div class="room-time">🎮 Multijugador</div>
+                <div class="room-name">Multijugador</div>
+                <div class="room-divider"></div>
                 <div class="host-info">
-                    <div class="player-icon">👤</div>
+                    <div class="player-icon">👥</div>
                     <div class="host-details">
-                        <div class="host-label">Host</div>
-                        <div class="host-name">Alexa</div>
+                        <div class="host-label">Modo</div>
+                        <div class="host-name">Proximamente</div>
                     </div>
                 </div>
+                <a href="Multijugador.html" class="btn-ingresar">Ingresar a la Sala</a>
+            </div>
 
-               <div class="tiktok-section">
-                    <div class="tiktok-label">📱 Transmisiones en vivo</div>
-                    <div class="tiktok-links">
-                        <a href="https://www.tiktok.com/@alexa_pro" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@alexa_pro</span>
-                            <span class="live-badge">LIVE</span>
-                        </a>
-                        <a href="https://www.tiktok.com/@competitiva_official" target="_blank" class="tiktok-link">
-                            <span class="tiktok-icon">📹</span>
-                            <span class="streamer-name">@competitiva_official</span>
-                        </a>
+            <!-- Sala 7: Torneo BR -->
+            <div class="room-card room-card-especial">
+                <div class="room-time">🎯 Torneo BR</div>
+                <div class="room-name">Torneo BR</div>
+                <div class="room-divider"></div>
+                <div class="host-info">
+                    <div class="player-icon">🏹</div>
+                    <div class="host-details">
+                        <div class="host-label">Modo</div>
+                        <div class="host-name" id="salasBREstado">Próximo</div>
                     </div>
-                </div> 
+                </div>
+                <a href="Torneo BR.html" class="btn-ingresar">Ver Torneo</a>
+            </div>
 
-                <a href="Liga Suprema.html" class="btn-ingresar">Ingresar a la Sala</a>
-            </div> -->
         </div>
     </div>
 
- 
-    <!-- Footer -->
+ <!-- Footer -->
     <footer>
         <div class="footer-content">
             <div class="footer-section">
@@ -213,31 +173,23 @@
             </div>
         </div>
         <div class="footer-bottom">
+            <p>© 2026 El Continental - Comunidad Call of Duty Mobile</p>
         </div>
     </footer>
 
+    <script src="config-global.js"></script>
     <script>
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
+        document.addEventListener('DOMContentLoaded', initHamburger);
 
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('active');
-            });
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('active');
-            }
-        });
+        // Estado dinámico Torneo BR (debe coincidir con la fecha en Torneo BR.html)
+        (function() {
+            const FECHA_BR = ""; // Ej: "2026-04-15" — mantener igual que en Torneo BR.html
+            const el = document.getElementById('salasBREstado');
+            if (!el) return;
+            if (!FECHA_BR) { el.textContent = "Próximo"; return; }
+            const pasado = new Date() > new Date(FECHA_BR + 'T23:59:59');
+            el.textContent = pasado ? "Finalizado" : "Próximo";
+        })();
     </script>
 </body>
 </html>
