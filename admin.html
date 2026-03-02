@@ -10,6 +10,7 @@
 <body>
 
 <!-- ══ LOGIN ══ -->
+<canvas id="loginLightningCanvas"></canvas>
 <div class="login-container" id="loginContainer">
     <div class="login-box">
         <img src="logo%20de%20sala/logo%20de%20pagina%20.jpg" alt="El Continental"
@@ -93,8 +94,13 @@
                 <div class="stat-value" id="totalTrofeos">—</div>
                 <div class="stat-label">Trofeos Otorgados</div>
             </div>
-        </div>
-    </div>
+        </div>        <div class="stat-card only-master" id="statSanciones">
+            <div class="stat-icon">🚨</div>
+            <div class="stat-info">
+                <div class="stat-value" id="totalSanciones">—</div>
+                <div class="stat-label">Sanciones Activas</div>
+            </div>
+        </div>    </div>
 
     <!-- ══ PESTAÑAS ══ -->
     <div class="admin-tabs" id="adminTabs">
@@ -104,6 +110,7 @@
         <button class="admin-tab" data-tab="medallas">🏅 Medallas</button>
         <button class="admin-tab only-master" data-tab="top3">🏆 Top 3</button>
         <button class="admin-tab only-master" data-tab="semanal">📊 Puntos Semanales</button>
+        <button class="admin-tab only-master" data-tab="sanciones">🚨 Sanciones</button>
     </div>
 
     <!-- ══ PANEL: CLANES ══ -->
@@ -234,6 +241,7 @@
             <div class="semanal-subtabs">
                 <button class="semanal-subtab active" data-sala="alcatraz">🏟️ Alcatraz</button>
                 <button class="semanal-subtab" data-sala="alcatraz2">🏟️ Alcatraz 2.0</button>
+                <button class="semanal-subtab" data-sala="alcatrazmaster">⛓️ Alcatraz Master</button>
                 <button class="semanal-subtab" data-sala="zguerra">⚔️ Zona de Guerra</button>
                 <button class="semanal-subtab" data-sala="zletal">💥 Zona Letal</button>
                 <button class="semanal-subtab" data-sala="zxtreme">⚡ Zona Xtreme</button>
@@ -242,6 +250,9 @@
                 <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
             </div>
             <div class="semanal-wrapper" id="semanalWrapper-alcatraz2" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-alcatrazmaster" style="display:none">
                 <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
             </div>
             <div class="semanal-wrapper" id="semanalWrapper-zguerra" style="display:none">
@@ -256,10 +267,122 @@
         </div>
     </div><!-- /panel-semanal -->
 
+    <!-- ══ PANEL: SANCIONES (solo CEO) ══ -->
+    <div class="admin-panel only-master" id="panel-sanciones" style="display:none">
+        <div class="sanciones-section">
+            <div class="sanciones-header">
+                <h3>🚨 Control de Sanciones</h3>
+                <div class="sanciones-header-actions">
+                    <select id="sancionesFiltroSala" class="filter-select">
+                        <option value="all">Todas las salas</option>
+                        <option value="alcatraz">🏟️ Alcatraz</option>
+                        <option value="alcatraz2">🏟️ Alcatraz 2.0</option>
+                        <option value="alcatrazmaster">⛓️ Alcatraz Master</option>
+                        <option value="zguerra">⚔️ Zona de Guerra</option>
+                        <option value="zletal">💥 Zona Letal</option>
+                        <option value="zxtreme">⚡ Zona Xtreme</option>
+                    </select>
+                    <button class="btn-refresh" id="btnRefreshSanciones">🔄 Actualizar</button>
+                </div>
+            </div>
+            <p class="sanciones-desc">Sanciones registradas en todas las salas · Solo visible para el CEO · Fuente: Google Sheets.</p>
+            <div id="sancionesWrapper">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando sanciones...</p>
+            </div>
+        </div>
+    </div><!-- /panel-sanciones -->
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="config-global.js"></script>
 <script src="admin.js"></script>
+
+<!-- Rayos eléctricos login -->
+<script>
+(function(){
+    const canvas = document.getElementById('loginLightningCanvas');
+    const ctx    = canvas.getContext('2d');
+
+    function resize(){
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const COLORS = [
+        'rgba(255,30,30,',
+        'rgba(180,0,255,',
+        'rgba(0,160,255,',
+        'rgba(255,215,0,',
+        'rgba(200,200,255,',
+    ];
+
+    function bolt(x1,y1,x2,y2,depth,color){
+        if(depth===0){
+            ctx.beginPath();
+            ctx.moveTo(x1,y1);
+            ctx.lineTo(x2,y2);
+            ctx.strokeStyle = color+'1)';
+            ctx.lineWidth   = 2.2;
+            ctx.shadowColor = color+'1)';
+            ctx.shadowBlur  = 30;
+            ctx.stroke();
+            return;
+        }
+        const mx = (x1+x2)/2 + (Math.random()-0.5)*(Math.abs(x2-x1)+Math.abs(y2-y1))*0.35;
+        const my = (y1+y2)/2 + (Math.random()-0.5)*(Math.abs(x2-x1)+Math.abs(y2-y1))*0.35;
+        bolt(x1,y1,mx,my,depth-1,color);
+        bolt(mx,my,x2,y2,depth-1,color);
+        if(depth>1 && Math.random()<0.35){
+            const bx = mx + (Math.random()-0.5)*120;
+            const by = my + Math.random()*120;
+            bolt(mx,my,bx,by,depth-2,color);
+        }
+    }
+
+    const bolts = [];
+    function spawnBolt(){
+        const color = COLORS[Math.floor(Math.random()*COLORS.length)];
+        const x1    = Math.random()*canvas.width;
+        const y1    = Math.random()*canvas.height*0.2;
+        const x2    = x1 + (Math.random()-0.5)*300;
+        const y2    = y1 + 200 + Math.random()*Math.max(300, canvas.height*0.7);
+        bolts.push({ x1,y1,x2,y2,color,life:0,maxLife:18+Math.floor(Math.random()*14) });
+    }
+
+    let frame = 0;
+    function draw(){
+        // Solo dibujar si el login es visible
+        if(document.getElementById('loginContainer').style.display !== 'none'){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            frame++;
+            if(frame % 14 === 0) spawnBolt();
+            if(frame % 28 === 0) spawnBolt();
+            if(frame % 42 === 0) spawnBolt();
+
+            ctx.save();
+            bolts.forEach(b=>{
+                const progress = b.life / b.maxLife;
+                const alpha    = progress < 0.2 ? progress/0.2 : 1-(progress-0.2)/0.8;
+                ctx.globalAlpha = alpha * 0.95;
+                ctx.save(); ctx.shadowBlur = 45;
+                bolt(b.x1,b.y1,b.x2,b.y2,4,b.color);
+                ctx.restore();
+                b.life++;
+            });
+            ctx.restore();
+            for(let i=bolts.length-1;i>=0;i--){
+                if(bolts[i].life>=bolts[i].maxLife) bolts.splice(i,1);
+            }
+        }
+        requestAnimationFrame(draw);
+    }
+
+    for(let i=0;i<3;i++) spawnBolt();
+    draw();
+})();
+</script>
 </body>
-</html>     
+</html>

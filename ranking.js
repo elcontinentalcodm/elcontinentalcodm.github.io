@@ -28,7 +28,7 @@ async function initRanking() {
 }
 
 function prepareRankings(clans) {
-    const R = { 'general': [], 'Alcatraz': [], 'Alcatraz 2.0': [], 'Zona Guerra': [], 'Zona Letal': [], 'Zona Xtreme': [] };
+    const R = { 'general': [], 'Alcatraz': [], 'Alcatraz 2.0': [], 'Alcatraz Master': [], 'Zona Guerra': [], 'Zona Letal': [], 'Zona Xtreme': [] };
     clans.forEach(row => {
         const base = {
             nombre: row[CONFIG.COLUMNS.NOMBRE_DE_CLAN],
@@ -38,11 +38,12 @@ function prepareRankings(clans) {
         const oro    = parseInt(row[CONFIG.COLUMNS.ORO])    || 0;
         const plata  = parseInt(row[CONFIG.COLUMNS.PLATA])  || 0;
         const bronce = parseInt(row[CONFIG.COLUMNS.BRONCE]) || 0;
-        const alc    = parseInt(row[CONFIG.COLUMNS.ALCATRAZ])     || 0;
-        const alc2   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_2_0]) || 0;
+        const alc    = parseInt(row[CONFIG.COLUMNS.ALCATRAZ])        || 0;
+        const alc2   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_2_0])    || 0;
+        const alcm   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_MASTER]) || 0;
         const zg     = parseInt(row[CONFIG.COLUMNS.ZONA_DE_GUERRA])  || 0;
-        const zl     = parseInt(row[CONFIG.COLUMNS.ZONA_LETAL])   || 0;
-        const zx     = parseInt(row[CONFIG.COLUMNS.ZONA_XTREME])  || 0;
+        const zl     = parseInt(row[CONFIG.COLUMNS.ZONA_LETAL])      || 0;
+        const zx     = parseInt(row[CONFIG.COLUMNS.ZONA_XTREME])     || 0;
         const total = calcularPuntos(row); // SOLO SALAS
 
         const logrosInline = getBadgesInline(row) || null;
@@ -54,11 +55,12 @@ function prepareRankings(clans) {
             logros: logrosInline
         });
 
-        if (alc  > 0) R['Alcatraz'].push({     ...base, puntos: alc,  sala: 'Alcatraz',     extra: null, logros: logrosInline });
-        if (alc2 > 0) R['Alcatraz 2.0'].push({ ...base, puntos: alc2, sala: 'Alcatraz 2.0', extra: null, logros: logrosInline });
-        if (zg   > 0) R['Zona Guerra'].push({   ...base, puntos: zg,   sala: 'Zona Guerra',  extra: null, logros: logrosInline });
-        if (zl   > 0) R['Zona Letal'].push({    ...base, puntos: zl,   sala: 'Zona Letal',   extra: null, logros: logrosInline });
-        if (zx   > 0) R['Zona Xtreme'].push({   ...base, puntos: zx,   sala: 'Zona Xtreme',  extra: null, logros: logrosInline });
+        if (alc  > 0) R['Alcatraz'].push({        ...base, puntos: alc,  sala: 'Alcatraz',        extra: null, logros: logrosInline });
+        if (alc2 > 0) R['Alcatraz 2.0'].push({    ...base, puntos: alc2, sala: 'Alcatraz 2.0',    extra: null, logros: logrosInline });
+        if (alcm > 0) R['Alcatraz Master'].push({ ...base, puntos: alcm, sala: 'Alcatraz Master', extra: null, logros: logrosInline });
+        if (zg   > 0) R['Zona Guerra'].push({      ...base, puntos: zg,   sala: 'Zona Guerra',     extra: null, logros: logrosInline });
+        if (zl   > 0) R['Zona Letal'].push({       ...base, puntos: zl,   sala: 'Zona Letal',      extra: null, logros: logrosInline });
+        if (zx   > 0) R['Zona Xtreme'].push({      ...base, puntos: zx,   sala: 'Zona Xtreme',     extra: null, logros: logrosInline });
     });
     Object.keys(R).forEach(k => R[k].sort((a, b) => b.puntos - a.puntos));
     return R;

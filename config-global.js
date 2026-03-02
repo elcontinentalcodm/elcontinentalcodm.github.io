@@ -32,6 +32,7 @@ const CONFIG = {
     SEMANAL_ZGUERRA_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=980212815&single=true&output=csv',
     SEMANAL_ZLETAL_URL:      'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=944215394&single=true&output=csv',
     SEMANAL_ZXTREME_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=850595394&single=true&output=csv',
+    SEMANAL_ALCATRAZ_MASTER_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=1392627225&single=true&output=csv',
 
     // ══════════════════════════════════════════════
     // HOJA DE CONTACTOS (solo visible para el CEO)
@@ -83,34 +84,35 @@ const CONFIG = {
         PLATA:            6,
         BRONCE:           7,
         ALCATRAZ:         8,
-        ALCATRAZ_2_0:      9,
-        ZONA_DE_GUERRA:   10,
-        ZONA_LETAL:       11,
-        ZONA_XTREME:      12,
-        puntos:           13,
+        ALCATRAZ_2_0:     9,
+        ALCATRAZ_MASTER:  10,
+        ZONA_DE_GUERRA:   11,
+        ZONA_LETAL:       12,
+        ZONA_XTREME:      13,
         PUNTOS_TOTAL:     14,
         // ─────────────────────────────────────────────────────────────
-        // MEDALLAS ESPECIALES — Columnas O, P, Q de tu Google Sheet
+        // MEDALLAS ESPECIALES — Columnas P, Q, R de tu Google Sheet
         // Para ACTIVAR: escribe cualquier valor (1, SI, ✓, GANADOR...)
         // Para DESACTIVAR: deja la celda vacía o pon 0
-        //   Columna O (índice 14) → RUBI        → Torneo
-        //   Columna P (índice 15) → ORO_DIAMANTE → Torneo entre comunidades
-        //   Columna Q (índice 16) → ESMERALDA   → Torneo de MJ
+        //   Columna P (índice 15) → RUBI         → Torneo
+        //   Columna Q (índice 16) → ORO_DIAMANTE → Torneo entre comunidades
+        //   Columna R (índice 17) → ESMERALDA    → Torneo de MJ
         // ─────────────────────────────────────────────────────────────
-        RUBI:             14,
-        ORO_DIAMANTE:     15,
-        ESMERALDA:        16,
+        RUBI:             15,
+        ORO_DIAMANTE:     16,
+        ESMERALDA:        17,
         // Los datos de contacto (líder, teléfonos, co-líderes, modo de juego)
         // se leen desde CONFIG.CONTACTO_URL (hoja separada del form de registro).
         // Ver CONTACTO_COLUMNS más abajo.
     },
 
     SALAS: {
-        ALCATRAZ:     'Alcatraz',
-        ALCATRAZ_2_0: 'Alcatraz2.0',
-        ZONA_DE_GUERRA:  'Zona de Guerra',
-        ZONA_LETAL:   'Zona Letal',
-        ZONA_XTREME:  'Zona Xtreme'
+        ALCATRAZ:         'Alcatraz',
+        ALCATRAZ_2_0:     'Alcatraz2.0',
+        ALCATRAZ_MASTER:  'Alcatraz Master',
+        ZONA_DE_GUERRA:   'Zona de Guerra',
+        ZONA_LETAL:       'Zona Letal',
+        ZONA_XTREME:      'Zona Xtreme'
     },
 
     // ══════════════════════════════════════════════
@@ -173,11 +175,12 @@ function getLogoUrl(clanId, logoUrl) {
 
 /* Puntos SOLO de salas (trofeos no suman) */
 function calcularPuntos(row) {
-    return (parseInt(row[CONFIG.COLUMNS.ALCATRAZ])     || 0)
-         + (parseInt(row[CONFIG.COLUMNS.ALCATRAZ_2_0]) || 0)
+    return (parseInt(row[CONFIG.COLUMNS.ALCATRAZ])        || 0)
+         + (parseInt(row[CONFIG.COLUMNS.ALCATRAZ_2_0])    || 0)
+         + (parseInt(row[CONFIG.COLUMNS.ALCATRAZ_MASTER]) || 0)
          + (parseInt(row[CONFIG.COLUMNS.ZONA_DE_GUERRA])  || 0)
-         + (parseInt(row[CONFIG.COLUMNS.ZONA_LETAL])   || 0)
-         + (parseInt(row[CONFIG.COLUMNS.ZONA_XTREME])  || 0);
+         + (parseInt(row[CONFIG.COLUMNS.ZONA_LETAL])      || 0)
+         + (parseInt(row[CONFIG.COLUMNS.ZONA_XTREME])     || 0);
 }
 
 /* CSV Parser */

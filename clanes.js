@@ -84,11 +84,12 @@ function processClansData(data) {
         const oro    = parseInt(row[CONFIG.COLUMNS.ORO])    || 0;
         const plata  = parseInt(row[CONFIG.COLUMNS.PLATA])  || 0;
         const bronce = parseInt(row[CONFIG.COLUMNS.BRONCE]) || 0;
-        const alc    = parseInt(row[CONFIG.COLUMNS.ALCATRAZ])     || 0;
-        const alc2   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_2_0]) || 0;
+        const alc    = parseInt(row[CONFIG.COLUMNS.ALCATRAZ])        || 0;
+        const alc2   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_2_0])    || 0;
+        const alcm   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_MASTER]) || 0;
         const zg     = parseInt(row[CONFIG.COLUMNS.ZONA_DE_GUERRA])  || 0;
-        const zl     = parseInt(row[CONFIG.COLUMNS.ZONA_LETAL])   || 0;
-        const zx     = parseInt(row[CONFIG.COLUMNS.ZONA_XTREME])  || 0;
+        const zl     = parseInt(row[CONFIG.COLUMNS.ZONA_LETAL])      || 0;
+        const zx     = parseInt(row[CONFIG.COLUMNS.ZONA_XTREME])     || 0;
         const total = calcularPuntos(row); // SOLO SALAS
         return {
             nombre: row[CONFIG.COLUMNS.NOMBRE_DE_CLAN],
@@ -97,7 +98,7 @@ function processClansData(data) {
             id:     row[CONFIG.COLUMNS.ID] || '—',
             // SIN lider (sección pública)
             oro, plata, bronce,
-            salas: { alc, alc2, zg, zl, zx },
+            salas: { alc, alc2, alcm, zg, zl, zx },
             total,
             // Medallas especiales desde la hoja (vacío si no tiene ninguna)
             badges: getBadgesHtml(row)
@@ -156,6 +157,7 @@ function displayClanes(clans, container, buscando = false) {
                 <div class="sala-ranks">
                     ${salaRow('Alcatraz', clan.salas.alc)}
                     ${salaRow('Alcatraz 2.0', clan.salas.alc2)}
+                    ${salaRow('Alcatraz Master', clan.salas.alcm)}
                     ${salaRow('Zona Guerra', clan.salas.zg)}
                     ${salaRow('Zona Letal', clan.salas.zl)}
                     ${salaRow('Zona Xtreme', clan.salas.zx)}
