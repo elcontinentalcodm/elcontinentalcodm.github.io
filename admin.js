@@ -822,6 +822,104 @@ function initSemanalTabs() {
     });
     // Cargar la primera sala al abrir la pestaña
     loadSemanal('alcatraz');
+
+    // Botón compartir imagen
+    document.getElementById('btnShareSemanal')?.addEventListener('click', compartirSemanalImagen);
+}
+
+async function compartirSemanalImagen() {
+    // Verificar que html2canvas esté disponible
+    if (typeof html2canvas === 'undefined') {
+        alert('❌ El generador de imágenes no está disponible.\nVerifica tu conexión a internet y recarga la página.');
+        return;
+    }
+
+    const activeSala = document.querySelector('.semanal-subtab.active')?.dataset.sala || 'alcatraz';
+    const wrapper = document.getElementById('semanalWrapper-' + activeSala);
+    if (!wrapper || !wrapper.children.length) {
+        alert('⚠️ No hay datos cargados. Espera a que cargue la tabla primero.');
+        return;
+    }
+
+    const btn = document.getElementById('btnShareSemanal');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Generando...';
+    btn.disabled = true;
+
+    try {
+        // Clonar el wrapper en un contenedor aislado con fondo oscuro para la captura
+        const clone = wrapper.cloneNode(true);
+        clone.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:' + wrapper.offsetWidth + 'px;background:#0d0d0d;padding:16px;border-radius:12px;z-index:-1';
+        document.body.appendChild(clone);
+
+        const canvas = await html2canvas(clone, {
+            backgroundColor: '#0d0d0d',
+            scale: 2,
+            useCORS: false,
+            allowTaint: true,
+            logging: false,
+            width: clone.offsetWidth,
+            height: clone.scrollHeight,
+            scrollX: 0,
+            scrollY: 0,
+        });
+
+        document.body.removeChild(clone);
+
+        if (!canvas || canvas.width === 0 || canvas.height === 0) {
+            throw new Error('El canvas generado está vacío (0x0)');
+        }
+
+        // Marca de agua
+        const ctx = canvas.getContext('2d');
+        ctx.font = 'bold 26px sans-serif';
+        ctx.fillStyle = 'rgba(255,215,0,0.65)';
+        ctx.textAlign = 'right';
+        ctx.fillText('El Continental · CODM', canvas.width - 24, canvas.height - 16);
+
+        const salaLabel = (document.querySelector('.semanal-subtab.active')?.textContent || activeSala)
+            .trim().replace(/[^\w\s]/gu, '').trim().replace(/\s+/g, '-') || activeSala;
+        const filename = 'resumen-semanal-' + salaLabel + '-' + new Date().toISOString().slice(0, 10) + '.png';
+
+        // Obtener dataURL
+        const dataUrl = canvas.toDataURL('image/png');
+        if (!dataUrl || dataUrl === 'data:,') {
+            throw new Error('No se pudo generar el dataURL (posible error de seguridad CORS)');
+        }
+
+        // Web Share API con archivo (móviles modernos)
+        let compartido = false;
+        if (typeof navigator.share === 'function') {
+            try {
+                const res = await fetch(dataUrl);
+                const blob = await res.blob();
+                const file = new File([blob], filename, { type: 'image/png' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files: [file], title: 'Resumen Semanal · El Continental' });
+                    compartido = true;
+                }
+            } catch (e) {
+                if (e.name === 'AbortError') compartido = true;
+                // si falla el share, caer en descarga
+            }
+        }
+
+        if (!compartido) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+    } catch (err) {
+        console.error('Error al generar imagen semanal:', err);
+        alert('❌ Error al generar la imagen:\n' + err.message);
+    }
+
+    btn.innerHTML = originalText;
+    btn.disabled = false;
 }
 
 async function loadSemanal(sala, forceRefresh = false) {

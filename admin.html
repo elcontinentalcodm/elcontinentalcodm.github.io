@@ -10,10 +10,9 @@
 <body>
 
 <!-- ══ LOGIN ══ -->
-<canvas id="loginLightningCanvas"></canvas>
 <div class="login-container" id="loginContainer">
     <div class="login-box">
-        <img src="logo%20de%20sala/logo%20de%20pagina%20.jpg" alt="El Continental"
+        <img src="logo de sala/logo de pagina.png" alt="El Continental"
              class="login-logo" onerror="this.style.display='none'">
         <h1>🔐 Panel de Administración</h1>
         <p>El Continental - Call of Duty Mobile</p>
@@ -31,19 +30,6 @@
             <div class="login-error" id="loginError">❌ Usuario o contraseña incorrectos</div>
         </div>
 
-        <div class="login-roles">
-            <p class="roles-title">Niveles de acceso</p>
-            <div class="roles-grid">
-                <div class="role-item role-viewer">
-                    <span>👁️</span><strong>Host de Sala</strong>
-                    <small>Nombre, tag, logo, trofeos, puntos de salas</small>
-                </div>
-                <div class="role-item role-master">
-                    <span>👑</span><strong>CEO</strong>
-                    <small>Acceso total: contactos, líderes, exportar CSV</small>
-                </div>
-            </div>
-        </div>
 
         <div class="login-footer">
             <a href="index.html">← Volver al inicio</a>
@@ -234,7 +220,10 @@
         <div class="semanal-section">
             <div class="semanal-header">
                 <h3>📊 Puntos Semanales</h3>
-                <button class="btn-refresh" id="btnRefreshSemanal">🔄 Actualizar</button>
+                <div style="display:flex;gap:0.6rem;align-items:center">
+                    <button class="btn-export" id="btnShareSemanal">📸 Compartir imagen</button>
+                    <button class="btn-refresh" id="btnRefreshSemanal">🔄 Actualizar</button>
+                </div>
             </div>
             <p class="semanal-desc">Puntos acumulados por sala esta semana · Solo visible para el CEO · Fuente: Google Sheets.</p>
             <!-- Sub-tabs de sala -->
@@ -298,91 +287,5 @@
 <script src="config-global.js"></script>
 <script src="admin.js"></script>
 
-<!-- Rayos eléctricos login -->
-<script>
-(function(){
-    const canvas = document.getElementById('loginLightningCanvas');
-    const ctx    = canvas.getContext('2d');
-
-    function resize(){
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    const COLORS = [
-        'rgba(255,30,30,',
-        'rgba(180,0,255,',
-        'rgba(0,160,255,',
-        'rgba(255,215,0,',
-        'rgba(200,200,255,',
-    ];
-
-    function bolt(x1,y1,x2,y2,depth,color){
-        if(depth===0){
-            ctx.beginPath();
-            ctx.moveTo(x1,y1);
-            ctx.lineTo(x2,y2);
-            ctx.strokeStyle = color+'1)';
-            ctx.lineWidth   = 2.2;
-            ctx.shadowColor = color+'1)';
-            ctx.shadowBlur  = 30;
-            ctx.stroke();
-            return;
-        }
-        const mx = (x1+x2)/2 + (Math.random()-0.5)*(Math.abs(x2-x1)+Math.abs(y2-y1))*0.35;
-        const my = (y1+y2)/2 + (Math.random()-0.5)*(Math.abs(x2-x1)+Math.abs(y2-y1))*0.35;
-        bolt(x1,y1,mx,my,depth-1,color);
-        bolt(mx,my,x2,y2,depth-1,color);
-        if(depth>1 && Math.random()<0.35){
-            const bx = mx + (Math.random()-0.5)*120;
-            const by = my + Math.random()*120;
-            bolt(mx,my,bx,by,depth-2,color);
-        }
-    }
-
-    const bolts = [];
-    function spawnBolt(){
-        const color = COLORS[Math.floor(Math.random()*COLORS.length)];
-        const x1    = Math.random()*canvas.width;
-        const y1    = Math.random()*canvas.height*0.2;
-        const x2    = x1 + (Math.random()-0.5)*300;
-        const y2    = y1 + 200 + Math.random()*Math.max(300, canvas.height*0.7);
-        bolts.push({ x1,y1,x2,y2,color,life:0,maxLife:18+Math.floor(Math.random()*14) });
-    }
-
-    let frame = 0;
-    function draw(){
-        // Solo dibujar si el login es visible
-        if(document.getElementById('loginContainer').style.display !== 'none'){
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            frame++;
-            if(frame % 14 === 0) spawnBolt();
-            if(frame % 28 === 0) spawnBolt();
-            if(frame % 42 === 0) spawnBolt();
-
-            ctx.save();
-            bolts.forEach(b=>{
-                const progress = b.life / b.maxLife;
-                const alpha    = progress < 0.2 ? progress/0.2 : 1-(progress-0.2)/0.8;
-                ctx.globalAlpha = alpha * 0.95;
-                ctx.save(); ctx.shadowBlur = 45;
-                bolt(b.x1,b.y1,b.x2,b.y2,4,b.color);
-                ctx.restore();
-                b.life++;
-            });
-            ctx.restore();
-            for(let i=bolts.length-1;i>=0;i--){
-                if(bolts[i].life>=bolts[i].maxLife) bolts.splice(i,1);
-            }
-        }
-        requestAnimationFrame(draw);
-    }
-
-    for(let i=0;i<3;i++) spawnBolt();
-    draw();
-})();
-</script>
 </body>
 </html>
