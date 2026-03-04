@@ -1349,6 +1349,42 @@ tbody td { padding:0.85rem 1rem;color:var(--text);vertical-align:middle; }
   .roles-grid     { grid-template-columns: 1fr; }
   .nav-center     { display: none; }
   .btn-logout     { font-size: 0.75rem; padding: 0.35rem 0.7rem; }
+
+  /* ── Nav ── */
+  .logo          { font-size: 1.3rem; letter-spacing: 2px; }
+  .nav-logo-img  { height: 30px; width: 30px; }
+  .nav-container { padding: 0.8rem 1.2rem; }
+
+  /* ── Hero ── */
+  .hero-section  { padding: 2.5rem 1rem 1.5rem; }
+  .hero-logo     { width: 120px; height: 120px; }
+  .container     { padding: 0 1rem 3rem; }
+
+  /* ── Admin tabs: scroll horizontal en lugar de desbordarse ── */
+  .admin-tabs    { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; padding: 0 0.8rem; scrollbar-width: none; }
+  .admin-tabs::-webkit-scrollbar { display: none; }
+  .admin-tab     { padding: 0.7rem 1rem; font-size: 0.82rem; white-space: nowrap; flex-shrink: 0; }
+
+  /* ── Admin — secciones internas ── */
+  .medallas-especiales-section { padding: 1.2rem; }
+  .medallas-grid { grid-template-columns: 1fr; }
+  .contactos-section { padding: 1rem 1rem 2rem; }
+  .contactos-grid    { grid-template-columns: 1fr; }
+  .sanciones-section { padding: 1rem 1rem 2rem; }
+  .asistencia-section{ padding: 0 1rem; }
+  .top3-section  { padding: 1.5rem 1rem; }
+  .semanal-section { margin: 1rem 0; }
+  .semanal-subtabs { gap: 0.35rem; }
+  .semanal-subtab  { padding: 0.3rem 0.7rem; font-size: 0.75rem; }
+
+  /* ── Login ── */
+  .login-box     { padding: 2rem 1.4rem; }
+
+  /* ── Ranking ── */
+  .ranking-item  { padding: 1rem 1rem; }
+
+  /* ── Stats bar index ── */
+  .stats-bar     { padding: 1.5rem 1rem; }
 }
 
 /* ══════════════════════════════════════════════
@@ -1717,4 +1753,67 @@ tbody td { padding:0.85rem 1rem;color:var(--text);vertical-align:middle; }
 @media (max-width: 600px) {
     .semanal-th-sesion { min-width: 40px; font-size: 0.62rem; }
     .semanal-td-nombre { min-width: 120px; max-width: 160px; }
+}
+
+/* ══════════════════════════════════════════════
+   EXTRA SMALL — teléfonos muy pequeños (≤ 480 px)
+   ══════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* ── Nav ── */
+  .nav-container { padding: 0.7rem 0.9rem; }
+  .logo          { font-size: 1.1rem; gap: 0.3rem; }
+  .nav-logo-img  { height: 26px; width: 26px; }
+  .btn-logout    { font-size: 0.68rem; padding: 0.28rem 0.55rem; }
+
+  /* ── Login ── */
+  .login-box     { padding: 1.6rem 1rem; }
+  .login-box h1  { font-size: 1.3rem; }
+  .login-logo    { width: 68px; height: 68px; }
+
+  /* ── Admin stats: 1 columna en pantallas muy pequeñas ── */
+  .stats-grid    { grid-template-columns: 1fr; }
+
+  /* ── Admin tabs: aún más compactas ── */
+  .admin-tab     { padding: 0.6rem 0.75rem; font-size: 0.76rem; }
+
+  /* ── Hero ── */
+  .hero-title    { font-size: clamp(2.2rem, 10vw, 3rem) !important; }
+  .hero-logo     { width: 100px; height: 100px; }
+  .hero-section  { padding: 2rem 0.8rem 1.2rem; }
+
+  /* ── Salas ── */
+  .sala-hero-img { width: 90px; height: 90px; }
+  .sala-hero     { gap: 1.5rem; padding: 1.5rem 1rem; }
+
+  /* ── Ranking ── */
+  .ranking-item  { padding: 0.9rem 0.8rem; gap: 0.5rem; }
+  .ranking-score { font-size: 1.4rem; }
+  .ranking-posicion { font-size: 1.5rem; }
+  .rank-score    { font-size: 1.3rem; }
+
+  /* ── Clanes ── */
+  .clanes-container { padding: 0 0.8rem 2rem; }
+
+  /* ── Top 3 ── */
+  .top3-clan-nombre { font-size: 0.82rem; }
+  .top3-clan-pts    { font-size: 0.82rem; }
+  .top3-card        { padding: 0.6rem 0.3rem 0.8rem; }
+
+  /* ── Botones de acción ── */
+  .btn-export    { font-size: 0.8rem; padding: 0.5rem 0.9rem; }
+  .btn-refresh   { font-size: 0.8rem; padding: 0.5rem 0.9rem; }
+
+  /* ── Misc ── */
+  .section       { padding: 2rem 0.9rem; }
+  .container     { padding: 0 0.8rem 2rem; }
+  .social-section{ padding: 2rem 0.9rem; }
+  .descarga-botones { flex-direction: column; align-items: center; }
+  .descarga-btn  { width: 100%; justify-content: center; min-width: unset; }
+
+  /* ── Salas grid ── */
+  .rooms-grid    { gap: 1.2rem; }
+
+  /* ── Stats bar en index ── */
+  .stats-bar     { padding: 1.2rem 0.8rem; }
+  .stat-num      { font-size: 1.7rem; }
 }
