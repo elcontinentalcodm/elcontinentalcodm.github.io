@@ -83,24 +83,18 @@ const CONFIG = {
         ORO:              5,
         PLATA:            6,
         BRONCE:           7,
-        ALCATRAZ:         8,
-        ALCATRAZ_2_0:     9,
-        ALCATRAZ_MASTER:  10,
-        ZONA_DE_GUERRA:   11,
-        ZONA_LETAL:       12,
-        ZONA_XTREME:      13,
-        PUNTOS_TOTAL:     14,
         // ─────────────────────────────────────────────────────────────
-        // MEDALLAS ESPECIALES — Columnas P, Q, R de tu Google Sheet
+        // MEDALLAS ESPECIALES — Columnas I, J, K de tu Google Sheet
         // Para ACTIVAR: escribe cualquier valor (1, SI, ✓, GANADOR...)
         // Para DESACTIVAR: deja la celda vacía o pon 0
-        //   Columna P (índice 15) → RUBI         → Torneo
-        //   Columna Q (índice 16) → ORO_DIAMANTE → Torneo entre comunidades
-        //   Columna R (índice 17) → ESMERALDA    → Torneo de MJ
+        //   Columna I (índice 8)  → RUBI         → Torneo
+        //   Columna J (índice 9)  → ORO_DIAMANTE → Torneo entre comunidades
+        //   Columna K (índice 10) → ESMERALDA    → Torneo de MJ
         // ─────────────────────────────────────────────────────────────
-        RUBI:             15,
-        ORO_DIAMANTE:     16,
-        ESMERALDA:        17,
+        RUBI:             8,
+        ORO_DIAMANTE:     9,
+        ESMERALDA:        10,
+        // Col 11 = "Nombre del Equipo" (usado por clanes.js para cruzar con hojas semanales)
         // Los datos de contacto (líder, teléfonos, co-líderes, modo de juego)
         // se leen desde CONFIG.CONTACTO_URL (hoja separada del form de registro).
         // Ver CONTACTO_COLUMNS más abajo.
@@ -173,14 +167,9 @@ function getLogoUrl(clanId, logoUrl) {
     return `${CONFIG.LOGO_FOLDER}/${cleanId}.${CONFIG.LOGO_EXTENSION}`;
 }
 
-/* Puntos SOLO de salas (trofeos no suman) */
+/* Puntos de salas — se leen desde las hojas semanales, no del formulario */
 function calcularPuntos(row) {
-    return (parseInt(row[CONFIG.COLUMNS.ALCATRAZ])        || 0)
-         + (parseInt(row[CONFIG.COLUMNS.ALCATRAZ_2_0])    || 0)
-         + (parseInt(row[CONFIG.COLUMNS.ALCATRAZ_MASTER]) || 0)
-         + (parseInt(row[CONFIG.COLUMNS.ZONA_DE_GUERRA])  || 0)
-         + (parseInt(row[CONFIG.COLUMNS.ZONA_LETAL])      || 0)
-         + (parseInt(row[CONFIG.COLUMNS.ZONA_XTREME])     || 0);
+    return 0;
 }
 
 /* CSV Parser */
@@ -248,6 +237,70 @@ window.fetchSheetData    = fetchSheetData;
 window.getLogoUrl        = getLogoUrl;
 window.filterActiveClans = filterActiveClans;
 window.calcularPuntos    = calcularPuntos;
+
+/* ══ RANKING SEMANAL PÚBLICO ══
+ * Carga el resumen semanal de una hoja y lo renderiza.
+ * url         → URL CSV semanal de la sala
+ * containerId → id del div donde volcar el ranking
+ */
+async function loadRankingSemanalPublic(url, containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    try {
+        const data = await fetchSheetData(url);
+        const rows = data.filter(r => (r[17] || '').toString().trim() !== '');
+        if (!rows.length) { el.innerHTML = '<p class="sp-empty">⚠️ Sin datos esta semana</p>'; return; }
+        // Cada fila es un equipo independiente (no se fusionan aunque compartan nombre)
+        const sorted = rows
+            .map(r => ({ n: (r[17] || '').trim(), p: parseFloat(r[23]) || 0 }))
+            .filter(e => e.n)
+            .sort((a, b) => b.p - a.p);
+        const medals = ['🥇', '🥈', '🥉'];
+        let html = '<div class="sp-list">';
+        sorted.forEach((c, i) => {
+            const medal = medals[i] || '#' + (i + 1);
+            const cls   = i < 3 ? ' sp-top' + (i + 1) : '';
+            html += `<div class="sp-row${cls}"><span class="sp-pos">${medal}</span><span class="sp-name">${c.n}</span><span class="sp-pts">${c.p} <em>pts</em></span></div>`;
+        });
+        html += '</div>';
+        el.innerHTML = html;
+    } catch (e) {
+        el.innerHTML = '<p class="sp-empty">⚠️ No se pudo cargar el ranking</p>';
+    }
+}
+window.loadRankingSemanalPublic = loadRankingSemanalPublic;
+
+/* ══ LÍDERES SEMANALES POR SALA ══
+ * Carga el #1 de cada sala y lo vuelca en containerId
+ * salasCfg = [{ label, url }]
+ */
+async function loadLideresSemanales(salasCfg, containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    try {
+        const results = await Promise.all(salasCfg.map(s => fetchSheetData(s.url).catch(() => [])));
+        let html = '';
+        salasCfg.forEach((s, i) => {
+            const rows = (results[i] || []).filter(r => (r[17] || '').toString().trim() !== '');
+            if (!rows.length) {
+                html += `<div class="lider-card lider-empty"><span class="lider-sala">${s.label}</span><span class="lider-nombre">Sin datos</span><span class="lider-pts">—</span></div>`;
+                return;
+            }
+            const map = {};
+            rows.forEach(r => {
+                const n = (r[17] || '').trim(); if (!n) return;
+                if (!map[n]) map[n] = 0;
+                map[n] += parseFloat(r[23]) || 0;
+            });
+            const top = Object.entries(map).map(([n, p]) => ({ n, p })).sort((a, b) => b.p - a.p)[0];
+            html += `<div class="lider-card"><span class="lider-sala">${s.label}</span><span class="lider-nombre">🥇 ${top.n}</span><span class="lider-pts">${top.p} pts</span></div>`;
+        });
+        el.innerHTML = html;
+    } catch (e) {
+        el.innerHTML = '<p style="color:var(--muted);text-align:center;padding:1rem">⚠️ Sin datos disponibles</p>';
+    }
+}
+window.loadLideresSemanales = loadLideresSemanales;
 window.clearCache        = clearCache;
 window.initHamburger     = initHamburger;
 

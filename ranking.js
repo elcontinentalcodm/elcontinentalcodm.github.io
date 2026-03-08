@@ -1,7 +1,17 @@
 /**
  * RANKING.JS
- * PUNTOS = solo salas. Trofeos = decorativos (se muestran en general, no suman).
+ * General → hoja de registro (formulario).
+ * Cada sala → su hoja semanal propia.
  */
+
+const SALAS_RANKING_CFG = {
+    'Alcatraz':        { url: () => CONFIG.SEMANAL_ALCATRAZ_URL,        icon: '🏙️' },
+    'Alcatraz 2.0':    { url: () => CONFIG.SEMANAL_ALCATRAZ2_URL,       icon: '🏙️' },
+    'Alcatraz Master': { url: () => CONFIG.SEMANAL_ALCATRAZ_MASTER_URL, icon: '⛓️' },
+    'Zona Guerra':     { url: () => CONFIG.SEMANAL_ZGUERRA_URL,         icon: '⚔️' },
+    'Zona Letal':      { url: () => CONFIG.SEMANAL_ZLETAL_URL,          icon: '💥' },
+    'Zona Xtreme':     { url: () => CONFIG.SEMANAL_ZXTREME_URL,         icon: '⚡' },
+};
 
 document.addEventListener('DOMContentLoaded', function () { initRanking(); initHamburger(); });
 
@@ -9,8 +19,8 @@ async function initRanking() {
     const container  = document.getElementById('rankingContainer');
     const filterBtns = document.querySelectorAll('.filtro-btn');
     try {
-        const data     = await fetchSheetData();
-        const active   = filterActiveClans(data);
+        const data    = await fetchSheetData();
+        const active  = filterActiveClans(data);
         if (active.length === 0) { container.innerHTML = '<div class="error-message">No hay clanes registrados aún</div>'; return; }
         const rankings = prepareRankings(active);
         displayRanking(rankings, 'general', container);
@@ -18,12 +28,59 @@ async function initRanking() {
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                displayRanking(rankings, btn.getAttribute('data-sala'), container);
+                const sala = btn.getAttribute('data-sala');
+                if (sala === 'general') {
+                    displayRanking(rankings, 'general', container);
+                } else {
+                    displaySalaRanking(sala, container);
+                }
             });
         });
     } catch (err) {
         console.error(err);
         container.innerHTML = `<div class="error-message">❌ Error al cargar los datos</div>`;
+    }
+}
+
+async function displaySalaRanking(sala, container) {
+    const cfg = SALAS_RANKING_CFG[sala];
+    if (!cfg) return;
+    container.innerHTML = `<div class="loading-message">⏳ Cargando ${sala}...</div>`;
+    try {
+        const data = await fetchSheetData(cfg.url());
+        const rows = data.filter(r => (r[17] || '').toString().trim() !== '');
+        if (!rows.length) {
+            container.innerHTML = `<div class="error-message">Sin datos para ${sala} esta semana</div>`;
+            return;
+        }
+        // Cada fila es un equipo independiente (no se fusionan aunque compartan nombre)
+        const sorted = rows
+            .map(r => ({ nombre: (r[17] || '').trim(), puntos: parseFloat(r[23]) || 0 }))
+            .filter(e => e.nombre)
+            .sort((a, b) => b.puntos - a.puntos);
+        const medals = ['🥇', '🥈', '🥉'];
+        let html = '';
+        sorted.forEach((clan, i) => {
+            const pos      = i + 1;
+            const topCl    = pos <= 3 ? `top-${pos}` : '';
+            const posLabel = medals[i] || pos;
+            html += `
+            <div class="ranking-item no-logo ${topCl}">
+                <div class="ranking-posicion">${posLabel}</div>
+                <div class="ranking-info">
+                    <div class="ranking-nombre">${clan.nombre}</div>
+                    <div class="ranking-sala">${cfg.icon} ${sala} · Semana actual</div>
+                </div>
+                <div class="ranking-puntos">
+                    <div class="ranking-score">${clan.puntos}</div>
+                    <div class="ranking-label">puntos</div>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = `<div class="error-message">❌ Error al cargar ${sala}</div>`;
     }
 }
 
@@ -38,29 +95,15 @@ function prepareRankings(clans) {
         const oro    = parseInt(row[CONFIG.COLUMNS.ORO])    || 0;
         const plata  = parseInt(row[CONFIG.COLUMNS.PLATA])  || 0;
         const bronce = parseInt(row[CONFIG.COLUMNS.BRONCE]) || 0;
-        const alc    = parseInt(row[CONFIG.COLUMNS.ALCATRAZ])        || 0;
-        const alc2   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_2_0])    || 0;
-        const alcm   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_MASTER]) || 0;
-        const zg     = parseInt(row[CONFIG.COLUMNS.ZONA_DE_GUERRA])  || 0;
-        const zl     = parseInt(row[CONFIG.COLUMNS.ZONA_LETAL])      || 0;
-        const zx     = parseInt(row[CONFIG.COLUMNS.ZONA_XTREME])     || 0;
-        const total = calcularPuntos(row); // SOLO SALAS
 
         const logrosInline = getBadgesInline(row) || null;
 
-        // General: puntos de salas. Trofeos e info extra separados de los logros
+        // General: trofeos únicamente; puntos de salas vienen de las hojas semanales
         R['general'].push({
-            ...base, puntos: total, sala: 'General',
+            ...base, puntos: 0, sala: 'General',
             extra:  (oro || plata || bronce) ? `🥇${oro} 🥈${plata} 🥉${bronce}` : null,
             logros: logrosInline
         });
-
-        if (alc  > 0) R['Alcatraz'].push({        ...base, puntos: alc,  sala: 'Alcatraz',        extra: null, logros: logrosInline });
-        if (alc2 > 0) R['Alcatraz 2.0'].push({    ...base, puntos: alc2, sala: 'Alcatraz 2.0',    extra: null, logros: logrosInline });
-        if (alcm > 0) R['Alcatraz Master'].push({ ...base, puntos: alcm, sala: 'Alcatraz Master', extra: null, logros: logrosInline });
-        if (zg   > 0) R['Zona Guerra'].push({      ...base, puntos: zg,   sala: 'Zona Guerra',     extra: null, logros: logrosInline });
-        if (zl   > 0) R['Zona Letal'].push({       ...base, puntos: zl,   sala: 'Zona Letal',      extra: null, logros: logrosInline });
-        if (zx   > 0) R['Zona Xtreme'].push({      ...base, puntos: zx,   sala: 'Zona Xtreme',     extra: null, logros: logrosInline });
     });
     Object.keys(R).forEach(k => R[k].sort((a, b) => b.puntos - a.puntos));
     return R;

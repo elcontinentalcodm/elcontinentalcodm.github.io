@@ -108,6 +108,12 @@
         </div>
     </section>
 
+    <!-- Ranking Semanal -->
+    <section class="sala-semanal-section">
+        <h2 class="sala-section-title">📊 Ranking Semanal</h2>
+        <div id="rankingSemanalPublico">&#9203; Cargando ranking...</div>
+    </section>
+
     <footer>
         <div class="footer-content">
             <div class="footer-section">
@@ -138,6 +144,6 @@
     </footer>
 
     <script src="config-global.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', initHamburger);</script>
+    <script>document.addEventListener('DOMContentLoaded', () => { initHamburger(); loadRankingSemanalPublic(CONFIG.SEMANAL_ALCATRAZ2_URL, 'rankingSemanalPublico'); });</script>
 </body>
 </html>

@@ -1121,6 +1121,35 @@ tbody td { padding:0.85rem 1rem;color:var(--text);vertical-align:middle; }
 
 /* Seccion features */
 .sala-features { max-width:1100px;margin:3rem auto;padding:0 2rem; }
+
+/* ══ Ranking Semanal Público (sala pages) ══ */
+.sala-semanal-section { max-width:700px;margin:0 auto 3rem;padding:0 2rem; }
+.sp-list { display:flex;flex-direction:column;gap:0.45rem; }
+.sp-row { display:flex;align-items:center;gap:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:0.65rem 1rem;transition:background 0.2s; }
+.sp-row:hover { background:rgba(255,255,255,0.07); }
+.sp-top1 { border-color:rgba(255,215,0,0.45);background:rgba(255,215,0,0.07); }
+.sp-top2 { border-color:rgba(192,192,192,0.3);background:rgba(192,192,192,0.04); }
+.sp-top3 { border-color:rgba(205,127,50,0.3); }
+.sp-pos  { font-size:1.1rem;min-width:2.2rem;text-align:center; }
+.sp-name { flex:1;font-weight:600;font-size:0.93rem;color:#fff; }
+.sp-pts  { font-size:0.95rem;font-weight:700;color:var(--gold);white-space:nowrap; }
+.sp-pts em { font-size:0.68rem;opacity:0.65;font-style:normal; }
+.sp-empty { text-align:center;color:var(--muted);padding:2rem; }
+
+/* ══ Líderes Semanales (clanes.html) ══ */
+.lideres-semanales-section { max-width:1100px;margin:1.5rem auto 0;padding:0 2rem; }
+.lideres-semanales-title { font-family:'Bebas Neue',cursive;font-size:clamp(1.3rem,3vw,1.8rem);letter-spacing:3px;color:var(--gold);text-align:center;margin-bottom:1rem; }
+.lideres-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:0.75rem;margin-bottom:1.5rem; }
+.lider-card { background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.2);border-radius:10px;padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.25rem;transition:border-color 0.2s; }
+.lider-card:hover { border-color:rgba(255,215,0,0.45); }
+.lider-card.lider-empty { opacity:0.35; }
+.lider-sala   { font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--accent); }
+.lider-nombre { font-size:0.92rem;font-weight:700;color:#fff; }
+.lider-pts    { font-size:0.82rem;color:var(--gold);font-weight:600; }
+
+/* ══ Ranking sin logo ══ */
+.ranking-item.no-logo { grid-template-columns:70px 1fr auto; }
+
 .sala-section-title {
     font-family:'Bebas Neue',cursive;
     font-size:clamp(1.6rem,4vw,2.4rem);

@@ -1,7 +1,7 @@
 /**
  * CLANES.JS - Sección pública
  * - Sin nombre de líder
- * - Puntos = solo salas
+ * - Puntos = salas (leídos desde hojas semanales, cruzados por nombre)
  * - Trofeos = decorativos
  */
 
@@ -10,13 +10,56 @@ document.addEventListener('DOMContentLoaded', function () { initClanes(); initHa
 let _todosLosClanes = [];
 let _filtroTrofeo   = 'todos';
 
+/* Normaliza un nombre para comparación: minúsculas + solo alfanumérico */
+function _normName(s) {
+    return (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+/* Busca en el mapa semanal el clan más cercano al nombre dado */
+function _findSem(nombre, semMap) {
+    const n = _normName(nombre);
+    if (!n) return null;
+    // 1. Coincidencia exacta
+    if (semMap[n]) return n;
+    // 2. Uno contiene al otro (mín 5 chars para evitar falsos positivos)
+    for (const k of Object.keys(semMap)) {
+        if (k.length >= 5 && n.length >= 5 && (n.includes(k) || k.includes(n))) return k;
+    }
+    return null;
+}
+
 async function initClanes() {
     const container = document.getElementById('clanesContainer');
     try {
-        const data   = await fetchSheetData();
-        const active = filterActiveClans(data);
+        // Cargar hoja principal + 6 hojas semanales en paralelo
+        const semUrls = [
+            CONFIG.SEMANAL_ALCATRAZ_URL,
+            CONFIG.SEMANAL_ALCATRAZ2_URL,
+            CONFIG.SEMANAL_ALCATRAZ_MASTER_URL,
+            CONFIG.SEMANAL_ZGUERRA_URL,
+            CONFIG.SEMANAL_ZLETAL_URL,
+            CONFIG.SEMANAL_ZXTREME_URL,
+        ];
+        const semKeys = ['alc', 'alc2', 'alcm', 'zg', 'zl', 'zx'];
+        const [mainData, ...semResults] = await Promise.all([
+            fetchSheetData(),
+            ...semUrls.map(u => fetchSheetData(u).catch(() => []))
+        ]);
+
+        // Construir mapa: nombre_normalizado → { alc, alc2, alcm, zg, zl, zx }
+        const semMap = {};
+        semResults.forEach((data, si) => {
+            data.filter(r => (r[17] || '').toString().trim() !== '').forEach(r => {
+                const k = _normName(r[17]);
+                if (!k) return;
+                if (!semMap[k]) semMap[k] = { alc:0, alc2:0, alcm:0, zg:0, zl:0, zx:0 };
+                semMap[k][semKeys[si]] += parseFloat(r[23]) || 0;
+            });
+        });
+
+        const active = filterActiveClans(mainData);
         if (active.length === 0) { container.innerHTML = '<div class="no-clanes">No hay clanes registrados aún</div>'; return; }
-        _todosLosClanes = processClansData(active);
+        _todosLosClanes = processClansData(active, semMap);
         aplicarFiltros(container);
         const countEl = document.getElementById('clanesCount');
         if (countEl) countEl.textContent = `${_todosLosClanes.length} clanes registrados y compitiendo`;
@@ -79,18 +122,24 @@ function aplicarFiltros(container) {
     }
 }
 
-function processClansData(data) {
+function processClansData(data, semMap) {
     return data.map(row => {
         const oro    = parseInt(row[CONFIG.COLUMNS.ORO])    || 0;
         const plata  = parseInt(row[CONFIG.COLUMNS.PLATA])  || 0;
         const bronce = parseInt(row[CONFIG.COLUMNS.BRONCE]) || 0;
-        const alc    = parseInt(row[CONFIG.COLUMNS.ALCATRAZ])        || 0;
-        const alc2   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_2_0])    || 0;
-        const alcm   = parseInt(row[CONFIG.COLUMNS.ALCATRAZ_MASTER]) || 0;
-        const zg     = parseInt(row[CONFIG.COLUMNS.ZONA_DE_GUERRA])  || 0;
-        const zl     = parseInt(row[CONFIG.COLUMNS.ZONA_LETAL])      || 0;
-        const zx     = parseInt(row[CONFIG.COLUMNS.ZONA_XTREME])     || 0;
-        const total = calcularPuntos(row); // SOLO SALAS
+
+        // Buscar in mapa semanal por nombre del clan (col 1) y por nombre del equipo (col 18)
+        const k1 = _findSem(row[CONFIG.COLUMNS.NOMBRE_DE_CLAN], semMap);
+        const k2 = _findSem(row[11], semMap); // col 11 = "Nombre del Equipo"
+        const sem = semMap[k1] || semMap[k2] || { alc:0, alc2:0, alcm:0, zg:0, zl:0, zx:0 };
+
+        const alc  = sem.alc;
+        const alc2 = sem.alc2;
+        const alcm = sem.alcm;
+        const zg   = sem.zg;
+        const zl   = sem.zl;
+        const zx   = sem.zx;
+        const total = alc + alc2 + alcm + zg + zl + zx;
         return {
             nombre: row[CONFIG.COLUMNS.NOMBRE_DE_CLAN],
             tag:    row[CONFIG.COLUMNS.TAG_DEL_CLAN],
