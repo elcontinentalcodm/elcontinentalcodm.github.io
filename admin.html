@@ -92,7 +92,7 @@
     <div class="admin-tabs" id="adminTabs">
         <button class="admin-tab active" data-tab="clanes">📋 Clanes</button>
         <button class="admin-tab" data-tab="asistencia">📅 Asistencia</button>
-        <button class="admin-tab only-master" data-tab="contactos">📞 Contactos</button>
+        <button class="admin-tab" data-tab="contactos">📞 Contactos</button>
         <button class="admin-tab" data-tab="medallas">🏅 Medallas</button>
         <button class="admin-tab only-master" data-tab="top3">🏆 Top 3</button>
         <button class="admin-tab only-master" data-tab="semanal">📊 Puntos Semanales</button>
@@ -151,14 +151,14 @@
     </div>
     </div><!-- /panel-asistencia -->
 
-    <!-- ══ PANEL: CONTACTOS (solo CEO) ══ -->
-    <div class="admin-panel only-master" id="panel-contactos" style="display:none">
+    <!-- ══ PANEL: CONTACTOS ══ -->
+    <div class="admin-panel" id="panel-contactos" style="display:none">
     <div class="contactos-section">
         <div class="contactos-header">
             <h3>📞 Directorio de Contactos</h3>
             <input type="text" id="contactosSearch" class="search-input" placeholder="🔍 Buscar clan, líder o modo..." style="max-width:320px">
         </div>
-        <p class="contactos-desc">Información privada — visible solo para el CEO. Fuente: hoja de registro.</p>
+        <p class="contactos-desc">Información privada — visible para CEO y Hosts de Sala. Fuente: hoja de registro.</p>
         <div class="contactos-grid" id="contactosGrid">
             <p style="color:var(--muted);text-align:center;padding:3rem">⏳ Cargando contactos...</p>
         </div>

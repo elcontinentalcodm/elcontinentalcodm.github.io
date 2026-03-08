@@ -109,10 +109,11 @@ function showDashboard() {
 /* ── CARGAR DATOS ── */
 async function loadAdminData() {
     try {
-        // Si es CEO y hay URL de contactos, cargar ambas hojas en paralelo
+        // Si es CEO o Host y hay URL de contactos, cargar ambas hojas en paralelo
         const isCEO = currentUser.rol === 'master';
+        const canSeeContacts = isCEO || currentUser.rol === 'viewer';
         const promises = [fetchSheetData(currentUser.sheetUrl)];
-        if (isCEO && CONFIG.CONTACTO_URL && CONFIG.CONTACTO_URL !== 'PEGA_AQUI_URL_CSV_DEL_FORM_DE_REGISTRO') {
+        if (canSeeContacts && CONFIG.CONTACTO_URL && CONFIG.CONTACTO_URL !== 'PEGA_AQUI_URL_CSV_DEL_FORM_DE_REGISTRO') {
             promises.push(fetchSheetData(CONFIG.CONTACTO_URL));
         }
 
@@ -1118,11 +1119,15 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
 
     // ── TABLA 1: resultados diarios ──────────────────────────────
     const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+    // Detectar si la hoja tiene columna ID extra (col 0=ID, col 1=Equipo, col 2=Día)
+    const _sr  = data.find(r => (r[1] || '').trim() !== '');
+    const _c2  = (_sr ? _sr[2] || '' : '').replace(/[^a-zA-Z]/g,'').toLowerCase();
+    const off  = dias.some(d => d.replace(/[^a-zA-Z]/g,'').toLowerCase() === _c2) ? 1 : 0;
     const porDia = {};
     dias.forEach(d => porDia[d] = []);
 
     data.forEach(row => {
-        const dia = (row[1] || '').trim();
+        const dia = (row[1 + off] || '').trim();
         // normalizar encoding
         const diaKey = dias.find(d => d.toLowerCase() === dia.toLowerCase()
             || dia.replace(/[^a-zA-Z]/g,'').toLowerCase() === d.replace(/[^a-zA-Z]/g,'').toLowerCase());
@@ -1138,10 +1143,10 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
         const filas = porDia[dia];
         let tbodyT1 = '';
         if (filas.length) {
-            const sorted = [...filas].sort((a, b) => (parseFloat(b[8]) || 0) - (parseFloat(a[8]) || 0));
+            const sorted = [...filas].sort((a, b) => (parseFloat(b[8 + off]) || 0) - (parseFloat(a[8 + off]) || 0));
             sorted.forEach((r, i) => {
-                const total   = parseFloat(r[8]) || 0;
-                const sancion = parseFloat(r[7]) || 0;
+                const total   = parseFloat(r[8 + off]) || 0;
+                const sancion = parseFloat(r[7 + off]) || 0;
                 const rankCls = i === 0 ? 'semanal-rank-1' : i === 1 ? 'semanal-rank-2' : i === 2 ? 'semanal-rank-3' : '';
                 const medal   = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
                 const sanHtml = sancion !== 0
@@ -1149,12 +1154,12 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
                     : '<span style="color:rgba(255,255,255,0.25)">—</span>';
                 tbodyT1 += `<tr class="${rankCls}">
                     <td class="semanal-td-rank">${medal}</td>
-                    <td style="text-align:center;font-weight:bold">${r[0] || '—'}</td>
-                    <td style="text-align:center">${r[2] || '—'}</td>
-                    <td style="text-align:center;color:var(--gold)">${r[3] || '0'}</td>
-                    <td style="text-align:center">${r[4] || '—'}</td>
-                    <td style="text-align:center;color:#4ecdc4">${r[5] || '0'}</td>
-                    <td style="text-align:center;color:#a8ff78">${(r[6] || '').trim() || '—'}</td>
+                    <td style="text-align:center;font-weight:bold">${r[0 + off] || '—'}</td>
+                    <td style="text-align:center">${r[2 + off] || '—'}</td>
+                    <td style="text-align:center;color:var(--gold)">${r[3 + off] || '0'}</td>
+                    <td style="text-align:center">${r[4 + off] || '—'}</td>
+                    <td style="text-align:center;color:#4ecdc4">${r[5 + off] || '0'}</td>
+                    <td style="text-align:center;color:#a8ff78">${(r[6 + off] || '').trim() || '—'}</td>
                     <td style="text-align:center">${sanHtml}</td>
                     <td class="semanal-td-total">${total}</td>
                 </tr>`;
@@ -1185,7 +1190,7 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
     });
 
     // ── TABLA 2: resumen semanal ─────────────────────────────────
-    const semRows = data.filter(r => (r[17] || '').toString().trim() !== '' && !isNaN(parseInt(r[17])));
+    const semRows = data.filter(r => (r[17] || '').toString().trim() !== '');
     let tbodyT2 = '';
     if (semRows.length) {
         const sorted2 = [...semRows].sort((a, b) => (parseFloat(b[23]) || 0) - (parseFloat(a[23]) || 0));
@@ -1251,6 +1256,10 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
 
     <!-- Panel: Resumen semanal -->
     <div class="alc-master-main-panel alc-hidden" data-panel="semanal">
+        <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:8px">
+            <button class="btn-export btn-share-semanal-panel" style="font-size:0.82rem;padding:5px 14px;cursor:pointer">📸 Compartir imagen</button>
+        </div>
+        <div class="semanal-capture-area">
         <div class="semanal-table-wrap" style="margin-top:0">
             <table class="semanal-table">
                 <thead><tr>
@@ -1265,6 +1274,7 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
                 </tr></thead>
                 <tbody>${tbodyT2}</tbody>
             </table>
+        </div>
         </div>
     </div>
 
@@ -1296,6 +1306,82 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
             if (panel) panel.classList.remove('alc-hidden');
         });
     });
+
+    // Botón compartir imagen del panel Resumen Semanal
+    const btnSharePanel = wrapper.querySelector('.btn-share-semanal-panel');
+    if (btnSharePanel) {
+        btnSharePanel.addEventListener('click', async () => {
+            if (typeof html2canvas === 'undefined') {
+                alert('❌ El generador de imágenes no está disponible.\nVerifica tu conexión a internet y recarga la página.');
+                return;
+            }
+            const captureArea = wrapper.querySelector('.semanal-capture-area');
+            if (!captureArea) return;
+            const originalText = btnSharePanel.innerHTML;
+            btnSharePanel.innerHTML = '⏳ Generando...';
+            btnSharePanel.disabled = true;
+            try {
+                // Capturar el elemento visible directamente (sin clonar off-screen)
+                const timeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Tiempo de espera agotado (15s)')), 15000)
+                );
+                const canvas = await Promise.race([
+                    html2canvas(captureArea, {
+                        backgroundColor: '#0d0d0d',
+                        scale: 2,
+                        useCORS: false,
+                        allowTaint: true,
+                        logging: false,
+                        imageTimeout: 3000,
+                        removeContainer: true,
+                    }),
+                    timeout
+                ]);
+
+                if (!canvas || canvas.width === 0 || canvas.height === 0) {
+                    throw new Error('El canvas generado está vacío (0x0)');
+                }
+                const ctx = canvas.getContext('2d');
+                ctx.font = 'bold 26px sans-serif';
+                ctx.fillStyle = 'rgba(255,215,0,0.65)';
+                ctx.textAlign = 'right';
+                ctx.fillText('El Continental · CODM', canvas.width - 24, canvas.height - 16);
+                const salaName = (wrapper.id || 'semanal').replace('semanalWrapper-', '');
+                const filename = 'resumen-semanal-' + salaName + '-' + new Date().toISOString().slice(0, 10) + '.png';
+                const dataUrl = canvas.toDataURL('image/png');
+                if (!dataUrl || dataUrl === 'data:,') {
+                    throw new Error('No se pudo generar el dataURL');
+                }
+                let compartido = false;
+                if (typeof navigator.share === 'function') {
+                    try {
+                        const res = await fetch(dataUrl);
+                        const blob = await res.blob();
+                        const file = new File([blob], filename, { type: 'image/png' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({ files: [file], title: 'Resumen Semanal · El Continental' });
+                            compartido = true;
+                        }
+                    } catch (e) {
+                        if (e.name === 'AbortError') compartido = true;
+                    }
+                }
+                if (!compartido) {
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = dataUrl;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } catch (err) {
+                console.error('Error al generar imagen semanal:', err);
+                alert('❌ Error al generar la imagen:\n' + err.message);
+            }
+            btnSharePanel.innerHTML = originalText;
+            btnSharePanel.disabled = false;
+        });
+    }
 
     // Sub-tabs de día dentro de Resultados
     wrapper.querySelectorAll('.alc-master-day-tab').forEach(btn => {
