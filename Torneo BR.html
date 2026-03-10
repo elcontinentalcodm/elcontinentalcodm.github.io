@@ -159,24 +159,39 @@
         ══════════════════════════════════════════════════════ */
         const TORNEOS_BR = [
             {
+                imagen: "TorneoBr/WhatsApp Image 2026-03-10 at 5.59.31 PM.jpeg",
+                fecha:  "2026-03-14",
+                fechaTexto: "14 de Marzo 2026",
+                hora: "8:00 PM MX",
+                premios: ["🥇 $50 USD", "🥈 Pase de Batalla", "🥉 Premio Sorpresa"]
+            },
+            {
                 imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (3).jpeg",
                 fecha:  "2026-03-03",
-                fechaTexto: "3 de Marzo 2026"
+                fechaTexto: "3 de Marzo 2026",
+                hora: "8:30 PM MX",
+                premios: ["🥇 $100 USD"]
             },
             {
                 imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM.jpeg",
                 fecha:  "2026-02-27",
-                fechaTexto: "27 de Febrero 2026"
+                fechaTexto: "27 de Febrero 2026",
+                hora: "9:00 PM MX",
+                premios: ["🏆 Prize Pool $200 USD", "🤝 Colaboración entre Comunidades"]
             },
             {
                 imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (1).jpeg",
                 fecha:  "2026-02-14",
-                fechaTexto: "14 de Febrero 2026"
+                fechaTexto: "14 de Febrero 2026",
+                hora: "8:00 PM MX",
+                premios: ["🥇 $40 USD"]
             },
             {
                 imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (2).jpeg",
                 fecha:  "2025-11-23",
-                fechaTexto: "23 de Noviembre 2025"
+                fechaTexto: "23 de Noviembre 2025",
+                hora: "5:00 PM MX",
+                premios: ["🥇 1ra Sala: $50 USD", "🏆 2da Sala: $100 USD"]
             }
         ];
         /* ══════════════════════════════════════════════════════ */
@@ -199,7 +214,8 @@
                          onerror="this.style.background='#111';this.style.minHeight='160px';">
                     <div class="tbr-body">
                         <div class="tbr-num">Torneo BR · #${i + 1}</div>
-                        <div class="tbr-fecha"><span>📅</span><span>${t.fechaTexto}</span></div>
+                        <div class="tbr-fecha"><span>📅</span><span>${t.fechaTexto}${t.hora ? ' · 🕗 ' + t.hora : ''}</span></div>
+                        ${t.premios ? '<div class="tbr-premios">' + t.premios.map(p=>`<span>${p}</span>`).join('') + '</div>' : ''}
                         <div class="tbr-badge ${estado}">
                             <span class="tbr-dot"></span>
                             <span>${estadoTxt}</span>

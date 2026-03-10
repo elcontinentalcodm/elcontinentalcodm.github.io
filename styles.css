@@ -319,6 +319,10 @@ footer { position: relative; z-index: 1; background: #000; border-top: 2px solid
 .idx-tbr-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
 .proximo  .idx-tbr-dot { background:#2ed573; box-shadow:0 0 6px #2ed573; animation:pdot 1.6s infinite; }
 .finalizado .idx-tbr-dot { background:#666; }
+.idx-tbr-premios { display:flex; flex-wrap:wrap; gap:5px; margin:6px 0 4px; }
+.idx-tbr-premios span { background:rgba(255,215,0,0.12); border:1px solid rgba(255,215,0,0.3); color:var(--gold); font-size:.72rem; font-weight:700; padding:3px 9px; border-radius:20px; }
+.tbr-premios { display:flex; flex-wrap:wrap; gap:5px; margin:6px 0 4px; }
+.tbr-premios span { background:rgba(255,215,0,0.12); border:1px solid rgba(255,215,0,0.3); color:var(--gold); font-size:.72rem; font-weight:700; padding:3px 9px; border-radius:20px; }
 @media(max-width:520px){ .idx-tbr-grid{ grid-template-columns:1fr; } }
 .descarga-section { position:relative;z-index:1;padding:3.5rem 2rem;text-align:center;background:linear-gradient(135deg,rgba(0,0,0,0.6),rgba(20,20,40,0.9));border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
 .descarga-inner   { max-width:700px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1.8rem; }
