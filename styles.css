@@ -343,6 +343,18 @@ footer { position: relative; z-index: 1; background: #000; border-top: 2px solid
 .streamers-section .section-subtitle { margin-bottom:2.5rem; }
 .streamers-grid { display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem;max-width:1200px;margin:0 auto; }
 
+/* ── Reglas de la Comunidad ── */
+.reglas-section { position:relative;z-index:1;padding:4rem 2rem;text-align:center; }
+.reglas-section h2 { font-family:'Bebas Neue',cursive;font-size:clamp(2rem,5vw,3rem);color:var(--gold);letter-spacing:3px;margin-bottom:0.3rem; }
+.reglas-section .section-subtitle { margin-bottom:2.5rem;font-size:1.1rem;letter-spacing:4px;text-transform:uppercase;color:var(--muted); }
+.reglas-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;max-width:1200px;margin:0 auto;text-align:left; }
+.regla-card { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.4rem;position:relative;transition:border-color 0.3s,box-shadow 0.3s; }
+.regla-card:hover { border-color:rgba(255,215,0,0.35);box-shadow:0 8px 28px rgba(255,215,0,0.08); }
+.regla-num { position:absolute;top:-14px;left:20px;background:var(--gold);color:#000;font-family:'Bebas Neue',cursive;font-size:1.4rem;line-height:1;padding:2px 12px;border-radius:8px;letter-spacing:1px; }
+.regla-card h3 { font-family:'Bebas Neue',cursive;font-size:1.15rem;letter-spacing:2px;color:var(--gold);margin:0.5rem 0 0.8rem;padding-top:0.4rem; }
+.regla-card ul { margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:0.45rem; }
+.regla-card ul li { font-size:0.88rem;line-height:1.55;color:rgba(255,255,255,0.82); }
+
 .streamer-card { background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.8rem 1.4rem;width:220px;display:flex;flex-direction:column;align-items:center;gap:0.8rem;transition:all 0.3s;position:relative;overflow:hidden;text-decoration:none;color:inherit; }
 .streamer-card::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,0,80,0.04),transparent);opacity:0;transition:opacity 0.3s; }
 .streamer-card:hover { transform:translateY(-6px);border-color:rgba(255,0,80,0.4);box-shadow:0 12px 35px rgba(255,0,80,0.15); }
