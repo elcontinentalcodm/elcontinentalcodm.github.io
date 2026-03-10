@@ -19,10 +19,10 @@ async function initRanking() {
     const container  = document.getElementById('rankingContainer');
     const filterBtns = document.querySelectorAll('.filtro-btn');
     try {
-        const data    = await fetchSheetData();
+        const [data, semMap] = await Promise.all([fetchSheetData(), buildSemMap()]);
         const active  = filterActiveClans(data);
         if (active.length === 0) { container.innerHTML = '<div class="error-message">No hay clanes registrados aún</div>'; return; }
-        const rankings = prepareRankings(active);
+        const rankings = prepareRankings(active, semMap);
         displayRanking(rankings, 'general', container);
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -84,8 +84,9 @@ async function displaySalaRanking(sala, container) {
     }
 }
 
-function prepareRankings(clans) {
-    const R = { 'general': [], 'Alcatraz': [], 'Alcatraz 2.0': [], 'Alcatraz Master': [], 'Zona Guerra': [], 'Zona Letal': [], 'Zona Xtreme': [] };
+function prepareRankings(clans, semMap) {
+    semMap = semMap || {};
+    const R = { 'general': [] };
     clans.forEach(row => {
         const base = {
             nombre: row[CONFIG.COLUMNS.NOMBRE_DE_CLAN],
@@ -96,11 +97,16 @@ function prepareRankings(clans) {
         const plata  = parseInt(row[CONFIG.COLUMNS.PLATA])  || 0;
         const bronce = parseInt(row[CONFIG.COLUMNS.BRONCE]) || 0;
 
+        // Buscar puntos en el semMap por nombre del clan o nombre del equipo (col 11)
+        const k1  = _findSem(row[CONFIG.COLUMNS.NOMBRE_DE_CLAN], semMap);
+        const k2  = _findSem(row[11], semMap);
+        const sem = semMap[k1] || semMap[k2] || { alc:0, alc2:0, alcm:0, zg:0, zl:0, zx:0 };
+        const total = sem.alc + sem.alc2 + sem.alcm + sem.zg + sem.zl + sem.zx;
+
         const logrosInline = getBadgesInline(row) || null;
 
-        // General: trofeos únicamente; puntos de salas vienen de las hojas semanales
         R['general'].push({
-            ...base, puntos: 0, sala: 'General',
+            ...base, puntos: total, sala: 'General',
             extra:  (oro || plata || bronce) ? `🥇${oro} 🥈${plata} 🥉${bronce}` : null,
             logros: logrosInline
         });

@@ -10,52 +10,11 @@ document.addEventListener('DOMContentLoaded', function () { initClanes(); initHa
 let _todosLosClanes = [];
 let _filtroTrofeo   = 'todos';
 
-/* Normaliza un nombre para comparación: minúsculas + solo alfanumérico */
-function _normName(s) {
-    return (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-}
-
-/* Busca en el mapa semanal el clan más cercano al nombre dado */
-function _findSem(nombre, semMap) {
-    const n = _normName(nombre);
-    if (!n) return null;
-    // 1. Coincidencia exacta
-    if (semMap[n]) return n;
-    // 2. Uno contiene al otro (mín 5 chars para evitar falsos positivos)
-    for (const k of Object.keys(semMap)) {
-        if (k.length >= 5 && n.length >= 5 && (n.includes(k) || k.includes(n))) return k;
-    }
-    return null;
-}
-
 async function initClanes() {
     const container = document.getElementById('clanesContainer');
     try {
-        // Cargar hoja principal + 6 hojas semanales en paralelo
-        const semUrls = [
-            CONFIG.SEMANAL_ALCATRAZ_URL,
-            CONFIG.SEMANAL_ALCATRAZ2_URL,
-            CONFIG.SEMANAL_ALCATRAZ_MASTER_URL,
-            CONFIG.SEMANAL_ZGUERRA_URL,
-            CONFIG.SEMANAL_ZLETAL_URL,
-            CONFIG.SEMANAL_ZXTREME_URL,
-        ];
-        const semKeys = ['alc', 'alc2', 'alcm', 'zg', 'zl', 'zx'];
-        const [mainData, ...semResults] = await Promise.all([
-            fetchSheetData(),
-            ...semUrls.map(u => fetchSheetData(u).catch(() => []))
-        ]);
-
-        // Construir mapa: nombre_normalizado → { alc, alc2, alcm, zg, zl, zx }
-        const semMap = {};
-        semResults.forEach((data, si) => {
-            data.filter(r => (r[17] || '').toString().trim() !== '').forEach(r => {
-                const k = _normName(r[17]);
-                if (!k) return;
-                if (!semMap[k]) semMap[k] = { alc:0, alc2:0, alcm:0, zg:0, zl:0, zx:0 };
-                semMap[k][semKeys[si]] += parseFloat(r[23]) || 0;
-            });
-        });
+        // Cargar hoja principal + hojas semanales en paralelo
+        const [mainData, semMap] = await Promise.all([fetchSheetData(), buildSemMap()]);
 
         const active = filterActiveClans(mainData);
         if (active.length === 0) { container.innerHTML = '<div class="no-clanes">No hay clanes registrados aún</div>'; return; }

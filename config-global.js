@@ -172,6 +172,46 @@ function calcularPuntos(row) {
     return 0;
 }
 
+/* Normaliza un nombre: minúsculas + solo alfanumérico */
+function _normName(s) {
+    return (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+/* Busca la clave más cercana en un semMap */
+function _findSem(nombre, semMap) {
+    const n = _normName(nombre);
+    if (!n) return null;
+    if (semMap[n]) return n;
+    for (const k of Object.keys(semMap)) {
+        if (k.length >= 5 && n.length >= 5 && (n.includes(k) || k.includes(n))) return k;
+    }
+    return null;
+}
+
+/* Construye un semMap { normName → {alc,alc2,alcm,zg,zl,zx} } desde las 6 hojas semanales */
+async function buildSemMap() {
+    const semUrls = [
+        CONFIG.SEMANAL_ALCATRAZ_URL,
+        CONFIG.SEMANAL_ALCATRAZ2_URL,
+        CONFIG.SEMANAL_ALCATRAZ_MASTER_URL,
+        CONFIG.SEMANAL_ZGUERRA_URL,
+        CONFIG.SEMANAL_ZLETAL_URL,
+        CONFIG.SEMANAL_ZXTREME_URL,
+    ];
+    const semKeys = ['alc', 'alc2', 'alcm', 'zg', 'zl', 'zx'];
+    const results = await Promise.all(semUrls.map(u => fetchSheetData(u).catch(() => [])));
+    const semMap = {};
+    results.forEach((data, si) => {
+        data.filter(r => (r[17] || '').toString().trim() !== '').forEach(r => {
+            const k = _normName(r[17]);
+            if (!k) return;
+            if (!semMap[k]) semMap[k] = { alc:0, alc2:0, alcm:0, zg:0, zl:0, zx:0 };
+            semMap[k][semKeys[si]] += parseFloat(r[23]) || 0;
+        });
+    });
+    return semMap;
+}
+
 /* CSV Parser */
 function parseCSV(text) {
     const lines = text.split('\n'), result = [];
