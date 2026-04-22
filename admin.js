@@ -17,8 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ['username','password'].forEach(id =>
         document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); })
     );
-    const saved = sessionStorage.getItem('adminUser');
-    if (saved) { currentUser = JSON.parse(saved); showDashboard(); }
+    const forceLoginView = window.location.hash === '#login';
+    const saved = localStorage.getItem('adminUser');
+    if (saved && !forceLoginView) { currentUser = JSON.parse(saved); showDashboard(); }
 });
 
 /* ── LOGIN ── */
@@ -29,7 +30,7 @@ function handleLogin() {
     const found = CONFIG.USERS.find(u => u.usuario === user && u.password === pass);
     if (found) {
         currentUser = { usuario: found.usuario, rol: found.rol, sheetUrl: found.sheetUrl };
-        sessionStorage.setItem('adminUser', JSON.stringify(currentUser));
+        localStorage.setItem('adminUser', JSON.stringify(currentUser));
         err.style.display = 'none';
         showDashboard();
     } else {
@@ -55,8 +56,14 @@ function showDashboard() {
     });
 
     document.getElementById('btnLogout').addEventListener('click', () => {
-        sessionStorage.removeItem('adminUser'); location.reload();
+        window.location.href = 'index.html';
     });
+    
+    // ── BOTONES DEL MODAL DE PERFIL ──
+    document.getElementById('btnPerfil')?.addEventListener('click', showPerfilModal);
+    document.getElementById('btnCerrarPerfil')?.addEventListener('click', closePerfilModal);
+    document.getElementById('btnCerrarPerfilFooter')?.addEventListener('click', closePerfilModal);
+    
     document.getElementById('btnRefresh').addEventListener('click', () => {
         clearCache(); loadAdminData();
     });
@@ -304,81 +311,82 @@ function renderSanciones(dataMap) {
     </div>`;
 }
 
-/* ── ASISTENCIA ── */
+/* ── ASISTENCIA ────────────────────────────────────────────────────
+ * Lee ASISTENCIA_URL: col 0 = nombre clan, col 1–31 = días del mes.
+ * P = presente (verde)  |  A = ausente (rojo)  |  vacío = sin dato
+ */
+let _asistData = null;
+
 async function loadAsistencia(forceRefresh = false) {
     const wrapper = document.getElementById('asistenciaWrapper');
     if (!wrapper) return;
-    if (forceRefresh) {
-        // Limpiar caché solo para la URL de asistencia
-        const keyId = CONFIG.ASISTENCIA_URL.replace(/[^a-zA-Z0-9]/g, '').slice(-24);
-        localStorage.removeItem('elcontinental_data_' + keyId);
-        localStorage.removeItem('elcontinental_time_' + keyId);
+
+    if (forceRefresh) _asistData = null;
+    if (!_asistData) {
+        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando asistencia...</p>';
+        try {
+            _asistData = await fetchSheetData(CONFIG.ASISTENCIA_URL);
+        } catch (err) {
+            console.error('Asistencia error:', err);
+            wrapper.innerHTML = '<p style="color:#ff4d4d;text-align:center;padding:2rem">❌ Error al cargar la hoja de asistencia.</p>';
+            return;
+        }
     }
-    wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando asistencia...</p>';
-    try {
-        const data = await fetchSheetData(CONFIG.ASISTENCIA_URL);
-        renderAsistencia(data, wrapper);
-    } catch (err) {
-        console.error('Asistencia error:', err);
-        wrapper.innerHTML = '<p style="color:#ff4d4d;text-align:center;padding:2rem">❌ No se pudo cargar la hoja de asistencia.</p>';
-    }
+    _renderAsistencia(wrapper, _asistData);
 }
 
-function renderAsistencia(data, wrapper) {
-    if (!data || data.length === 0) {
-        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ La hoja de asistencia está vacía.</p>';
+function _renderAsistencia(wrapper, rows) {
+    if (!rows || !rows.length) {
+        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ Sin datos en la hoja de asistencia.</p>';
         return;
     }
 
-    // parseCSV ya saltó la fila 1 (cabecera), así que TODAS las filas son clanes.
-    // Generamos los números de día según la cantidad de columnas que tenga la primera fila.
-    const rows = data.filter(r => r[0] && r[0].trim() !== '');
-    const maxCols = Math.max(...rows.map(r => r.length)) - 1; // columnas de días
-    const diasHeaders = Array.from({ length: maxCols }, (_, i) => i + 1); // [1, 2, ..., N]
+    const now        = new Date();
+    const curDay     = now.getDate();      // 1-31
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
-    // Calcular resumen por clan
-    const hoy = new Date();
-    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    const mesLabel = `${meses[hoy.getMonth()]} ${hoy.getFullYear()}`;
+    // Cabecera de días
+    let thead = '<thead><tr><th class="asist-th-clan">Clan</th>';
+    for (let d = 1; d <= daysInMonth; d++) {
+        const esHoy = d === curDay;
+        thead += `<th class="asist-th-dia${esHoy ? ' asist-hoy' : ''}">${d}</th>`;
+    }
+    thead += '<th class="asist-th-total">P / Total</th></tr></thead>';
 
-    let thead = `<thead><tr>
-        <th class="asist-th-clan">Clan</th>`;
-    diasHeaders.forEach(d => {
-        const n = parseInt(d);
-        const esHoy = n === hoy.getDate();
-        thead += `<th class="asist-th-dia${esHoy ? ' asist-hoy' : ''}">${isNaN(n) ? d : n}</th>`;
-    });
-    thead += `<th class="asist-th-total">Total</th></tr></thead>`;
-
+    // Filas
     let tbody = '<tbody>';
     rows.forEach(row => {
-        const clan   = row[0] || '—';
-        const celdas = row.slice(1);
-        let total = 0;
+        const clanName = (row[0] || '').toString().trim();
+        if (!clanName) return;            // saltar filas vacías o cabecera
+
+        let presentes = 0;
         let tds = '';
-        diasHeaders.forEach((d, i) => {
-            const val = (celdas[i] || '').trim();
-            const presente = val !== '' && val !== '0' && val.toLowerCase() !== 'no' && val.toLowerCase() !== 'false';
-            if (presente) total++;
-            const hoyIdx = parseInt(d) === new Date().getDate();
-            tds += `<td class="asist-celda ${presente ? 'asist-presente' : 'asist-ausente'}${hoyIdx ? ' asist-hoy-col' : ''}" title="${presente ? val : 'Ausente'}">${presente ? '✓' : ''}</td>`;
-        });
-        const pct = diasHeaders.length > 0 ? Math.round(total / diasHeaders.length * 100) : 0;
+        for (let d = 1; d <= daysInMonth; d++) {
+            const val = (row[d] || '').toString().trim().toUpperCase();
+            const esFuturo = d > curDay;
+            let cls, txt;
+            if (esFuturo)      { cls = 'asist-futuro';   txt = ''; }
+            else if (val === 'P') { cls = 'asist-presente'; txt = '✓'; presentes++; }
+            else if (val === 'A') { cls = 'asist-ausente-exp'; txt = '✗'; }
+            else                  { cls = 'asist-sin-dato';    txt = ''; }
+            const esHoy = d === curDay;
+            tds += `<td class="asist-celda ${cls}${esHoy ? ' asist-hoy-col' : ''}" title="${clanName} — día ${d}">${txt}</td>`;
+        }
+        const diasPasados = curDay;
+        const pct = diasPasados > 0 ? Math.round(presentes / diasPasados * 100) : 0;
         tbody += `<tr>
-            <td class="asist-td-clan">${clan}</td>
+            <td class="asist-td-clan">${clanName}</td>
             ${tds}
-            <td class="asist-td-total">${total}<span class="asist-pct">${pct}%</span></td>
+            <td class="asist-td-total">${presentes}<span class="asist-pct">${pct}%</span></td>
         </tr>`;
     });
     tbody += '</tbody>';
 
     wrapper.innerHTML = `
-        <div class="asistencia-mes">📅 ${mesLabel}</div>
-        <div class="asistencia-scroll">
-            <table class="asistencia-tabla">${thead}${tbody}</table>
-        </div>`;
+    <div class="asistencia-scroll">
+        <table class="asistencia-tabla">${thead}${tbody}</table>
+    </div>`;
 }
-
 /* ── FILTRO ── */
 function applyFilter() {
     const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
@@ -1394,3 +1402,37 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
         });
     });
 }
+
+/* ── MODAL DE PERFIL DEL ADMIN ── */
+function showPerfilModal() {
+    const modal = document.getElementById('perfilModal');
+    if (!modal) return;
+    
+    const icons = { viewer: '👁️ Host de Sala', master: '👑 CEO' };
+    const rolesDescripcion = { 
+        viewer: 'Visualización de salas y estadísticas', 
+        master: 'Acceso total a todas las secciones' 
+    };
+    
+    document.getElementById('perfilUsuario').textContent = currentUser.usuario;
+    document.getElementById('perfilRol').textContent = icons[currentUser.rol] || currentUser.rol;
+    document.getElementById('perfilTipo').textContent = rolesDescripcion[currentUser.rol] || 'Sin descripción';
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closePerfilModal() {
+    const modal = document.getElementById('perfilModal');
+    if (!modal) return;
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Cerrar modal al hacer click fuera del contenido
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('perfilModal');
+    if (modal && e.target === modal) {
+        closePerfilModal();
+    }
+});

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videos - Torneo BR #6 | El Continental</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            overflow: hidden;
+            background: linear-gradient(135deg, #000 0%, #1a0033 100%);
+            margin: 0;
+            padding: 0;
+        }
+
+        .videos-container {
+            width: 100vw;
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .videos-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(20,10,40,0.95) 100%);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.1);
+        }
+
+        .videos-header h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1.8rem;
+            background: rgba(255, 215, 0, 0.12);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 10px;
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.7);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            transform: translateX(-2px);
+        }
+
+        .videos-grid {
+            display: flex;
+            flex-direction: column;
+            margin-top: 70px;
+        }
+
+        .video-card {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            background: linear-gradient(135deg, #000 0%, #1a0033 100%);
+            position: relative;
+            padding: 2rem;
+        }
+
+        .video-iframe-container {
+            width: 100%;
+            height: 100%;
+            max-width: 500px;
+            aspect-ratio: 9 / 16;
+            background: #000;
+            border: 3px solid var(--gold);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 
+                0 0 40px rgba(255, 215, 0, 0.4),
+                inset 0 0 20px rgba(255, 215, 0, 0.1),
+                0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255, 215, 0, 0.1), 0 20px 60px rgba(0, 0, 0, 0.8); }
+            50% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.6), inset 0 0 30px rgba(255, 215, 0, 0.15), 0 20px 60px rgba(0, 0, 0, 0.8); }
+        }
+
+        .video-iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-body {
+            display: none;
+        }
+
+        .video-name {
+            display: none;
+        }
+
+        .video-counter {
+            display: none;
+        }
+
+        .videos-loading {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 1.3rem;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 2px;
+        }
+
+        .videos-empty {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 1.3rem;
+            text-align: center;
+            padding: 2rem;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 2px;
+        }
+
+        .videos-error {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 100, 100, 0.08);
+            color: #ff6b6b;
+            font-size: 1.3rem;
+            text-align: center;
+            padding: 2rem;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 2px;
+        }
+
+        /* Decoración de líneas laterales */
+        .video-card::before,
+        .video-card::after {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .videos-header {
+                height: 60px;
+                padding: 0 1rem;
+            }
+
+            .videos-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .video-iframe-container {
+                max-width: 90vw;
+            }
+
+            .video-counter {
+                bottom: 20px;
+                right: 20px;
+                font-size: 0.85rem;
+                padding: 0.7rem 1.2rem;
+                min-width: 85px;
+            }
+
+            .video-body {
+                bottom: 15px;
+                left: 15px;
+                right: 15px;
+                padding: 0.9rem 1.2rem;
+            }
+
+            .video-name {
+                font-size: 1rem;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+
+            .video-card::before,
+            .video-card::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="videos-container" id="videosContainer">
+        <div class="videos-header">
+            <h1>🎬 Videos - Torneo BR #6</h1>
+            <a href="Torneo BR.html" class="back-btn">← Volver</a>
+        </div>
+
+        <div class="videos-grid" id="videosGrid">
+            <div class="videos-loading">⏳ Cargando videos...</div>
+        </div>
+    </div>
+
+    <div class="video-counter" id="videoCounter"></div>
+
+    <script src="config-global.js"></script>
+    <script src="videos-torneo6.js"></script>
+    <script>
+        // Actualizar contador de videos
+        document.getElementById('videosContainer').addEventListener('scroll', () => {
+            const container = document.getElementById('videosContainer');
+            const cards = document.querySelectorAll('.video-card');
+            const scrollPos = container.scrollTop + window.innerHeight / 2;
+            
+            cards.forEach((card, idx) => {
+                const cardTop = card.offsetTop;
+                const cardBottom = cardTop + card.offsetHeight;
+                
+                if (scrollPos >= cardTop && scrollPos <= cardBottom) {
+                    document.getElementById('videoCounter').textContent = `${idx + 1} / ${cards.length}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

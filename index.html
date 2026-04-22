@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,8 @@
                 <li><a href="clanes.html">Clanes</a></li>
                 <li><a href="ranking.html">Ranking</a></li>
                 <li><a href="salas.html">Salas</a></li>
-                <li><a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" class="cta-button">✚ Registrar Clan</a></li>
+                <li><a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" rel="noopener" class="cta-button">✚ Registrar Clan</a></li>
+                <li><a href="settings.html" class="settings-link">⚙️ Configuración</a></li>
             </ul>
             <div class="hamburger" id="hamburger">
                 <span></span><span></span><span></span>
@@ -34,8 +35,8 @@
         <img src="logo de sala/logo de pagina.png" alt="El Continental Logo" class="hero-logo">
         <div class="hero-content">
             <h1 class="hero-title">EL CONTINENTAL</h1>
-            <p class="hero-subtitle">Comunidad Élite de Call of Duty Mobile</p>
-            <p class="hero-description">Únete a la comunidad más prestigiosa donde solo los mejores guerreros demuestran su valía en el campo de batalla</p>
+            <p class="hero-subtitle">Comunidad Elite de Call of Duty Mobile</p>
+            <p class="hero-description">Unete a la comunidad mas prestigiosa donde solo los mejores guerreros demuestran su valia en el campo de batalla</p>
         </div>
     </section>
 
@@ -52,7 +53,7 @@
             </div>
             <div class="stat-card">
                 <div class="stat-number">5</div>
-                <div class="stat-label">Salas al Día</div>
+                <div class="stat-label">Salas al Dia</div>
             </div>
         </div>
     </section>
@@ -177,7 +178,7 @@
         <h2>⚔️ ¿Listo para la Batalla?</h2>
         <p>Únete a la élite de jugadores profesionales y demuestra tu valía en el campo de batalla</p>
         <div class="botones-container">
-            <a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" class="btn-primary">✔ Registra Tu Clan</a>
+            <a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" rel="noopener" class="btn-primary">✔ Registra Tu Clan</a>
             <a href="ranking.html" class="btn-secondary">🏆 Ver Ranking</a>
         </div>
     </section>
@@ -215,17 +216,17 @@
         <h2>🌐 Síguenos en Nuestras Redes</h2>
         <p class="section-subtitle">Manténte al día con torneos, eventos y contenido exclusivo</p>
         <div class="social-grid">
-            <a href="https://www.tiktok.com/@elcontinentalcodm" target="_blank" class="social-card">
+            <a href="https://www.tiktok.com/@elcontinentalcodm" target="_blank" rel="noopener" class="social-card">
                 <div class="social-icon">📱</div>
                 <div class="social-name">TikTok</div>
                 <div class="social-handle">@elcontinental_codm</div>
             </a>
-            <a href="https://www.instagram.com/elcontinentalcodm" target="_blank" class="social-card">
+            <a href="https://www.instagram.com/elcontinentalcodm" target="_blank" rel="noopener" class="social-card">
                 <div class="social-icon">📷</div>
                 <div class="social-name">Instagram</div>
                 <div class="social-handle">@elcontinental_codm</div>
             </a>
-            <a href="https://chat.whatsapp.com/KMFxB5W4Bw17WbG1IzZFYd" target="_blank" class="social-card">
+            <a href="https://chat.whatsapp.com/KMFxB5W4Bw17WbG1IzZFYd" target="_blank" rel="noopener" class="social-card">
                 <div class="social-icon">💬</div>
                 <div class="social-name">WhatsApp</div>
                 <div class="social-handle">¿Interesado? Entra aquí</div>
@@ -244,7 +245,7 @@
     <footer>
         <div class="footer-content">
             <div class="footer-section">
-                <h3>El Continental</h3>
+                <h3><a href="admin.html#login" class="footer-link-title">El Continental</a></h3>
                 <p>Comunidad Élite de Call of Duty Mobile</p>
             </div>
             <div class="footer-section">
@@ -258,9 +259,9 @@
             <div class="footer-section">
                 <h3>Redes Sociales</h3>
                 <div class="footer-social">
-                    <a href="https://www.tiktok.com/@elcontinentalcodm" target="_blank">TikTok</a>
-                    <a href="https://www.instagram.com/elcontinentalcodm" target="_blank">Instagram</a>
-                    <a href="https://chat.whatsapp.com/KMFxB5W4Bw17WbG1IzZFYd" target="_blank">WhatsApp</a>
+                    <a href="https://www.tiktok.com/@elcontinentalcodm" target="_blank" rel="noopener">TikTok</a>
+                    <a href="https://www.instagram.com/elcontinentalcodm" target="_blank" rel="noopener">Instagram</a>
+                    <a href="https://chat.whatsapp.com/KMFxB5W4Bw17WbG1IzZFYd" target="_blank" rel="noopener">WhatsApp</a>
                 </div>
             </div>
         </div>
@@ -270,41 +271,56 @@
     </footer>
 
     <script src="config-global.js"></script>
+    <script src="torneo-br.js"></script>
+    <script src="settings.js"></script>
     <script src="index.js"></script>
 
-    <!-- Torneo BR ─ tarjetas en index -->
+    <!-- Torneo BR - Cargar dinámicamente los 3 torneos más nuevos -->
     <script>
-    (function(){
-        const TORNEOS = [
-            { imagen:"TorneoBr/WhatsApp Image 2026-03-10 at 5.59.31 PM.jpeg", fecha:"2026-03-14", fechaTexto:"14 de Marzo 2026", hora:"8:00 PM MX", premios:["🥇 $50 USD","🥈 Pase de Batalla","🥉 Premio Sorpresa"] },
-            { imagen:"TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (3).jpeg", fecha:"2026-03-03", fechaTexto:"3 de Marzo 2026", hora:"8:30 PM MX", premios:["🥇 $100 USD"] },
-            { imagen:"TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM.jpeg", fecha:"2026-02-27", fechaTexto:"27 de Febrero 2026", hora:"9:00 PM MX", premios:["🏆 Prize Pool $200 USD","🤝 Colaboración entre Comunidades"] },
-            { imagen:"TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (1).jpeg", fecha:"2026-02-14", fechaTexto:"14 de Febrero 2026", hora:"8:00 PM MX", premios:["🥇 $40 USD"] },
-            { imagen:"TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (2).jpeg", fecha:"2025-11-23", fechaTexto:"23 de Noviembre 2025", hora:"5:00 PM MX", premios:["🥇 1ra Sala: $50 USD","🏆 2da Sala: $100 USD"] }
-        ];
-        const hoy  = new Date();
+    (async function(){
         const grid = document.getElementById('idxTbrGrid');
         if (!grid) return;
-        TORNEOS.forEach((t, i) => {
-            const pasado    = new Date(t.fecha + 'T23:59:59') < hoy;
-            const estado    = pasado ? 'finalizado' : 'proximo';
-            const estadoTxt = pasado ? 'FINALIZADO' : 'PRÓXIMO';
-            const num       = TORNEOS.length - i;
-            const card      = document.createElement('div');
-            card.className  = 'idx-tbr-card' + (i === 0 ? ' reciente' : '');
-            card.innerHTML  = `
-                <img class="idx-tbr-img" src="${t.imagen}" alt="Torneo BR ${num}"
-                     onerror="this.style.background='#111';this.style.minHeight='140px';">
-                <div class="idx-tbr-body">
-                    <div class="idx-tbr-num">Torneo BR · #${num}${i===0?' · Último':''}</div>
-                    <div class="idx-tbr-fecha"><span>📅</span><span>${t.fechaTexto}${t.hora ? ' · 🕗 ' + t.hora : ''}</span></div>
-                    ${t.premios ? '<div class="idx-tbr-premios">' + t.premios.map(p=>`<span>${p}</span>`).join('') + '</div>' : ''}
-                    <div class="idx-tbr-badge ${estado}">
-                        <span class="idx-tbr-dot"></span><span>${estadoTxt}</span>
-                    </div>
-                </div>`;
-            grid.appendChild(card);
-        });
+        
+        try {
+            const torneos = await obtenerTorneosRecientes(3);
+            
+            if (!torneos || torneos.length === 0) {
+                grid.innerHTML = '<div class="error-message">⚠️ No hay torneos disponibles</div>';
+                return;
+            }
+            
+            const hoy = new Date();
+            grid.innerHTML = '';
+            
+            torneos.forEach((t, i) => {
+                const fechaTorneo = new Date(t.fecha + 'T23:59:59');
+                const pasado = fechaTorneo < hoy;
+                const estado = pasado ? 'finalizado' : 'proximo';
+                const estadoTxt = pasado ? 'FINALIZADO' : 'PRÓXIMO';
+                const num = torneos.length - i;
+                
+                // Formatear fecha
+                const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+                const fechaFormato = fechaTorneo.toLocaleDateString('es-ES', opciones);
+                
+                const card = document.createElement('div');
+                card.className = 'idx-tbr-card' + (i === 0 ? ' reciente' : '');
+                card.innerHTML = `
+                    <img class="idx-tbr-img" src="${t.imagen}" alt="Torneo BR ${num}"
+                         onerror="this.style.background='#111';this.style.minHeight='140px';">
+                    <div class="idx-tbr-body">
+                        <div class="idx-tbr-num">Torneo BR · #${num}${i===0?' · Nuevo':''}</div>
+                        <div class="idx-tbr-fecha"><span>📅</span><span>${fechaFormato}${t.hora ? ' · 🕗 ' + t.hora : ''}</span></div>
+                        <div class="idx-tbr-badge ${estado}">
+                            <span class="idx-tbr-dot"></span><span>${estadoTxt}</span>
+                        </div>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        } catch (err) {
+            console.error('❌ Error cargando torneos en index:', err);
+            grid.innerHTML = '<div class="error-message">❌ Error al cargar torneos</div>';
+        }
     })();
     </script>
 
@@ -400,3 +416,6 @@
     </script>
 </body>
 </html>
+
+
+

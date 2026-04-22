@@ -46,8 +46,9 @@
             <div class="nav-center">
                 <span class="nav-title">Panel de Administración</span>
                 <span class="rol-badge" id="rolBadge">—</span>
+                <button class="btn-perfil" id="btnPerfil">👤 Ver Perfil</button>
             </div>
-            <button class="btn-logout" id="btnLogout">🚪 Cerrar Sesión</button>
+            <button class="btn-logout" id="btnLogout">🚪 Salir del Admin</button>
         </div>
     </nav>
 
@@ -90,13 +91,12 @@
 
     <!-- ══ PESTAÑAS ══ -->
     <div class="admin-tabs" id="adminTabs">
-        <button class="admin-tab active" data-tab="clanes">📋 Clanes</button>
-        <button class="admin-tab" data-tab="asistencia">📅 Asistencia</button>
-        <button class="admin-tab" data-tab="contactos">📞 Contactos</button>
+        <button class="admin-tab active" data-tab="clanes">📋 Clanes</button>        <button class="admin-tab" data-tab="asistencia">📅 Asistencia</button>        <button class="admin-tab" data-tab="contactos">📞 Contactos</button>
         <button class="admin-tab" data-tab="medallas">🏅 Medallas</button>
-        <button class="admin-tab only-master" data-tab="top3">🏆 Top 3</button>
-        <button class="admin-tab only-master" data-tab="semanal">📊 Puntos Semanales</button>
+        <button class="admin-tab" data-tab="top3">🏆 Top 3</button>
+        <button class="admin-tab" data-tab="semanal">📊 Puntos Semanales</button>
         <button class="admin-tab only-master" data-tab="sanciones">🚨 Sanciones</button>
+        <button class="admin-tab only-master" data-tab="formulario">📝 Formulario</button>
     </div>
 
     <!-- ══ PANEL: CLANES ══ -->
@@ -137,15 +137,22 @@
 
     </div><!-- /panel-clanes -->
 
+
+
     <!-- ══ PANEL: ASISTENCIA ══ -->
     <div class="admin-panel" id="panel-asistencia" style="display:none">
-    <div class="asistencia-section" id="asistenciaSection">
+    <div class="asistencia-section">
         <div class="asistencia-header">
             <h3>📅 Asistencia de Clanes</h3>
             <button class="btn-refresh asistencia-refresh" id="btnRefreshAsistencia">🔄 Actualizar</button>
         </div>
-        <p class="asistencia-desc">Registro mensual de asistencia. <span class="asist-verde">■</span> Asistió &nbsp; <span class="asist-gris">■</span> No asistió</p>
-        <div class="asistencia-wrapper" id="asistenciaWrapper">
+        <p class="asistencia-desc">
+            Datos leídos desde la hoja de asistencia.
+            <span class="asist-verde">■</span> <strong>P</strong> = Presente &nbsp;
+            <span class="asist-rojo">■</span> <strong>A</strong> = Ausente &nbsp;
+            <span class="asist-gris">■</span> Sin dato
+        </p>
+        <div id="asistenciaWrapper">
             <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando asistencia...</p>
         </div>
     </div>
@@ -187,8 +194,8 @@
     </div>
     </div><!-- /panel-medallas -->
 
-    <!-- ══ PANEL: TOP 3 (solo CEO) ══ -->
-    <div class="admin-panel only-master" id="panel-top3" style="display:none">
+    <!-- ══ PANEL: TOP 3 (CEO y Host) ══ -->
+    <div class="admin-panel" id="panel-top3" style="display:none">
         <div class="top3-section">
             <div class="top3-header">
                 <h3>🏆 Top 3 Destacados</h3>
@@ -215,8 +222,8 @@
         </div>
     </div><!-- /panel-top3 -->
 
-    <!-- ══ PANEL: PUNTOS SEMANALES (solo CEO) ══ -->
-    <div class="admin-panel only-master" id="panel-semanal" style="display:none">
+    <!-- ══ PANEL: PUNTOS SEMANALES (CEO y Host) ══ -->
+    <div class="admin-panel" id="panel-semanal" style="display:none">
         <div class="semanal-section">
             <div class="semanal-header">
                 <h3>📊 Puntos Semanales</h3>
@@ -225,7 +232,7 @@
                     <button class="btn-refresh" id="btnRefreshSemanal">🔄 Actualizar</button>
                 </div>
             </div>
-            <p class="semanal-desc">Puntos acumulados por sala esta semana · Solo visible para el CEO · Fuente: Google Sheets.</p>
+            <p class="semanal-desc">Puntos acumulados por sala esta semana · Visible para CEO y Hosts de Sala · Fuente: Google Sheets.</p>
             <!-- Sub-tabs de sala -->
             <div class="semanal-subtabs">
                 <button class="semanal-subtab active" data-sala="alcatraz">🏟️ Alcatraz</button>
@@ -281,6 +288,50 @@
         </div>
     </div><!-- /panel-sanciones -->
 
+    <!-- ══ PANEL: FORMULARIO (solo CEO) ══ -->
+    <div class="admin-panel only-master" id="panel-formulario" style="display:none">
+        <div class="formulario-section">
+            <div class="formulario-header">
+                <h3>📝 Registro de Equipos</h3>
+                <p class="formulario-desc">Formulario de registro para nuevos equipos. Solo accesible para el CEO.</p>
+            </div>
+            <div class="formulario-container">
+                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeAdpRzmX-iZX17r4SvcYryGYg0HnIJCOCjz4t7MDfkq1HyYg/viewform?embedded=true" width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">Cargando…</iframe>
+            </div>
+        </div>
+    </div><!-- /panel-formulario -->
+
+</div>
+
+<!-- ══ MODAL: PERFIL DEL ADMIN ══ -->
+<div class="perfil-modal" id="perfilModal" style="display:none">
+    <div class="perfil-modal-content">
+        <div class="perfil-modal-header">
+            <h2>👤 Perfil del Admin</h2>
+            <button class="perfil-modal-close" id="btnCerrarPerfil">✕</button>
+        </div>
+        <div class="perfil-modal-body">
+            <div class="perfil-field">
+                <label>Usuario:</label>
+                <p id="perfilUsuario">—</p>
+            </div>
+            <div class="perfil-field">
+                <label>Rol:</label>
+                <p id="perfilRol">—</p>
+            </div>
+            <div class="perfil-field">
+                <label>Tipo de Acceso:</label>
+                <p id="perfilTipo">—</p>
+            </div>
+            <div class="perfil-field">
+                <label>Estado de Sesión:</label>
+                <p id="perfilEstado">✅ Sesión activa</p>
+            </div>
+        </div>
+        <div class="perfil-modal-footer">
+            <button class="btn-primary" id="btnCerrarPerfilFooter">Cerrar</button>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>

@@ -8,9 +8,13 @@ const SALAS_RANKING_CFG = {
     'Alcatraz':        { url: () => CONFIG.SEMANAL_ALCATRAZ_URL,        icon: '🏙️' },
     'Alcatraz 2.0':    { url: () => CONFIG.SEMANAL_ALCATRAZ2_URL,       icon: '🏙️' },
     'Alcatraz Master': { url: () => CONFIG.SEMANAL_ALCATRAZ_MASTER_URL, icon: '⛓️' },
-    'Zona Guerra':     { url: () => CONFIG.SEMANAL_ZGUERRA_URL,         icon: '⚔️' },
-    'Zona Letal':      { url: () => CONFIG.SEMANAL_ZLETAL_URL,          icon: '💥' },
-    'Zona Xtreme':     { url: () => CONFIG.SEMANAL_ZXTREME_URL,         icon: '⚡' },
+    'ZONA DE GUERRA 8': { url: () => CONFIG.SEMANAL_ZGUERRA_URL,        icon: '⚔️' },
+    'ZONA LETAL 9':     { url: () => CONFIG.SEMANAL_ZLETAL_URL,         icon: '💥' },
+    'ZONA XTREME 9':    { url: () => CONFIG.SEMANAL_ZXTREME_URL,        icon: '⚡' },
+    'ISOLATED 7':      { url: () => CONFIG.SEMANAL_ISOLATED7_URL,       icon: '🔒' },
+    'ISOLATED 8':      { url: () => CONFIG.SEMANAL_ISOLATED8_URL,       icon: '🔒' },
+    'ISOLATED 9':      { url: () => CONFIG.SEMANAL_ISOLATED9_URL,       icon: '🔒' },
+    'ISOLATED 10':     { url: () => CONFIG.SEMANAL_ISOLATED10_URL,      icon: '🔒' },
 };
 
 document.addEventListener('DOMContentLoaded', function () { initRanking(); initHamburger(); });

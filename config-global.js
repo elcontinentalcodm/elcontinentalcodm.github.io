@@ -21,7 +21,7 @@ const CONFIG = {
     // 4. Copia el enlace y pégalo aquí
     // Formato de la hoja:  Ronda | Equipo1 | Puntos1 | Equipo2 | Puntos2
     // ══════════════════════════════════════════════
-    TORNEO_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=876119716&single=true&output=csv',
+    TORNEO_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRokGDiYpw_QV0WtS7dqPXdZFsBRrQWawAH5kzK9Jodgun6Cy2lNalOhRiE6XIZ69pwtJFwHWmZBRTP/pub?gid=218312983&single=true&output=csv',
 
     // Hoja de asistencia: columna A = Clanes, columnas B-AF = días 1-31
     ASISTENCIA_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=1400235060&single=true&output=csv',
@@ -33,6 +33,10 @@ const CONFIG = {
     SEMANAL_ZLETAL_URL:      'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=944215394&single=true&output=csv',
     SEMANAL_ZXTREME_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=850595394&single=true&output=csv',
     SEMANAL_ALCATRAZ_MASTER_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=1392627225&single=true&output=csv',
+    SEMANAL_ISOLATED8_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=0&single=true&output=csv',
+    SEMANAL_ISOLATED7_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=0&single=true&output=csv',
+    SEMANAL_ISOLATED10_URL:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=0&single=true&output=csv',
+    SEMANAL_ISOLATED9_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=0&single=true&output=csv',
 
     // ══════════════════════════════════════════════
     // HOJA DE CONTACTOS (solo visible para el CEO)

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -71,6 +71,30 @@
         .finalizado .tbr-dot { background:#666; }
         @keyframes pdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(1.35)} }
 
+        /* ── Tags de Torneos ── */
+        .tbr-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .torneo-tag {
+            display: inline-block;
+            background: rgba(255,215,0,0.12);
+            border: 1px solid rgba(255,215,0,0.3);
+            color: var(--gold);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         /* ── Volver ── */
         .tbr-back {
             display:block; text-align:center; margin:0 auto 64px; width:fit-content;
@@ -97,7 +121,7 @@
                 <li><a href="clanes.html">Clanes</a></li>
                 <li><a href="ranking.html">Ranking</a></li>
                 <li><a href="salas.html">Salas</a></li>
-                <li><a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" class="cta-button">✚ Registrar Clan</a></li>
+                <li><a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" rel="noopener" class="cta-button">✚ Registrar Clan</a></li>
             </ul>
             <div class="hamburger" id="hamburger">
                 <span></span><span></span><span></span>
@@ -122,7 +146,7 @@
     <footer>
         <div class="footer-content">
             <div class="footer-section">
-                <h3>El Continental</h3>
+                <h3><a href="admin.html#login" class="footer-link-title">El Continental</a></h3>
                 <p>Comunidad Élite de Call of Duty Mobile</p>
             </div>
             <div class="footer-section">
@@ -137,9 +161,9 @@
             <div class="footer-section">
                 <h3>Redes Sociales</h3>
                 <div class="footer-social">
-                    <a href="https://www.tiktok.com/@elcontinentalcodm" target="_blank">TikTok</a>
-                    <a href="https://www.instagram.com/elcontinentalcodm" target="_blank">Instagram</a>
-                    <a href="https://discord.com/invite/BFgupYEYUq" target="_blank">Discord</a>
+                    <a href="https://www.tiktok.com/@elcontinentalcodm" target="_blank" rel="noopener">TikTok</a>
+                    <a href="https://www.instagram.com/elcontinentalcodm" target="_blank" rel="noopener">Instagram</a>
+                    <a href="https://discord.com/invite/BFgupYEYUq" target="_blank" rel="noopener">Discord</a>
                 </div>
             </div>
         </div>
@@ -149,81 +173,12 @@
     </footer>
 
     <script src="config-global.js"></script>
+    <script src="torneo-br.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', initHamburger);
-
-        /* ══════════════════════════════════════════════════════
-           LISTA DE TORNEOS BR
-           Para agregar un nuevo torneo, añade un objeto al array.
-           fecha: "YYYY-MM-DD"  →  determina PRÓXIMO / FINALIZADO automáticamente
-        ══════════════════════════════════════════════════════ */
-        const TORNEOS_BR = [
-            {
-                imagen: "TorneoBr/WhatsApp Image 2026-03-10 at 5.59.31 PM.jpeg",
-                fecha:  "2026-03-14",
-                fechaTexto: "14 de Marzo 2026",
-                hora: "8:00 PM MX",
-                premios: ["🥇 $50 USD", "🥈 Pase de Batalla", "🥉 Premio Sorpresa"]
-            },
-            {
-                imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (3).jpeg",
-                fecha:  "2026-03-03",
-                fechaTexto: "3 de Marzo 2026",
-                hora: "8:30 PM MX",
-                premios: ["🥇 $100 USD"]
-            },
-            {
-                imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM.jpeg",
-                fecha:  "2026-02-27",
-                fechaTexto: "27 de Febrero 2026",
-                hora: "9:00 PM MX",
-                premios: ["🏆 Prize Pool $200 USD", "🤝 Colaboración entre Comunidades"]
-            },
-            {
-                imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (1).jpeg",
-                fecha:  "2026-02-14",
-                fechaTexto: "14 de Febrero 2026",
-                hora: "8:00 PM MX",
-                premios: ["🥇 $40 USD"]
-            },
-            {
-                imagen: "TorneoBr/WhatsApp Image 2026-03-01 at 6.49.42 PM (2).jpeg",
-                fecha:  "2025-11-23",
-                fechaTexto: "23 de Noviembre 2025",
-                hora: "5:00 PM MX",
-                premios: ["🥇 1ra Sala: $50 USD", "🏆 2da Sala: $100 USD"]
-            }
-        ];
-        /* ══════════════════════════════════════════════════════ */
-
-        (function renderTorneos() {
-            const grid = document.getElementById('tbrGrid');
-            const hoy  = new Date();
-
-            TORNEOS_BR.forEach((t, i) => {
-                const pasado    = new Date(t.fecha + 'T23:59:59') < hoy;
-                const estado    = pasado ? 'finalizado' : 'proximo';
-                const estadoTxt = pasado ? 'FINALIZADO'  : 'PRÓXIMO';
-
-                const card = document.createElement('div');
-                card.className = 'tbr-card' + (pasado ? '' : ' es-proximo');
-                card.innerHTML = `
-                    <img class="tbr-img"
-                         src="${t.imagen}"
-                         alt="Torneo BR ${i + 1}"
-                         onerror="this.style.background='#111';this.style.minHeight='160px';">
-                    <div class="tbr-body">
-                        <div class="tbr-num">Torneo BR · #${i + 1}</div>
-                        <div class="tbr-fecha"><span>📅</span><span>${t.fechaTexto}${t.hora ? ' · 🕗 ' + t.hora : ''}</span></div>
-                        ${t.premios ? '<div class="tbr-premios">' + t.premios.map(p=>`<span>${p}</span>`).join('') + '</div>' : ''}
-                        <div class="tbr-badge ${estado}">
-                            <span class="tbr-dot"></span>
-                            <span>${estadoTxt}</span>
-                        </div>
-                    </div>`;
-                grid.appendChild(card);
-            });
-        })();
     </script>
 </body>
 </html>
+
+
+

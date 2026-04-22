@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - El Continental</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="logo de sala/logo de pagina.png">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo"><img src="logo de sala/logo de pagina.png" alt="Logo" class="nav-logo-img"> EL CONTINENTAL</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="clanes.html">Clanes</a></li>
+                <li><a href="ranking.html">Ranking</a></li>
+                <li><a href="salas.html">Salas</a></li>
+                <li><a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" rel="noopener" class="cta-button">✚ Registrar Clan</a></li>
+                <li><a href="settings.html" class="settings-link active">⚙️ Configuración</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">CONFIGURACIÓN</h1>
+            <p class="hero-subtitle">Personaliza tu experiencia en El Continental</p>
+        </div>
+    </section>
+
+    <!-- Settings Container -->
+    <section class="settings-section">
+        <div class="settings-container">
+            
+            <!-- Panel Izquierdo - Menú -->
+            <div class="settings-menu">
+                <h3>⚙️ Opciones</h3>
+                <ul class="settings-menu-list">
+                    <li><a href="#tema" class="menu-item active">🌙 Tema</a></li>
+                    <li><a href="#idioma" class="menu-item">🌐 Idioma</a></li>
+                    <li><a href="#notificaciones" class="menu-item">🔔 Notificaciones</a></li>
+                    <li><a href="#sonido" class="menu-item">🔊 Sonido</a></li>
+                    <li><a href="#datos" class="menu-item">📊 Datos & Privacidad</a></li>
+                </ul>
+            </div>
+
+            <!-- Panel Derecho - Contenido -->
+            <div class="settings-content">
+
+                <!-- TEMA -->
+                <div class="settings-panel" id="tema">
+                    <h2>🌙 Tema</h2>
+                    <p class="panel-description">Elige el tema visual que prefieres</p>
+                    
+                    <div class="settings-option">
+                        <div class="option-header">
+                            <label for="themeToggle" class="toggle-label">Modo Oscuro</label>
+                            <input type="checkbox" id="themeToggle" class="toggle-switch" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                        <p class="option-description">Activa el modo oscuro para una experiencia más cómoda en la noche</p>
+                    </div>
+
+                    <div class="theme-options">
+                        <h3>Temas Disponibles</h3>
+                        <div class="theme-grid">
+                            <div class="theme-card active" data-theme="dark">
+                                <div class="theme-preview dark"></div>
+                                <span>Oscuro (por defecto)</span>
+                            </div>
+                            <div class="theme-card" data-theme="light">
+                                <div class="theme-preview light"></div>
+                                <span>Rojo</span>
+                            </div>
+                            <div class="theme-card" data-theme="neon">
+                                <div class="theme-preview neon"></div>
+                                <span>Púrpura</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IDIOMA -->
+                <div class="settings-panel" id="idioma">
+                    <h2>🌐 Idioma</h2>
+                    <p class="panel-description">Selecciona tu idioma preferido</p>
+                    
+                    <div class="settings-option">
+                        <div class="option-header">
+                            <label for="languageSelect">Idioma de la Interfaz</label>
+                        </div>
+                        <select id="languageSelect" class="settings-select">
+                            <option value="es" selected>Español (ES)</option>
+                            <option value="en">English (EN)</option>
+                            <option value="pt">Português (PT)</option>
+                            <option value="fr">Français (FR)</option>
+                        </select>
+                        <p class="option-description">El cambio de idioma se aplicará al recargar la página</p>
+                    </div>
+                </div>
+
+                <!-- NOTIFICACIONES -->
+                <div class="settings-panel" id="notificaciones">
+                    <h2>🔔 Notificaciones</h2>
+                    <p class="panel-description">Controla qué notificaciones recibir</p>
+                    
+                    <div class="settings-option">
+                        <div class="option-header">
+                            <label for="notifTorneos">Notificaciones de Torneos</label>
+                            <input type="checkbox" id="notifTorneos" class="toggle-switch" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                        <p class="option-description">Recibe alertas sobre nuevos torneos y eventos</p>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="option-header">
+                            <label for="notifClanes">Actualizaciones de Clanes</label>
+                            <input type="checkbox" id="notifClanes" class="toggle-switch" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                        <p class="option-description">Notificaciones sobre cambios en rankings y salas</p>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="option-header">
+                            <label for="notifMarketing">Emails Promocionales</label>
+                            <input type="checkbox" id="notifMarketing" class="toggle-switch">
+                            <span class="toggle-slider"></span>
+                        </div>
+                        <p class="option-description">Recibe ofertas y contenido promocional</p>
+                    </div>
+                </div>
+
+                <!-- SONIDO -->
+                <div class="settings-panel" id="sonido">
+                    <h2>🔊 Sonido</h2>
+                    <p class="panel-description">Ajusta la configuración de audio</p>
+                    
+                    <div class="settings-option">
+                        <div class="option-header">
+                            <label for="soundToggle">Sonidos de Interfaz</label>
+                            <input type="checkbox" id="soundToggle" class="toggle-switch" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                        <p class="option-description">Sonidos al navegar la página</p>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="option-header">
+                            <label for="volumeControl">Volumen 🔊</label>
+                        </div>
+                        <input type="range" id="volumeControl" class="settings-slider" min="0" max="100" value="50">
+                        <div class="volume-display"><span id="volumeValue">50</span>%</div>
+                        <p class="option-description">Ajusta el volumen de los sonidos</p>
+                    </div>
+                </div>
+
+                <!-- DATOS & PRIVACIDAD -->
+                <div class="settings-panel" id="datos">
+                    <h2>📊 Datos & Privacidad</h2>
+                    <p class="panel-description">Gestiona tu información personal y privacidad</p>
+                    
+                    <div class="settings-option">
+                        <div class="option-header">
+                            <label for="dataTracking">Permitir Análisis Anónimo</label>
+                            <input type="checkbox" id="dataTracking" class="toggle-switch" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                        <p class="option-description">Ayuda a mejorar El Continental compartiendo datos de uso anónimos</p>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="option-header">
+                            <h3>Opciones de Datos</h3>
+                        </div>
+                        <div class="settings-buttons">
+                            <button id="exportBtn" class="btn-secondary">📥 Descargar mis Datos</button>
+                            <button id="clearBtn" class="btn-danger">🗑️ Limpiar Preferencias</button>
+                        </div>
+                        <p class="option-description">
+                            Descarga una copia de tus datos o limpia todas las preferencias guardadas localmente
+                        </p>
+                    </div>
+
+                    <div class="privacy-info">
+                        <h3>ℹ️ Información de Privacidad</h3>
+                        <p>Tus preferencias se guardan localmente en tu navegador. No compartimos datos personales con terceros. <a href="#" class="privacy-link">Ver política de privacidad completa</a></p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Info Box -->
+    <section class="info-box-section">
+        <div class="info-box">
+            <h3>ℹ️ Tus Preferencias Se Guardan Automáticamente</h3>
+            <p>Todos los cambios se guardan instantáneamente en tu navegador usando almacenamiento local. No requiere cuenta o login.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><a href="admin.html#login" class="footer-link-title">El Continental</a></h3>
+                <p>Comunidad Élite de Call of Duty Mobile</p>
+            </div>
+            <div class="footer-section">
+                <h3>Enlaces Rápidos</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="clanes.html">Clanes</a></li>
+                    <li><a href="ranking.html">Ranking</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Redes Sociales</h3>
+                <div class="footer-social">
+                    <a href="https://www.tiktok.com/@elcontinentalcodm" target="_blank" rel="noopener">TikTok</a>
+                    <a href="https://www.instagram.com/elcontinentalcodm" target="_blank" rel="noopener">Instagram</a>
+                    <a href="https://chat.whatsapp.com/KMFxB5W4Bw17WbG1IzZFYd" target="_blank" rel="noopener">WhatsApp</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 El Continental - Comunidad Call of Duty Mobile</p>
+        </div>
+    </footer>
+
+    <script src="config-global.js"></script>
+    <script src="settings.js"></script>
+
+</body>
+</html>
