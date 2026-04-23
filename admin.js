@@ -11,6 +11,32 @@ let currentUser  = null;
 let allData      = [];
 let filteredData = [];
 let contactMap   = {}; // { nombreClanNormalizado: {lider, tel, colider1, ...} } solo CEO
+let semanalTabsInitDone = false;
+
+function escHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function escAttr(value) {
+    return escHtml(value).replace(/`/g, '&#96;');
+}
+
+function escJsString(value) {
+    return String(value ?? '')
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\"/g, '\\"')
+        .replace(/\r?\n/g, ' ');
+}
+
+function sanitizePhone(value) {
+    return String(value ?? '').replace(/[^0-9+\-()\s]/g, '').trim();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnLogin').addEventListener('click', handleLogin);
@@ -19,7 +45,17 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     const forceLoginView = window.location.hash === '#login';
     const saved = localStorage.getItem('adminUser');
-    if (saved && !forceLoginView) { currentUser = JSON.parse(saved); showDashboard(); }
+    if (saved && !forceLoginView) {
+        try {
+            currentUser = JSON.parse(saved);
+            if (!currentUser || !currentUser.usuario || !currentUser.rol) {
+                throw new Error('Sesion invalida');
+            }
+            showDashboard();
+        } catch {
+            localStorage.removeItem('adminUser');
+        }
+    }
 });
 
 /* ── LOGIN ── */
@@ -55,9 +91,13 @@ function showDashboard() {
         el.style.display = currentUser.rol === 'master' ? '' : 'none';
     });
 
-    document.getElementById('btnLogout').addEventListener('click', () => {
-        window.location.href = 'index.html';
-    });
+    const btnLogout = document.getElementById('btnLogout');
+    if (btnLogout) {
+        btnLogout.onclick = () => {
+            localStorage.removeItem('adminUser');
+            window.location.href = 'admin.html#login';
+        };
+    }
     
     // ── BOTONES DEL MODAL DE PERFIL ──
     document.getElementById('btnPerfil')?.addEventListener('click', showPerfilModal);
@@ -99,11 +139,20 @@ function showDashboard() {
     document.getElementById('btnShareTop3')?.addEventListener('click', exportTop3AsImage);
     document.getElementById('btnRefreshTop3')?.addEventListener('click', renderTop3);
     document.getElementById('btnRefreshSemanal')?.addEventListener('click', () => {
-        const activeSala = document.querySelector('.semanal-subtab.active')?.dataset.sala || 'alcatraz';
+        const activeSala = document.querySelector('.semanal-subtab.active')?.dataset.sala || 'zguerra';
         loadSemanal(activeSala, true);
     });
     document.getElementById('btnRefreshSanciones')?.addEventListener('click', () => {
         _sancionesData = null;
+        // Limpiar caché de todas las salas de sanciones
+        Object.keys(SALAS_SANCIONES_CFG).forEach(k => {
+            const url = SALAS_SANCIONES_CFG[k].url();
+            if (typeof getSheetCacheKeys === 'function') {
+                const keys = getSheetCacheKeys(url);
+                localStorage.removeItem(keys.data);
+                localStorage.removeItem(keys.time);
+            }
+        });
         loadSanciones();
     });
     document.getElementById('sancionesFiltroSala')?.addEventListener('change', () => {
@@ -209,12 +258,13 @@ async function loadSancionesStats() {
 
 /* ── SANCIONES PANEL ── */
 const SALAS_SANCIONES_CFG = {
-    alcatraz:       { label: '🏟️ Alcatraz',        url: () => CONFIG.SEMANAL_ALCATRAZ_URL },
-    alcatraz2:      { label: '🏟️ Alcatraz 2.0',    url: () => CONFIG.SEMANAL_ALCATRAZ2_URL },
-    alcatrazmaster: { label: '⛓️ Alcatraz Master', url: () => CONFIG.SEMANAL_ALCATRAZ_MASTER_URL },
-    zguerra:        { label: '⚔️ Zona de Guerra',  url: () => CONFIG.SEMANAL_ZGUERRA_URL },
-    zletal:         { label: '💥 Zona Letal',      url: () => CONFIG.SEMANAL_ZLETAL_URL },
-    zxtreme:        { label: '⚡ Zona Xtreme',     url: () => CONFIG.SEMANAL_ZXTREME_URL },
+    zguerra:        { label: '⚔️ Zona de Guerra',  url: () => CONFIG.SANCIONES_ZGUERRA_URL },
+    zletal:         { label: '💥 Zona Letal 9',    url: () => CONFIG.SANCIONES_ZLETAL_URL },
+    zxtreme:        { label: '⚡ Zona Xtreme 9',   url: () => CONFIG.SANCIONES_ZXTREME_URL },
+    isolated7:      { label: '🔒 ISOLATED 7',      url: () => CONFIG.SANCIONES_ISOLATED7_URL },
+    isolated8:      { label: '🔒 ISOLATED 8',      url: () => CONFIG.SANCIONES_ISOLATED8_URL },
+    isolated9:      { label: '🔒 ISOLATED 9',      url: () => CONFIG.SANCIONES_ISOLATED9_URL },
+    isolated10:     { label: '🔒 ISOLATED 10',     url: () => CONFIG.SANCIONES_ISOLATED10_URL },
 };
 let _sancionesData = null; // cache: { alcatraz: [...], alcatraz2: [...], ... }
 
@@ -222,21 +272,34 @@ async function loadSanciones() {
     const wrapper = document.getElementById('sancionesWrapper');
     if (!wrapper) return;
 
-    if (_sancionesData) { renderSanciones(_sancionesData); return; }
-
-    wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando sanciones de todas las salas...</p>';
+    wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando sanciones...</p>';
 
     try {
+        console.log('[loadSanciones] Iniciando carga...');
+        
+        // Cargar todas las salas
         const keys = Object.keys(SALAS_SANCIONES_CFG);
         const results = await Promise.all(
-            keys.map(k => fetchSheetData(SALAS_SANCIONES_CFG[k].url()).catch(() => []))
+            keys.map(k => {
+                console.log(`[loadSanciones] Cargando ${k} desde:`, SALAS_SANCIONES_CFG[k].url());
+                return fetchSheetData(SALAS_SANCIONES_CFG[k].url()).catch(err => {
+                    console.error(`[loadSanciones] Error en ${k}:`, err);
+                    return [];
+                });
+            })
         );
+        
         _sancionesData = {};
-        keys.forEach((k, i) => { _sancionesData[k] = results[i]; });
+        keys.forEach((k, i) => { 
+            _sancionesData[k] = results[i];
+            console.log(`[loadSanciones] ${k} → ${results[i].length} rows`);
+        });
+        
         renderSanciones(_sancionesData);
+        
     } catch (err) {
-        console.error('Sanciones panel error:', err);
-        wrapper.innerHTML = '<p style="color:#ff4d4d;text-align:center;padding:2rem">❌ No se pudieron cargar las sanciones.</p>';
+        console.error('[loadSanciones] Error:', err);
+        wrapper.innerHTML = '<p style="color:#ff4d4d;text-align:center;padding:2rem">❌ Error: ' + err.message + '</p>';
     }
 }
 
@@ -251,17 +314,20 @@ function renderSanciones(dataMap) {
     const todas = [];
     keys.forEach(k => {
         const rows = dataMap[k] || [];
+        
+        // parseCSV ya salta encabezado, así que rows son datos reales
         rows.forEach(row => {
-            if ((row[27] || '').toString().trim() !== '') {
+            // Formato uniforme para todas las salas: Equipo/Ronda (0), Jugador (1), Fecha (2), Motivo (3), PTS (4), Días (5), Retorno (6)
+            if ((row[1] || '').toString().trim() !== '') {
                 todas.push({
                     sala:      SALAS_SANCIONES_CFG[k]?.label || k,
-                    equipo:    (row[26] || '—').toString().trim(),
-                    jugador:   (row[27] || '—').toString().trim(),
-                    fecha:     (row[28] || '—').toString().trim(),
-                    motivo:    (row[29] || '—').toString().trim(),
-                    pts:       parseFloat(row[30]) || 0,
-                    diasSusp:  (row[31] || '—').toString().trim(),
-                    regreso:   (row[32] || '—').toString().trim(),
+                    equipo:    (row[0] || '—').toString().trim(),
+                    jugador:   (row[1] || '—').toString().trim(),
+                    fecha:     (row[2] || '—').toString().trim(),
+                    motivo:    (row[3] || '—').toString().trim(),
+                    pts:       parseFloat(row[4]) || 0,
+                    diasSusp:  (row[5] || '—').toString().trim(),
+                    regreso:   (row[6] || '—').toString().trim(),
                 });
             }
         });
@@ -275,18 +341,26 @@ function renderSanciones(dataMap) {
     let tbodyHtml = '';
     todas.forEach(s => {
         const pts = s.pts;
+        const salaSafe = escHtml(s.sala);
+        const equipoSafe = escHtml(s.equipo);
+        const jugadorSafe = escHtml(s.jugador);
+        const fechaSafe = escHtml(s.fecha);
+        const motivoSafe = escHtml(s.motivo);
+        const diasSafe = escHtml(s.diasSusp);
+        const regresoSafe = escHtml(s.regreso);
         const ptsHtml = pts !== 0
             ? `<span style="color:#ff4d4d;font-weight:bold">${pts > 0 ? '-' + pts : pts}</span>`
             : '<span style="color:rgba(255,255,255,0.25)">—</span>';
+        
         tbodyHtml += `<tr>
-            <td><span class="semanal-sala-badge" style="font-size:0.72rem;padding:0.2rem 0.6rem">${s.sala}</span></td>
-            <td style="text-align:center;font-weight:bold;color:var(--gold)">${s.equipo}</td>
-            <td style="font-weight:600">${s.jugador}</td>
-            <td style="text-align:center;color:var(--muted);font-size:0.85rem">${s.fecha}</td>
-            <td style="max-width:220px">${s.motivo}</td>
+            <td><span class="semanal-sala-badge" style="font-size:0.72rem;padding:0.2rem 0.6rem">${salaSafe}</span></td>
+            <td style="text-align:center;font-weight:bold;color:var(--gold)">${equipoSafe}</td>
+            <td style="font-weight:600">${jugadorSafe}</td>
+            <td style="text-align:center;color:var(--muted);font-size:0.85rem">${fechaSafe}</td>
+            <td style="max-width:220px">${motivoSafe}</td>
             <td style="text-align:center">${ptsHtml}</td>
-            <td style="text-align:center;color:#ffa500">${s.diasSusp}</td>
-            <td style="text-align:center;color:#a8ff78">${s.regreso}</td>
+            <td style="text-align:center;color:#ffa500">${diasSafe}</td>
+            <td style="text-align:center;color:#a8ff78">${regresoSafe}</td>
         </tr>`;
     });
 
@@ -298,7 +372,7 @@ function renderSanciones(dataMap) {
         <table class="semanal-table">
             <thead><tr>
                 <th>Sala</th>
-                <th style="text-align:center">Equipo</th>
+                <th style="text-align:center">Equipo/Ronda</th>
                 <th>Jugador</th>
                 <th style="text-align:center">Fecha</th>
                 <th>Motivo</th>
@@ -457,6 +531,11 @@ function renderTabla(rows) {
         const nombre   = r[CONFIG.COLUMNS.NOMBRE_DE_CLAN] || '—';
         const tag      = r[CONFIG.COLUMNS.TAG_DEL_CLAN]    || '—';
         const logoUrl  = getLogoUrl(clanId, r[CONFIG.COLUMNS.LOGO]);
+        const nombreSafe = escHtml(nombre);
+        const tagSafe = escHtml(tag);
+        const logoAttrSafe = escAttr(logoUrl);
+        const logoJsSafe = escJsString(logoUrl);
+        const clanDlName = escJsString((clanId || nombre).replace(/[^a-zA-Z0-9_\- ]/g, '_'));
 
         const sc = (v, col) => v > 0
             ? `<td style="color:${col};font-weight:bold;text-align:center">${v}</td>`
@@ -466,14 +545,14 @@ function renderTabla(rows) {
             <td style="color:var(--gold);font-weight:bold;text-align:center">${i + 1}</td>
             <td>
                 <div class="logo-cell">
-                    <img src="${logoUrl}" alt="${nombre}" class="clan-logo-small"
+                    <img src="${logoAttrSafe}" alt="${nombreSafe}" class="clan-logo-small"
                          onerror="this.src='logo/default.jpg'">
                     <button class="btn-dl" title="Descargar logo"
-                        onclick="descargarLogo('${logoUrl}', '${(clanId || nombre).replace(/'/g, '')}')">⬇</button>
+                        onclick="descargarLogo('${logoJsSafe}', '${clanDlName}')">⬇</button>
                 </div>
             </td>
-            <td style="font-weight:bold">${nombre}</td>
-            <td style="color:var(--yellow-accent);font-weight:bold">${tag}</td>
+            <td style="font-weight:bold">${nombreSafe}</td>
+            <td style="color:var(--yellow-accent);font-weight:bold">${tagSafe}</td>
             <td>
                 <div class="medals-display">
                     <span style="color:#FFD700">🥇${oro}</span>
@@ -497,15 +576,20 @@ function renderTabla(rows) {
             // Buscar en el mapa de contactos por nombre de clan (insensible a mayúsculas)
             const cKey = nombre.trim().toLowerCase();
             const c    = contactMap[cKey] || {};
-            const tel  = (t) => t ? `<a href="tel:${t}" style="color:rgba(255,255,255,0.7);font-size:0.85rem;text-decoration:none">${t}</a>` : '<span style="color:rgba(255,255,255,0.25)">—</span>';
+            const tel  = (t) => {
+                const phone = sanitizePhone(t);
+                return phone
+                    ? `<a href="tel:${escAttr(phone)}" style="color:rgba(255,255,255,0.7);font-size:0.85rem;text-decoration:none">${escHtml(phone)}</a>`
+                    : '<span style="color:rgba(255,255,255,0.25)">—</span>';
+            };
             row += `
-            <td>${c.lider    || '<span style="color:rgba(255,255,255,0.25)">—</span>'}</td>
+            <td>${c.lider ? escHtml(c.lider) : '<span style="color:rgba(255,255,255,0.25)">—</span>'}</td>
             <td>${tel(c.telLider)}</td>
-            <td>${c.colider1 || '<span style="color:rgba(255,255,255,0.25)">—</span>'}</td>
+            <td>${c.colider1 ? escHtml(c.colider1) : '<span style="color:rgba(255,255,255,0.25)">—</span>'}</td>
             <td>${tel(c.telCo1)}</td>
-            <td>${c.colider2 || '<span style="color:rgba(255,255,255,0.25)">—</span>'}</td>
+            <td>${c.colider2 ? escHtml(c.colider2) : '<span style="color:rgba(255,255,255,0.25)">—</span>'}</td>
             <td>${tel(c.telCo2)}</td>
-            <td style="color:var(--accent);font-weight:600">${c.modo || '<span style="color:rgba(255,255,255,0.25)">—</span>'}</td>
+            <td style="color:var(--accent);font-weight:600">${c.modo ? escHtml(c.modo) : '<span style="color:rgba(255,255,255,0.25)">—</span>'}</td>
             <td>
                 <span class="status-badge ${isActive ? 'status-active' : 'status-inactive'}">
                     ${isActive ? '✅ Activo' : '⏳ Pendiente'}
@@ -562,19 +646,24 @@ function renderContactos(filtro) {
         input.addEventListener('input', () => renderContactos(input.value));
     }
 
-    const tel = (t, label) => t
-        ? `<div class="cto-field"><span class="cto-lbl">${label}</span><a href="tel:${t}" class="cto-tel">📞 ${t}</a></div>`
-        : `<div class="cto-field"><span class="cto-lbl">${label}</span><span class="cto-empty">—</span></div>`;
-    const txt = (v, label) => `<div class="cto-field"><span class="cto-lbl">${label}</span><span class="cto-val">${v || '<span class="cto-empty">—</span>'}</span></div>`;
+    const tel = (t, label) => {
+        const phone = sanitizePhone(t);
+        return phone
+            ? `<div class="cto-field"><span class="cto-lbl">${escHtml(label)}</span><a href="tel:${escAttr(phone)}" class="cto-tel">📞 ${escHtml(phone)}</a></div>`
+            : `<div class="cto-field"><span class="cto-lbl">${escHtml(label)}</span><span class="cto-empty">—</span></div>`;
+    };
+    const txt = (v, label) => {
+        return `<div class="cto-field"><span class="cto-lbl">${escHtml(label)}</span><span class="cto-val">${v ? escHtml(v) : '<span class="cto-empty">—</span>'}</span></div>`;
+    };
 
     grid.innerHTML = clanes.map(c => `
         <div class="cto-card">
             <div class="cto-card-top">
-                <img src="${c.logo}" alt="${c.nombre}" class="cto-logo" onerror="this.src='logo/default.jpg'">
+                <img src="${escAttr(c.logo)}" alt="${escAttr(c.nombre)}" class="cto-logo" onerror="this.src='logo/default.jpg'">
                 <div class="cto-clan-info">
-                    <span class="cto-nombre">${c.nombre}</span>
-                    <span class="cto-tag">${c.tag}</span>
-                    ${c.modo ? `<span class="cto-modo">${c.modo}</span>` : ''}
+                    <span class="cto-nombre">${escHtml(c.nombre)}</span>
+                    <span class="cto-tag">${escHtml(c.tag)}</span>
+                    ${c.modo ? `<span class="cto-modo">${escHtml(c.modo)}</span>` : ''}
                 </div>
             </div>
             <div class="cto-divider"></div>
@@ -680,6 +769,9 @@ function renderMedallasSection(rows) {
         const nombre = (r[CONFIG.COLUMNS.NOMBRE_DE_CLAN] || '—').trim();
         const tag    = (r[CONFIG.COLUMNS.TAG_DEL_CLAN]   || '').trim();
         const logo   = getLogoUrl(id, r[CONFIG.COLUMNS.LOGO]);
+        const nombreSafe = escHtml(nombre);
+        const tagSafe = escHtml(tag);
+        const logoSafe = escAttr(logo);
 
         // Badges activos de este clan
         const badgesHtml = TIPOS_MEDALLA
@@ -689,11 +781,11 @@ function renderMedallasSection(rows) {
 
         html += `
         <div class="medalla-clan-card tiene-medallas">
-            <img src="${logo}" alt="${nombre}" class="medalla-logo"
+            <img src="${logoSafe}" alt="${nombreSafe}" class="medalla-logo"
                  onerror="this.src='logo/default.jpg'">
             <div class="medalla-clan-info">
-                <span class="medalla-clan-nombre">${nombre}</span>
-                <span class="medalla-clan-tag">${tag}</span>
+                <span class="medalla-clan-nombre">${nombreSafe}</span>
+                <span class="medalla-clan-tag">${tagSafe}</span>
             </div>
             <div class="medalla-botones">${badgesHtml}</div>
         </div>`;
@@ -808,32 +900,44 @@ async function exportTop3AsImage() {
 
 /* ══ PUNTOS SEMANALES (multi-sala) ══ */
 const SALAS_SEMANAL = {
-    alcatraz:       { label: '🏟️ Alcatraz',        url: () => CONFIG.SEMANAL_ALCATRAZ_URL },
-    alcatraz2:      { label: '🏟️ Alcatraz 2.0',    url: () => CONFIG.SEMANAL_ALCATRAZ2_URL },
-    alcatrazmaster: { label: '⛓️ Alcatraz Master', url: () => CONFIG.SEMANAL_ALCATRAZ_MASTER_URL },
-    zguerra:        { label: '⚔️ Zona de Guerra',  url: () => CONFIG.SEMANAL_ZGUERRA_URL },
-    zletal:         { label: '💥 Zona Letal',      url: () => CONFIG.SEMANAL_ZLETAL_URL },
-    zxtreme:        { label: '⚡ Zona Xtreme',     url: () => CONFIG.SEMANAL_ZXTREME_URL },
+    alcatraz:       { label: '🏟️ Alcatraz',        url: () => CONFIG.SEMANAL_ALCATRAZ_URL, diarios: null, sanciones: null },
+    alcatraz2:      { label: '🏟️ Alcatraz 2.0',    url: () => CONFIG.SEMANAL_ALCATRAZ2_URL, diarios: null, sanciones: null },
+    alcatrazmaster: { label: '⛓️ Alcatraz Master', url: () => CONFIG.SEMANAL_ALCATRAZ_MASTER_URL, diarios: null, sanciones: null },
+    zguerra:        { label: '⚔️ Zona de Guerra',  url: () => CONFIG.SEMANAL_ZGUERRA_URL, diarios: () => CONFIG.DIARIOS_ZGUERRA_URL, sanciones: () => CONFIG.SANCIONES_ZGUERRA_URL },
+    zletal:         { label: '💥 Zona Letal 9',    url: () => CONFIG.SEMANAL_ZLETAL_URL, diarios: () => CONFIG.DIARIOS_ZLETAL_URL, sanciones: () => CONFIG.SANCIONES_ZLETAL_URL },
+    zxtreme:        { label: '⚡ Zona Xtreme 9',   url: () => CONFIG.SEMANAL_ZXTREME_URL, diarios: () => CONFIG.DIARIOS_ZXTREME_URL, sanciones: () => CONFIG.SANCIONES_ZXTREME_URL },
+    isolated7:      { label: '🔒 ISOLATED 7',      url: () => CONFIG.SEMANAL_ISOLATED7_URL, diarios: () => CONFIG.DIARIOS_ISOLATED7_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED7_URL },
+    isolated8:      { label: '🔒 ISOLATED 8',      url: () => CONFIG.SEMANAL_ISOLATED8_URL, diarios: () => CONFIG.DIARIOS_ISOLATED8_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED8_URL },
+    isolated9:      { label: '🔒 ISOLATED 9',      url: () => CONFIG.SEMANAL_ISOLATED9_URL, diarios: () => CONFIG.DIARIOS_ISOLATED9_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED9_URL },
+    isolated10:     { label: '🔒 ISOLATED 10',     url: () => CONFIG.SEMANAL_ISOLATED10_URL, diarios: () => CONFIG.DIARIOS_ISOLATED10_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED10_URL },
 };
 const semanalCargado = {}; // { alcatraz: bool, alcatraz2: bool }
 
 function initSemanalTabs() {
-    document.querySelectorAll('.semanal-subtab').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.semanal-subtab').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.semanal-wrapper').forEach(w => w.style.display = 'none');
-            btn.classList.add('active');
-            const sala = btn.dataset.sala;
-            const wrapper = document.getElementById('semanalWrapper-' + sala);
-            if (wrapper) wrapper.style.display = '';
-            loadSemanal(sala);
+    if (!semanalTabsInitDone) {
+        document.querySelectorAll('.semanal-subtab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.semanal-subtab').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.semanal-wrapper').forEach(w => w.style.display = 'none');
+                btn.classList.add('active');
+                const sala = btn.dataset.sala;
+                const wrapper = document.getElementById('semanalWrapper-' + sala);
+                if (wrapper) wrapper.style.display = '';
+                loadSemanal(sala);
+            });
         });
-    });
-    // Cargar la primera sala al abrir la pestaña
-    loadSemanal('alcatraz');
 
-    // Botón compartir imagen
-    document.getElementById('btnShareSemanal')?.addEventListener('click', compartirSemanalImagen);
+        // Botón compartir imagen
+        document.getElementById('btnShareSemanal')?.addEventListener('click', compartirSemanalImagen);
+        semanalTabsInitDone = true;
+    }
+
+    const activeBtn = document.querySelector('.semanal-subtab.active') || document.querySelector('.semanal-subtab[data-sala="zguerra"]');
+    const activeSala = activeBtn?.dataset.sala || 'zguerra';
+    document.querySelectorAll('.semanal-wrapper').forEach(w => w.style.display = 'none');
+    const activeWrapper = document.getElementById('semanalWrapper-' + activeSala);
+    if (activeWrapper) activeWrapper.style.display = '';
+    loadSemanal(activeSala);
 }
 
 async function compartirSemanalImagen() {
@@ -843,7 +947,7 @@ async function compartirSemanalImagen() {
         return;
     }
 
-    const activeSala = document.querySelector('.semanal-subtab.active')?.dataset.sala || 'alcatraz';
+    const activeSala = document.querySelector('.semanal-subtab.active')?.dataset.sala || 'zguerra';
     const wrapper = document.getElementById('semanalWrapper-' + activeSala);
     if (!wrapper || !wrapper.children.length) {
         alert('⚠️ No hay datos cargados. Espera a que cargue la tabla primero.');
@@ -939,22 +1043,280 @@ async function loadSemanal(sala, forceRefresh = false) {
 
     if (forceRefresh) {
         const url   = cfg.url();
-        const keyId = url.replace(/[^a-zA-Z0-9]/g, '').slice(-24);
-        localStorage.removeItem('elcontinental_data_' + keyId);
-        localStorage.removeItem('elcontinental_time_' + keyId);
+        if (typeof getSheetCacheKeys === 'function') {
+            const keys = getSheetCacheKeys(url);
+            localStorage.removeItem(keys.data);
+            localStorage.removeItem(keys.time);
+        }
         semanalCargado[sala] = false;
     }
     if (semanalCargado[sala] && !forceRefresh) return;
 
     wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando ' + cfg.label + '...</p>';
     try {
-        const data = await fetchSheetData(cfg.url());
-        renderSemanalCompleto(data, wrapper, cfg.label);
+        if (sala === 'zletal') {
+            const [dataDiarios, dataSemanal, dataSanciones, dataTopKiller] = await Promise.all([
+                fetchSheetData(cfg.diarios()),
+                fetchSheetData(cfg.url()),
+                fetchSheetData(cfg.sanciones()),
+                fetchSheetData(CONFIG.TOPKILLER_ZLETAL_URL),
+            ]);
+            renderZonaLetalEspecial(dataDiarios, wrapper, cfg.label, dataSemanal, dataSanciones, dataTopKiller);
+            semanalCargado[sala] = true;
+            return;
+        }
+
+        // Si la sala tiene URLs de diarios y sanciones: cargar 3 datos (diarios, semanal, sanciones)
+        if (cfg.diarios && cfg.sanciones) {
+            const [dataDiarios, dataSemanal, dataSanciones] = await Promise.all([
+                fetchSheetData(cfg.diarios()),
+                fetchSheetData(cfg.url()),
+                fetchSheetData(cfg.sanciones())
+            ]);
+            renderZonaLetal(dataDiarios, wrapper, cfg.label, dataSemanal, dataSanciones);
+        } else {
+            const data = await fetchSheetData(cfg.url());
+            renderSemanalCompleto(data, wrapper, cfg.label);
+        }
         semanalCargado[sala] = true;
     } catch (err) {
         console.error('Semanal error (' + sala + '):', err);
         wrapper.innerHTML = '<p style="color:#ff4d4d;text-align:center;padding:2rem">❌ No se pudo cargar la hoja de ' + cfg.label + '.</p>';
     }
+}
+
+function renderZonaLetalEspecial(dataDiarios, wrapper, salaLabel, dataSemanal = null, dataSanciones = null, dataTopKiller = null) {
+    if (!dataDiarios || !dataDiarios.length) {
+        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ La hoja de ' + salaLabel + ' está vacía.</p>';
+        return;
+    }
+
+    const rows = dataDiarios.slice(1).filter(r => r.some(c => (c || '').toString().trim() !== ''));
+    if (!rows.length) {
+        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ No hay datos esta semana.</p>';
+        return;
+    }
+
+    const days = [
+        { key: 'L', label: 'Lunes' },
+        { key: 'M', label: 'Martes' },
+        { key: 'X', label: 'Miércoles' },
+        { key: 'J', label: 'Jueves' },
+        { key: 'V', label: 'Viernes' },
+    ];
+
+    const byDay = { L: [], M: [], X: [], J: [], V: [] };
+    rows.forEach(row => {
+        const dayKey = (row[2] || '').toString().trim().toUpperCase();
+        if (byDay[dayKey]) byDay[dayKey].push(row);
+    });
+
+    const dayTabsHtml = days.map((d, i) => `<button class="alc-master-day-tab${i === 0 ? ' active' : ''}" data-dia="${d.key}">${d.label}</button>`).join('');
+
+    let dayPanelsHtml = '';
+    days.forEach((d, idx) => {
+        const dayRows = [...byDay[d.key]].sort((a, b) => (parseFloat(b[9]) || 0) - (parseFloat(a[9]) || 0));
+        let tbody = '';
+        if (dayRows.length) {
+            dayRows.forEach((r, i) => {
+                const rankCls = i === 0 ? 'semanal-rank-1' : i === 1 ? 'semanal-rank-2' : i === 2 ? 'semanal-rank-3' : '';
+                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
+                const ok = (r[7] || '').toString().trim() !== '' ? '✓' : '—';
+                const no = (r[8] || '').toString().trim() !== '' ? '✗' : '—';
+                tbody += `<tr class="${rankCls}">
+                    <td class="semanal-td-rank">${medal}</td>
+                    <td style="text-align:center;font-weight:bold">${escHtml(r[0] || '—')}</td>
+                    <td style="font-weight:600">${escHtml(r[1] || '—')}</td>
+                    <td style="text-align:center">${escHtml(r[2] || '—')}</td>
+                    <td style="text-align:center">${escHtml(r[3] || '—')}</td>
+                    <td style="text-align:center;color:var(--gold)">${escHtml(r[4] || '—')}</td>
+                    <td style="text-align:center">${escHtml(r[5] || '—')}</td>
+                    <td style="text-align:center;color:#a8ff78">${escHtml(r[6] || '—')}</td>
+                    <td style="text-align:center">${ok}</td>
+                    <td style="text-align:center">${no}</td>
+                    <td class="semanal-td-total">${parseFloat(r[9]) || 0}</td>
+                </tr>`;
+            });
+        } else {
+            tbody = '<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:1rem">Sin datos para este día</td></tr>';
+        }
+
+        dayPanelsHtml += `
+        <div class="alc-master-day-panel${idx === 0 ? '' : ' alc-hidden'}" data-dia="${d.key}">
+            <div class="semanal-table-wrap" style="margin-top:0">
+                <table class="semanal-table">
+                    <thead><tr>
+                        <th class="semanal-th-rank">#</th>
+                        <th style="text-align:center">SLOT</th>
+                        <th style="text-align:center">EQUIPO | TAG</th>
+                        <th style="text-align:center">DÍA</th>
+                        <th style="text-align:center">1 POS</th>
+                        <th style="text-align:center">PTS1</th>
+                        <th style="text-align:center">2 KILL</th>
+                        <th style="text-align:center">PTS2</th>
+                        <th style="text-align:center">✓</th>
+                        <th style="text-align:center">✗</th>
+                        <th class="semanal-th-total">TOTAL</th>
+                    </tr></thead>
+                    <tbody>${tbody}</tbody>
+                </table>
+            </div>
+        </div>`;
+    });
+
+    const semRows = (dataSemanal || []).slice(1).filter(r => r.some(c => (c || '').toString().trim() !== ''));
+    let semanalBody = '';
+    if (semRows.length) {
+        const sorted = [...semRows].sort((a, b) => (parseFloat(b[12]) || 0) - (parseFloat(a[12]) || 0));
+        sorted.forEach((r, i) => {
+            const rankCls = i === 0 ? 'semanal-rank-1' : i === 1 ? 'semanal-rank-2' : i === 2 ? 'semanal-rank-3' : '';
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
+            const cell = v => v > 0 ? `<td class="semanal-td-sesion semanal-pts-activo" style="text-align:center">${v}</td>` : `<td class="semanal-pts-vacio" style="text-align:center">—</td>`;
+            const pts = [3, 5, 7, 9, 11].map(ix => parseFloat(r[ix]) || 0);
+            const total = parseFloat(r[12]) || pts.reduce((a, b) => a + b, 0);
+            semanalBody += `<tr class="${rankCls}">
+                <td class="semanal-td-rank">${medal}</td>
+                <td style="text-align:center;font-weight:bold">${escHtml(r[1] || '—')}</td>
+                ${cell(pts[0])}${cell(pts[1])}${cell(pts[2])}${cell(pts[3])}${cell(pts[4])}
+                <td class="semanal-td-total">${total}</td>
+            </tr>`;
+        });
+    } else {
+        semanalBody = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:1rem">Sin datos semanales aún</td></tr>';
+    }
+
+    const sancRows = (dataSanciones || []).slice(1).filter(r => r.some(c => (c || '').toString().trim() !== ''));
+    let sancBody = '';
+    if (sancRows.length) {
+        sancRows.forEach(r => {
+            const pts = parseFloat(r[4]) || 0;
+            sancBody += `<tr>
+                <td style="text-align:center;font-weight:bold;color:var(--gold)">${escHtml(r[0] || '—')}</td>
+                <td style="font-weight:600">${escHtml(r[1] || '—')}</td>
+                <td style="text-align:center;color:var(--muted)">${escHtml(r[2] || '—')}</td>
+                <td style="text-align:center">${escHtml(r[3] || '—')}</td>
+                <td style="text-align:center;color:#ff4d4d;font-weight:bold">${pts !== 0 ? (pts > 0 ? '-' + pts : pts) : '—'}</td>
+                <td style="text-align:center;color:#ffa500">${escHtml(r[5] || '—')}</td>
+                <td style="text-align:center;color:#a8ff78">${escHtml(r[6] || '—')}</td>
+            </tr>`;
+        });
+    } else {
+        sancBody = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1rem">✅ Sin sanciones registradas</td></tr>';
+    }
+
+    const topRows = (dataTopKiller || []).slice(1).filter(r => r.some(c => (c || '').toString().trim() !== ''));
+    let topBody = '';
+    if (topRows.length) {
+        const sortedTop = [...topRows].sort((a, b) => (parseFloat(b[7]) || 0) - (parseFloat(a[7]) || 0));
+        sortedTop.forEach((r, i) => {
+            const rankCls = i === 0 ? 'semanal-rank-1' : i === 1 ? 'semanal-rank-2' : i === 2 ? 'semanal-rank-3' : '';
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
+            const cell = v => v > 0 ? `<td class="semanal-td-sesion semanal-pts-activo" style="text-align:center">${v}</td>` : `<td class="semanal-pts-vacio" style="text-align:center">—</td>`;
+            const pts = [2, 3, 4, 5, 6].map(ix => parseFloat(r[ix]) || 0);
+            const total = parseFloat(r[7]) || pts.reduce((a, b) => a + b, 0);
+            topBody += `<tr class="${rankCls}">
+                <td class="semanal-td-rank">${medal}</td>
+                <td style="text-align:center;font-weight:bold">${escHtml(r[0] || '—')}</td>
+                <td style="font-weight:600">${escHtml(r[1] || '—')}</td>
+                ${cell(pts[0])}${cell(pts[1])}${cell(pts[2])}${cell(pts[3])}${cell(pts[4])}
+                <td class="semanal-td-total">${total}</td>
+            </tr>`;
+        });
+    } else {
+        topBody = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:1rem">Sin datos de top killer aún</td></tr>';
+    }
+
+    wrapper.innerHTML = `
+    <div class="semanal-info">
+        <span class="semanal-sala-badge">${escHtml(salaLabel)}</span>
+        <span class="semanal-clanes-count">${rows.length} registros</span>
+    </div>
+
+    <div class="alc-master-main-tabs">
+        <button class="alc-master-main-tab active" data-panel="resultados">📋 Resultados</button>
+        <button class="alc-master-main-tab" data-panel="semanal">📊 Resumen Semanal</button>
+        <button class="alc-master-main-tab" data-panel="sanciones">🚫 Sanciones</button>
+        <button class="alc-master-main-tab" data-panel="topkiller">🎯 Top Killer</button>
+    </div>
+
+    <div class="alc-master-main-panel" data-panel="resultados">
+        <div class="alc-master-day-tabs">${dayTabsHtml}</div>
+        ${dayPanelsHtml}
+    </div>
+
+    <div class="alc-master-main-panel alc-hidden" data-panel="semanal">
+        <div class="semanal-table-wrap" style="margin-top:0">
+            <table class="semanal-table">
+                <thead><tr>
+                    <th class="semanal-th-rank">#</th>
+                    <th style="text-align:center">Clan</th>
+                    <th class="semanal-th-sesion">L</th>
+                    <th class="semanal-th-sesion">M</th>
+                    <th class="semanal-th-sesion">X</th>
+                    <th class="semanal-th-sesion">J</th>
+                    <th class="semanal-th-sesion">V</th>
+                    <th class="semanal-th-total">Total</th>
+                </tr></thead>
+                <tbody>${semanalBody}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="alc-master-main-panel alc-hidden" data-panel="sanciones">
+        <div class="semanal-table-wrap" style="margin-top:0">
+            <table class="semanal-table">
+                <thead><tr>
+                    <th style="text-align:center">Equipo</th>
+                    <th>Jugador</th>
+                    <th style="text-align:center">Fecha</th>
+                    <th style="text-align:center">Motivo</th>
+                    <th style="text-align:center">Pts Restados</th>
+                    <th style="text-align:center">Días Susp.</th>
+                    <th style="text-align:center">Día Regreso</th>
+                </tr></thead>
+                <tbody>${sancBody}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="alc-master-main-panel alc-hidden" data-panel="topkiller">
+        <div class="semanal-table-wrap" style="margin-top:0">
+            <table class="semanal-table">
+                <thead><tr>
+                    <th class="semanal-th-rank">#</th>
+                    <th style="text-align:center">Clan</th>
+                    <th>Player</th>
+                    <th class="semanal-th-sesion">L</th>
+                    <th class="semanal-th-sesion">M</th>
+                    <th class="semanal-th-sesion">X</th>
+                    <th class="semanal-th-sesion">J</th>
+                    <th class="semanal-th-sesion">V</th>
+                    <th class="semanal-th-total">Total</th>
+                </tr></thead>
+                <tbody>${topBody}</tbody>
+            </table>
+        </div>
+    </div>`;
+
+    wrapper.querySelectorAll('.alc-master-main-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            wrapper.querySelectorAll('.alc-master-main-tab').forEach(b => b.classList.remove('active'));
+            wrapper.querySelectorAll('.alc-master-main-panel').forEach(p => p.classList.add('alc-hidden'));
+            btn.classList.add('active');
+            const panel = wrapper.querySelector(`.alc-master-main-panel[data-panel="${btn.dataset.panel}"]`);
+            if (panel) panel.classList.remove('alc-hidden');
+        });
+    });
+
+    wrapper.querySelectorAll('.alc-master-day-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            wrapper.querySelectorAll('.alc-master-day-tab').forEach(t => t.classList.remove('active'));
+            wrapper.querySelectorAll('.alc-master-day-panel').forEach(p => p.classList.add('alc-hidden'));
+            tab.classList.add('active');
+            const panel = wrapper.querySelector(`.alc-master-day-panel[data-dia="${tab.dataset.dia}"]`);
+            if (panel) panel.classList.remove('alc-hidden');
+        });
+    });
 }
 
 function renderSemanal(data, wrapper, salaLabel) {
@@ -1114,12 +1476,316 @@ function renderSemanalGenerico(data, wrapper, salaLabel) {
     </div>`;
 }
 
+/* ══ ZONA LETAL ══
+   DIARIOS: B=EQUIPO C=DÍA D=1POS E=PTS1 F=2KILL G=PTS2 H=✓ I=✗ J=TOTAL
+   SEMANAL: A=Equipo B=Lunes C=Martes D=Miércoles E=Jueves F=Viernes G=TOTAL
+   SANCIONES: variado
+*/
+function renderZonaLetal(dataDiarios, wrapper, salaLabel, dataSemanal = null, dataSanciones = null) {
+    if (!dataDiarios || !dataDiarios.length) {
+        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ La hoja de ' + salaLabel + ' está vacía.</p>';
+        return;
+    }
+
+    // Detectar estructura: revisar columna B
+    const firstData = dataDiarios[1];
+    const isZonaLetal = firstData && /^[LMXJV]$/.test((firstData[1] || '').trim().toUpperCase());
+    
+    // Saltar fila de encabezado (fila 0)
+    const rows = dataDiarios.slice(1).filter(r => (r[1] || '').toString().trim() !== '');
+    if (!rows.length) {
+        wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ No hay datos esta semana.</p>';
+        return;
+    }
+
+    // ── TABLA 1: RESULTADOS DIARIOS ──────────────────────────────
+    // Agrupar por día
+    const porDia = {};
+    const diasOrden = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+    const mapDias = {
+        'L': 'Lunes',
+        'M': 'Martes',
+        'X': 'Miércoles',
+        'J': 'Jueves',
+        'V': 'Viernes'
+    };
+    diasOrden.forEach(d => porDia[d] = []);
+
+    rows.forEach(r => {
+        let dia, diaKey;
+        if (isZonaLetal) {
+            dia = (r[1] || '').trim().toUpperCase(); // Col B = DÍA (L, M, X, J, V)
+            diaKey = mapDias[dia];
+        } else {
+            // Nueva estructura: Col B = "Lunes", "Martes", etc.
+            dia = (r[1] || '').trim();
+            diaKey = diasOrden.find(d => d.toLowerCase() === dia.toLowerCase());
+        }
+        if (diaKey) porDia[diaKey].push(r);
+    });
+
+    let diaTabsHtml = diasOrden.map((d, i) =>
+        `<button class="alc-master-day-tab${i === 0 ? ' active' : ''}" data-dia="${d}">${d}</button>`
+    ).join('');
+
+    let tabla1Panels = '';
+    diasOrden.forEach((dia, idx) => {
+        const filas = porDia[dia];
+        // Ordenar por puntos totales descendente
+        if (isZonaLetal) {
+            filas.sort((a, b) => (parseFloat(b[8]) || 0) - (parseFloat(a[8]) || 0)); // Col I (índice 8) = Total
+        } else {
+            filas.sort((a, b) => (parseFloat(b[8]) || 0) - (parseFloat(a[8]) || 0)); // Col I (índice 8) = Total
+        }
+
+        let tbodyT1 = '';
+        if (filas.length) {
+            filas.forEach((r, i) => {
+                const equipo   = (r[0] || '—').trim(); // Col A = Equipo
+                const pos      = (r[2] || '—').toString().trim(); // Col C = Posición
+                const pts1     = (r[3] || '—').toString().trim(); // Col D = Puntos Posición
+                const kills    = (r[4] || '—').toString().trim(); // Col E = Kills
+                const pts2     = (r[5] || '—').toString().trim(); // Col F = Puntos Kills
+                const bonus    = (r[6] || '').toString().trim() !== '' ? 'B' : '';
+                const sancion  = (r[7] || '').toString().trim() !== '' ? 'S' : '';
+                const total    = parseFloat(r[8]) || 0; // Col I = Total
+
+                const rankCls = i === 0 ? 'semanal-rank-1' : i === 1 ? 'semanal-rank-2' : i === 2 ? 'semanal-rank-3' : '';
+                const medal   = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
+
+                tbodyT1 += `<tr class="${rankCls}">
+                    <td class="semanal-td-rank">${medal}</td>
+                    <td style="text-align:center;font-weight:bold">${equipo}</td>
+                    <td style="text-align:center">${pos}</td>
+                    <td style="text-align:center;color:var(--gold)">${pts1}</td>
+                    <td style="text-align:center">${kills}</td>
+                    <td style="text-align:center;color:#a8ff78">${pts2}</td>
+                    <td style="text-align:center">${bonus || sancion || '—'}</td>
+                    <td class="semanal-td-total">${total}</td>
+                </tr>`;
+            });
+        } else {
+            tbodyT1 = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:1rem">Sin datos para este día</td></tr>';
+        }
+
+        tabla1Panels += `
+        <div class="alc-master-day-panel${idx === 0 ? '' : ' alc-hidden'}" data-dia="${dia}">
+            <div class="semanal-table-wrap" style="margin-top:0">
+                <table class="semanal-table">
+                    <thead><tr>
+                        <th class="semanal-th-rank">#</th>
+                        <th style="text-align:center">Equipo</th>
+                        <th style="text-align:center">Posición</th>
+                        <th style="text-align:center">Pts Pos.</th>
+                        <th style="text-align:center">Kills</th>
+                        <th style="text-align:center">Pts Kills</th>
+                        <th style="text-align:center">Estado</th>
+                        <th class="semanal-th-total">Total</th>
+                    </tr></thead>
+                    <tbody>${tbodyT1}</tbody>
+                </table>
+            </div>
+        </div>`;
+    });
+
+    // ── TABLA 2: RESUMEN SEMANAL ─────────────────────────────────
+    let tbodyT2 = '';
+    if (dataSemanal && dataSemanal.length > 1) {
+        let semRows;
+        let lunes, martes, mier, jueves, viernes, total, clanName, lunesIdx, martesIdx, mierIdx, juevesIdx, viernesIdx;
+        
+        if (isZonaLetal) {
+            // Zona Letal: Saltar 4 filas de headers
+            semRows = dataSemanal.slice(4).filter(r => 
+                (r[0] || '').toString().trim() !== '' && 
+                !/^[-–—=SLOT]/.test((r[0] || '').toString().trim())
+            );
+            lunesIdx = 3; martesIdx = 5; mierIdx = 7; juevesIdx = 9; viernesIdx = 11;
+        } else {
+            // Zona de Guerra y salas similares: permitir filas con puntos aunque "Equipo" venga vacío
+            semRows = dataSemanal.slice(1).filter(r => {
+                const rawName = (r[0] || '').toString().trim();
+                if (/^[-–—=]/.test(rawName)) return false;
+
+                const totalSem = parseFloat(r[6]) || 0;
+                const sumDias = (parseFloat(r[1]) || 0)
+                    + (parseFloat(r[2]) || 0)
+                    + (parseFloat(r[3]) || 0)
+                    + (parseFloat(r[4]) || 0)
+                    + (parseFloat(r[5]) || 0);
+
+                return rawName !== '' || totalSem > 0 || sumDias > 0;
+            });
+            lunesIdx = 1; martesIdx = 2; mierIdx = 3; juevesIdx = 4; viernesIdx = 5;
+        }
+        
+        if (semRows.length) {
+            const sorted2 = [...semRows].sort((a, b) => {
+                const totalA = isZonaLetal 
+                    ? (parseFloat(a[11]) || 0)
+                    : (parseFloat(a[6]) || 0);
+                const totalB = isZonaLetal 
+                    ? (parseFloat(b[11]) || 0)
+                    : (parseFloat(b[6]) || 0);
+                return totalB - totalA;
+            });
+            
+            sorted2.forEach((r, i) => {
+                const rankCls = i === 0 ? 'semanal-rank-1' : i === 1 ? 'semanal-rank-2' : i === 2 ? 'semanal-rank-3' : '';
+                const medal   = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
+                
+                clanName = isZonaLetal
+                    ? ((r[1] || '').toString().trim() || `Equipo ${i + 1}`)
+                    : ((r[0] || '').toString().trim() || `Equipo ${i + 1}`);
+                lunes   = parseFloat(r[lunesIdx]) || 0;
+                martes  = parseFloat(r[martesIdx]) || 0;
+                mier    = parseFloat(r[mierIdx]) || 0;
+                jueves  = parseFloat(r[juevesIdx]) || 0;
+                viernes = parseFloat(r[viernesIdx]) || 0;
+                total   = isZonaLetal 
+                    ? (lunes + martes + mier + jueves + viernes)
+                    : ((parseFloat(r[6]) || 0) || (lunes + martes + mier + jueves + viernes));
+                
+                const cell = v => v > 0
+                    ? `<td class="semanal-td-sesion semanal-pts-activo" style="text-align:center">${v}</td>`
+                    : `<td class="semanal-pts-vacio" style="text-align:center">—</td>`;
+                    
+                tbodyT2 += `<tr class="${rankCls}">
+                    <td class="semanal-td-rank">${medal}</td>
+                    <td style="text-align:center;font-weight:bold">${clanName}</td>
+                    ${cell(lunes)}${cell(martes)}${cell(mier)}${cell(jueves)}${cell(viernes)}
+                    <td class="semanal-td-total">${total}</td>
+                </tr>`;
+            });
+        }
+    }
+    
+    if (!tbodyT2) {
+        tbodyT2 = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:1rem">Sin datos semanales aún</td></tr>';
+    }
+
+    // ── TABLA 3: SANCIONES ───────────────────────────────────────
+    let tbodyT3 = '';
+    if (dataSanciones && dataSanciones.length) {
+        let sanRows;
+        sanRows = dataSanciones.slice(1).filter(r => {
+            const hasAnyValue = r.some(c => (c || '').toString().trim() !== '');
+            if (!hasAnyValue) return false;
+            const c0 = (r[0] || '').toString().trim().toLowerCase();
+            const c1 = (r[1] || '').toString().trim().toLowerCase();
+            if (c0 === 'equipo' || c0 === 'equipo/ronda' || c1 === 'jugador') return false;
+            return true;
+        });
+
+        if (!sanRows.length) {
+            tbodyT3 = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem">✅ Sin sanciones registradas</td></tr>';
+        } else {
+            sanRows.forEach(r => {
+                const equipo = (r[0] || '—').toString().trim() || '—';
+                const jugador = isZonaLetal ? ((r[1] || '—').toString().trim() || '—') : '—';
+                const motivo = isZonaLetal
+                    ? ((r[3] || '—').toString().trim() || '—')
+                    : ((r[2] || '—').toString().trim() || '—');
+                const pts = isZonaLetal
+                    ? ((parseFloat(r[4]) || 0) || (parseFloat(r[3]) || 0))
+                    : ((parseFloat(r[3]) || 0) || (parseFloat(r[2]) || 0));
+
+                tbodyT3 += `<tr>
+                    <td style="text-align:center;font-weight:bold;color:var(--gold)">${equipo}</td>
+                    <td style="font-weight:600">${jugador}</td>
+                    <td style="text-align:center;color:var(--muted)">${motivo}</td>
+                    <td style="text-align:center;color:#ff4d4d;font-weight:bold">${pts !== 0 ? (pts > 0 ? '-' + pts : pts) : '—'}</td>
+                </tr>`;
+            });
+        }
+    } else {
+        tbodyT3 = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem">✅ Sin sanciones registradas</td></tr>';
+    }
+
+    // ── RENDER FINAL ─────────────────────────────────────────────
+    wrapper.innerHTML = `
+    <div class="semanal-info">
+        <span class="semanal-sala-badge">${salaLabel}</span>
+        <span class="semanal-clanes-count">${rows.length} registros</span>
+    </div>
+
+    <!-- 3 pestañas principales -->
+    <div class="alc-master-main-tabs">
+        <button class="alc-master-main-tab active" data-panel="resultados">📋 Resultados</button>
+        <button class="alc-master-main-tab" data-panel="semanal">📊 Resumen Semanal</button>
+        <button class="alc-master-main-tab" data-panel="sanciones">🚫 Sanciones</button>
+    </div>
+
+    <!-- Panel: Resultados por día -->
+    <div class="alc-master-main-panel" data-panel="resultados">
+        <div class="alc-master-day-tabs">${diaTabsHtml}</div>
+        ${tabla1Panels}
+    </div>
+
+    <!-- Panel: Resumen semanal -->
+    <div class="alc-master-main-panel alc-hidden" data-panel="semanal">
+        <div class="semanal-table-wrap" style="margin-top:0">
+            <table class="semanal-table">
+                <thead><tr>
+                    <th class="semanal-th-rank">#</th>
+                    <th style="text-align:center">Equipo</th>
+                    <th class="semanal-th-sesion">Lunes</th>
+                    <th class="semanal-th-sesion">Martes</th>
+                    <th class="semanal-th-sesion">Miércoles</th>
+                    <th class="semanal-th-sesion">Jueves</th>
+                    <th class="semanal-th-sesion">Viernes</th>
+                    <th class="semanal-th-total">Total Semanal</th>
+                </tr></thead>
+                <tbody>${tbodyT2}</tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Panel: Sanciones -->
+    <div class="alc-master-main-panel alc-hidden" data-panel="sanciones">
+        <div class="semanal-table-wrap" style="margin-top:0">
+            <table class="semanal-table">
+                <thead><tr>
+                    <th style="text-align:center">Equipo</th>
+                    <th>Jugador</th>
+                    <th style="text-align:center">Motivo</th>
+                    <th style="text-align:center">Pts Restados</th>
+                </tr></thead>
+                <tbody>${tbodyT3}</tbody>
+            </table>
+        </div>
+    </div>`;
+
+    // Pestañas principales (Resultados / Semanal / Sanciones)
+    wrapper.querySelectorAll('.alc-master-main-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            wrapper.querySelectorAll('.alc-master-main-tab').forEach(b => b.classList.remove('active'));
+            wrapper.querySelectorAll('.alc-master-main-panel').forEach(p => p.classList.add('alc-hidden'));
+            btn.classList.add('active');
+            const panel = wrapper.querySelector(`.alc-master-main-panel[data-panel="${btn.dataset.panel}"]`);
+            if (panel) panel.classList.remove('alc-hidden');
+        });
+    });
+
+    // Tabs de días (Lunes, Martes, etc)
+    wrapper.querySelectorAll('.alc-master-day-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            wrapper.querySelectorAll('.alc-master-day-tab').forEach(t => t.classList.remove('active'));
+            wrapper.querySelectorAll('.alc-master-day-panel').forEach(p => p.classList.add('alc-hidden'));
+            tab.classList.add('active');
+            const dia = tab.getAttribute('data-dia');
+            const panel = wrapper.querySelector(`.alc-master-day-panel[data-dia="${dia}"]`);
+            if (panel) panel.classList.remove('alc-hidden');
+        });
+    });
+}
+
 /* ══ ALCATRAZ MASTER — 3 tablas ══
    TABLA 1 (resultados por día): 0=Equipo 1=Día 2=Posición 3=PtsPosición 4=Kills 5=PtsKills 6=Bonus 7=Sanción 8=TotalDía
    TABLA 2 (resumen semanal):   17=Equipo 18=Lunes 19=Martes 20=Miércoles 21=Jueves 22=Viernes 23=TotalSemanal
    TABLA 3 (sanciones):         26=Equipo 27=Jugador 28=Fecha 29=Motivo 30=PtsRestados 31=DíasSuspendido 32=DíaRegreso
 */
-function renderSemanalCompleto(data, wrapper, salaLabel) {
+function renderSemanalCompleto(data, wrapper, salaLabel, dataSemanal = null, dataSanciones = null) {
     if (!data || !data.length) {
         wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ La hoja de ' + salaLabel + ' está vacía.</p>';
         return;
@@ -1198,7 +1864,9 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
     });
 
     // ── TABLA 2: resumen semanal ─────────────────────────────────
-    const semRows = data.filter(r => (r[17] || '').toString().trim() !== '');
+    // Usar dataSemanal si está disponible (para Zona Letal), si no usar data
+    const dataForSemanal = dataSemanal || data;
+    const semRows = dataForSemanal.filter(r => (r[17] || '').toString().trim() !== '');
     let tbodyT2 = '';
     if (semRows.length) {
         const sorted2 = [...semRows].sort((a, b) => (parseFloat(b[23]) || 0) - (parseFloat(a[23]) || 0));
@@ -1223,7 +1891,9 @@ function renderSemanalCompleto(data, wrapper, salaLabel) {
     }
 
     // ── TABLA 3: sanciones ───────────────────────────────────────
-    const sanRows = data.filter(r => (r[27] || '').toString().trim() !== '');
+    // Usar dataSanciones si está disponible (para Zona Letal), si no usar data
+    const dataForSanciones = dataSanciones || data;
+    const sanRows = dataForSanciones.filter(r => (r[27] || '').toString().trim() !== '');
     let tbodyT3 = '';
     if (sanRows.length) {
         sanRows.forEach(r => {

@@ -5,16 +5,16 @@
  */
 
 const SALAS_RANKING_CFG = {
-    'Alcatraz':        { url: () => CONFIG.SEMANAL_ALCATRAZ_URL,        icon: '🏙️' },
-    'Alcatraz 2.0':    { url: () => CONFIG.SEMANAL_ALCATRAZ2_URL,       icon: '🏙️' },
-    'Alcatraz Master': { url: () => CONFIG.SEMANAL_ALCATRAZ_MASTER_URL, icon: '⛓️' },
-    'ZONA DE GUERRA 8': { url: () => CONFIG.SEMANAL_ZGUERRA_URL,        icon: '⚔️' },
-    'ZONA LETAL 9':     { url: () => CONFIG.SEMANAL_ZLETAL_URL,         icon: '💥' },
-    'ZONA XTREME 9':    { url: () => CONFIG.SEMANAL_ZXTREME_URL,        icon: '⚡' },
-    'ISOLATED 7':      { url: () => CONFIG.SEMANAL_ISOLATED7_URL,       icon: '🔒' },
-    'ISOLATED 8':      { url: () => CONFIG.SEMANAL_ISOLATED8_URL,       icon: '🔒' },
-    'ISOLATED 9':      { url: () => CONFIG.SEMANAL_ISOLATED9_URL,       icon: '🔒' },
-    'ISOLATED 10':     { url: () => CONFIG.SEMANAL_ISOLATED10_URL,      icon: '🔒' },
+    'Alcatraz':        { url: () => CONFIG.SEMANAL_ALCATRAZ_URL,        icon: '🏙️', diarios: null, sanciones: null },
+    'Alcatraz 2.0':    { url: () => CONFIG.SEMANAL_ALCATRAZ2_URL,       icon: '🏙️', diarios: null, sanciones: null },
+    'Alcatraz Master': { url: () => CONFIG.SEMANAL_ALCATRAZ_MASTER_URL, icon: '⛓️', diarios: null, sanciones: null },
+    'ZONA DE GUERRA 8': { url: () => CONFIG.SEMANAL_ZGUERRA_URL,        icon: '⚔️', diarios: () => CONFIG.DIARIOS_ZGUERRA_URL, sanciones: () => CONFIG.SANCIONES_ZGUERRA_URL },
+    'ZONA LETAL 9':     { url: () => CONFIG.SEMANAL_ZLETAL_URL,         icon: '💥', diarios: () => CONFIG.DIARIOS_ZLETAL_URL, sanciones: () => CONFIG.SANCIONES_ZLETAL_URL },
+    'ZONA XTREME 9':    { url: () => CONFIG.SEMANAL_ZXTREME_URL,        icon: '⚡', diarios: () => CONFIG.DIARIOS_ZXTREME_URL, sanciones: () => CONFIG.SANCIONES_ZXTREME_URL },
+    'ISOLATED 7':      { url: () => CONFIG.SEMANAL_ISOLATED7_URL,       icon: '🔒', diarios: () => CONFIG.DIARIOS_ISOLATED7_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED7_URL },
+    'ISOLATED 8':      { url: () => CONFIG.SEMANAL_ISOLATED8_URL,       icon: '🔒', diarios: () => CONFIG.DIARIOS_ISOLATED8_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED8_URL },
+    'ISOLATED 9':      { url: () => CONFIG.SEMANAL_ISOLATED9_URL,       icon: '🔒', diarios: () => CONFIG.DIARIOS_ISOLATED9_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED9_URL },
+    'ISOLATED 10':     { url: () => CONFIG.SEMANAL_ISOLATED10_URL,      icon: '🔒', diarios: () => CONFIG.DIARIOS_ISOLATED10_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED10_URL },
 };
 
 document.addEventListener('DOMContentLoaded', function () { initRanking(); initHamburger(); });
@@ -51,24 +51,37 @@ async function displaySalaRanking(sala, container) {
     if (!cfg) return;
     container.innerHTML = `<div class="loading-message">⏳ Cargando ${sala}...</div>`;
     try {
-        const data = await fetchSheetData(cfg.url());
-        const rows = data.filter(r => (r[17] || '').toString().trim() !== '');
-        if (!rows.length) {
-            container.innerHTML = `<div class="error-message">Sin datos para ${sala} esta semana</div>`;
-            return;
-        }
-        // Cada fila es un equipo independiente (no se fusionan aunque compartan nombre)
-        const sorted = rows
-            .map(r => ({ nombre: (r[17] || '').trim(), puntos: parseFloat(r[23]) || 0 }))
-            .filter(e => e.nombre)
-            .sort((a, b) => b.puntos - a.puntos);
-        const medals = ['🥇', '🥈', '🥉'];
-        let html = '';
-        sorted.forEach((clan, i) => {
-            const pos      = i + 1;
-            const topCl    = pos <= 3 ? `top-${pos}` : '';
-            const posLabel = medals[i] || pos;
-            html += `
+        // Las salas especiales se muestran como ranking simple en público.
+        if (cfg.diarios && cfg.sanciones) {
+            const dataSemanal = await fetchSheetData(cfg.url());
+            const isZonaLetal = sala === 'ZONA LETAL 9';
+            const items = buildSalaRankingItems(dataSemanal, isZonaLetal);
+
+            if (!items.length) {
+                container.innerHTML = `<div class="error-message">Sin datos para ${sala} esta semana</div>`;
+                return;
+            }
+
+            renderSalaRankingItems(container, sala, cfg.icon, items);
+        } else {
+            const data = await fetchSheetData(cfg.url());
+            const rows = data.filter(r => (r[17] || '').toString().trim() !== '');
+            if (!rows.length) {
+                container.innerHTML = `<div class="error-message">Sin datos para ${sala} esta semana</div>`;
+                return;
+            }
+            // Cada fila es un equipo independiente (no se fusionan aunque compartan nombre)
+            const sorted = rows
+                .map(r => ({ nombre: (r[17] || '').trim(), puntos: parseFloat(r[23]) || 0 }))
+                .filter(e => e.nombre)
+                .sort((a, b) => b.puntos - a.puntos);
+            const medals = ['🥇', '🥈', '🥉'];
+            let html = '';
+            sorted.forEach((clan, i) => {
+                const pos      = i + 1;
+                const topCl    = pos <= 3 ? `top-${pos}` : '';
+                const posLabel = medals[i] || pos;
+                html += `
             <div class="ranking-item no-logo ${topCl}">
                 <div class="ranking-posicion">${posLabel}</div>
                 <div class="ranking-info">
@@ -80,11 +93,269 @@ async function displaySalaRanking(sala, container) {
                     <div class="ranking-label">puntos</div>
                 </div>
             </div>`;
-        });
-        container.innerHTML = html;
+            });
+            container.innerHTML = html;
+        }
     } catch (e) {
         console.error(e);
         container.innerHTML = `<div class="error-message">❌ Error al cargar ${sala}</div>`;
+    }
+}
+
+function buildSalaRankingItems(dataSemanal, isZonaLetal) {
+    if (!dataSemanal || !dataSemanal.length) return [];
+
+    const rows = isZonaLetal
+        ? dataSemanal.filter(r => /^\d+$/.test((r[0] || '').toString().trim()))
+        : dataSemanal.slice(1).filter(r =>
+            (r[0] || '').toString().trim() !== '' &&
+            !/^[-–—=]/.test((r[0] || '').toString().trim())
+        );
+
+    const items = rows.map(r => {
+        if (isZonaLetal) {
+            const lunes = parseFloat(r[3]) || 0;
+            const martes = parseFloat(r[5]) || 0;
+            const mier = parseFloat(r[7]) || 0;
+            const jueves = parseFloat(r[9]) || 0;
+            const viernes = parseFloat(r[11]) || 0;
+            const total = parseFloat(r[12]) || (lunes + martes + mier + jueves + viernes);
+            return {
+                nombre: (r[1] || '').trim(),
+                puntos: total
+            };
+        }
+
+        return {
+            nombre: (r[0] || '').trim(),
+            puntos: parseFloat(r[6]) || 0
+        };
+    }).filter(item => item.nombre);
+
+    return items.sort((a, b) => b.puntos - a.puntos);
+}
+
+function renderSalaRankingItems(container, sala, icon, items) {
+    const medals = ['🥇', '🥈', '🥉'];
+    let html = '';
+
+    items.forEach((clan, i) => {
+        const pos = i + 1;
+        const topCl = pos <= 3 ? `top-${pos}` : '';
+        const posLabel = medals[i] || pos;
+        html += `
+        <div class="ranking-item no-logo ${topCl}">
+            <div class="ranking-posicion">${posLabel}</div>
+            <div class="ranking-info">
+                <div class="ranking-nombre">${clan.nombre}</div>
+                <div class="ranking-sala">${icon} ${sala} · Semana actual</div>
+            </div>
+            <div class="ranking-puntos">
+                <div class="ranking-score">${clan.puntos}</div>
+                <div class="ranking-label">puntos</div>
+            </div>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+function displayZonaLetal(dataDiarios, dataSemanal, dataSanciones, container, sala) {
+    if (!dataDiarios || !dataDiarios.length) {
+        container.innerHTML = `<div class="error-message">Sin datos para ${sala}</div>`;
+        return;
+    }
+
+    // Detectar estructura
+    const firstData = dataDiarios[1];
+    const isZonaLetal = firstData && /^[LMXJV]$/.test((firstData[1] || '').trim().toUpperCase());
+
+    const rows = dataDiarios.slice(1).filter(r => (r[1] || '').toString().trim() !== '');
+    if (!rows.length) {
+        container.innerHTML = `<div class="error-message">Sin datos para ${sala}</div>`;
+        return;
+    }
+
+    // Tabs principales
+    let tabsHtml = '<div style="display:flex;gap:0.5rem;margin-bottom:1rem;border-bottom:2px solid var(--border-color);">';
+    tabsHtml += '<button class="ranking-tab active" data-tab="resumen" style="padding:0.5rem 1rem;background:none;border:none;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;color:var(--text-color);">📋 Resultados</button>';
+    tabsHtml += '<button class="ranking-tab" data-tab="semanal" style="padding:0.5rem 1rem;background:none;border:none;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;color:var(--text-color);">📊 Resumen Semanal</button>';
+    tabsHtml += '<button class="ranking-tab" data-tab="sanciones" style="padding:0.5rem 1rem;background:none;border:none;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;color:var(--text-color);">🚫 Sanciones</button>';
+    tabsHtml += '</div>';
+
+    // Panel 1: Resumen Semanal
+    let resumenHtml = '<div class="ranking-tab-content" data-tab="resumen">';
+    if (dataSemanal && dataSemanal.length > 1) {
+        let semRows, lunesIdx, martesIdx, mierIdx, juevesIdx, viernesIdx, totalIdx, clanNameIdx;
+        
+        if (isZonaLetal) {
+            semRows = dataSemanal.slice(4).filter(r => 
+                (r[0] || '').toString().trim() !== '' && 
+                !/^[-–—=SLOT]/.test((r[0] || '').toString().trim())
+            );
+            lunesIdx = 3; martesIdx = 5; mierIdx = 7; juevesIdx = 9; viernesIdx = 11; totalIdx = 11; clanNameIdx = 1;
+        } else {
+            semRows = dataSemanal.slice(1).filter(r => 
+                (r[0] || '').toString().trim() !== '' && 
+                !/^[-–—=]/.test((r[0] || '').toString().trim())
+            );
+            lunesIdx = 1; martesIdx = 2; mierIdx = 3; juevesIdx = 4; viernesIdx = 5; totalIdx = 6; clanNameIdx = 0;
+        }
+        
+        if (semRows.length) {
+            const sorted = [...semRows].map(r => {
+                const lunes = parseFloat(r[lunesIdx]) || 0;
+                const martes = parseFloat(r[martesIdx]) || 0;
+                const mier = parseFloat(r[mierIdx]) || 0;
+                const jueves = parseFloat(r[juevesIdx]) || 0;
+                const viernes = parseFloat(r[viernesIdx]) || 0;
+                return {
+                    nombre: r[clanNameIdx] || '—',
+                    puntos: isZonaLetal ? (lunes + martes + mier + jueves + viernes) : (parseFloat(r[totalIdx]) || 0)
+                };
+            }).sort((a, b) => b.puntos - a.puntos);
+
+            const medals = ['🥇', '🥈', '🥉'];
+            sorted.forEach((clan, i) => {
+                const topCl    = i <= 2 ? `top-${i + 1}` : '';
+                const posLabel = medals[i] || (i + 1);
+                resumenHtml += `
+            <div class="ranking-item no-logo ${topCl}">
+                <div class="ranking-posicion">${posLabel}</div>
+                <div class="ranking-info">
+                    <div class="ranking-nombre">${clan.nombre}</div>
+                    <div class="ranking-sala">📊 ${sala} · Puntos Semanales</div>
+                </div>
+                <div class="ranking-puntos">
+                    <div class="ranking-score">${clan.puntos}</div>
+                    <div class="ranking-label">puntos</div>
+                </div>
+            </div>`;
+            });
+        } else {
+            resumenHtml += '<p style="text-align:center;color:var(--muted);padding:1rem">Sin datos semanales aún</p>';
+        }
+    } else {
+        resumenHtml += '<p style="text-align:center;color:var(--muted);padding:1rem">Sin datos semanales aún</p>';
+    }
+    resumenHtml += '</div>';
+
+    // Panel 2: Semanal (duplicado de resumen para consistencia)
+    let semanalHtml = '<div class="ranking-tab-content" data-tab="semanal" style="display:none;">';
+    if (dataSemanal && dataSemanal.length > 1) {
+        let semRows, lunesIdx, martesIdx, mierIdx, juevesIdx, viernesIdx, totalIdx, clanNameIdx;
+        
+        if (isZonaLetal) {
+            semRows = dataSemanal.slice(4).filter(r => 
+                (r[0] || '').toString().trim() !== '' && 
+                !/^[-–—=SLOT]/.test((r[0] || '').toString().trim())
+            );
+            lunesIdx = 3; martesIdx = 5; mierIdx = 7; juevesIdx = 9; viernesIdx = 11; totalIdx = 11; clanNameIdx = 1;
+        } else {
+            semRows = dataSemanal.slice(1).filter(r => 
+                (r[0] || '').toString().trim() !== '' && 
+                !/^[-–—=]/.test((r[0] || '').toString().trim())
+            );
+            lunesIdx = 1; martesIdx = 2; mierIdx = 3; juevesIdx = 4; viernesIdx = 5; totalIdx = 6; clanNameIdx = 0;
+        }
+        
+        if (semRows.length) {
+            const sorted = [...semRows].map(r => {
+                const lunes = parseFloat(r[lunesIdx]) || 0;
+                const martes = parseFloat(r[martesIdx]) || 0;
+                const mier = parseFloat(r[mierIdx]) || 0;
+                const jueves = parseFloat(r[juevesIdx]) || 0;
+                const viernes = parseFloat(r[viernesIdx]) || 0;
+                return {
+                    nombre: r[clanNameIdx] || '—',
+                    puntos: isZonaLetal ? (lunes + martes + mier + jueves + viernes) : (parseFloat(r[totalIdx]) || 0)
+                };
+            }).sort((a, b) => b.puntos - a.puntos);
+
+            const medals = ['🥇', '🥈', '🥉'];
+            sorted.forEach((clan, i) => {
+                const topCl    = i <= 2 ? `top-${i + 1}` : '';
+                const posLabel = medals[i] || (i + 1);
+                semanalHtml += `
+            <div class="ranking-item no-logo ${topCl}">
+                <div class="ranking-posicion">${posLabel}</div>
+                <div class="ranking-info">
+                    <div class="ranking-nombre">${clan.nombre}</div>
+                    <div class="ranking-sala">📊 ${sala} · Resumen Semanal</div>
+                </div>
+                <div class="ranking-puntos">
+                    <div class="ranking-score">${clan.puntos}</div>
+                    <div class="ranking-label">puntos</div>
+                </div>
+            </div>`;
+            });
+        } else {
+            semanalHtml += '<p style="text-align:center;color:var(--muted);padding:1rem">Sin datos semanales aún</p>';
+        }
+    } else {
+        semanalHtml += '<p style="text-align:center;color:var(--muted);padding:1rem">Sin datos semanales aún</p>';
+    }
+    semanalHtml += '</div>';
+
+    // Panel 3: Sanciones
+    let sancionesHtml = '<div class="ranking-tab-content" data-tab="sanciones" style="display:none;">';
+    if (dataSanciones && dataSanciones.length) {
+        let sanRows;
+        if (isZonaLetal) {
+            sanRows = dataSanciones.slice(1).filter(r => (r[1] || '').toString().trim() !== '');
+        } else {
+            // Nueva estructura: A=EQUIPO, B=FECHA, C=MOTIVO, D=PUNTOS RESTADOS, E=DÍAS SUSPENDIDO
+            sanRows = dataSanciones.slice(1).filter(r => (r[0] || '').toString().trim() !== '');
+        }
+        
+        if (sanRows.length) {
+            sanRows.forEach(r => {
+                const equipo = isZonaLetal ? (r[0] || '—') : (r[0] || '—');
+                const jugador = isZonaLetal ? (r[1] || '—') : '';
+                const fecha = isZonaLetal ? (r[2] || '—') : (r[1] || '—');
+                const motivo = isZonaLetal ? (r[3] || '—') : (r[2] || '—');
+                const pts = isZonaLetal ? (parseFloat(r[4]) || 0) : (parseFloat(r[3]) || 0);
+                
+                sancionesHtml += `
+            <div style="padding:0.75rem;border-bottom:1px solid var(--border-color);display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0.5rem;align-items:center;">
+                <div style="font-weight:bold;color:var(--gold)">${equipo}</div>
+                <div>${jugador}</div>
+                <div style="text-align:center;color:var(--muted);font-size:0.9rem">${fecha}</div>
+                <div style="text-align:center;color:#ff4d4d;font-weight:bold">${pts !== 0 ? (pts > 0 ? '-' + pts : pts) : '—'}</div>
+            </div>`;
+            });
+        } else {
+            sancionesHtml += '<p style="text-align:center;color:var(--muted);padding:1rem">✅ Sin sanciones registradas</p>';
+        }
+    } else {
+        sancionesHtml += '<p style="text-align:center;color:var(--muted);padding:1rem">✅ Sin sanciones registradas</p>';
+    }
+    sancionesHtml += '</div>';
+
+    container.innerHTML = tabsHtml + resumenHtml + semanalHtml + sancionesHtml;
+
+    // Event listeners para tabs
+    container.querySelectorAll('.ranking-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            container.querySelectorAll('.ranking-tab').forEach(b => {
+                b.style.borderBottom = '3px solid transparent';
+                b.style.color = 'var(--text-color)';
+            });
+            container.querySelectorAll('.ranking-tab-content').forEach(p => p.style.display = 'none');
+            
+            btn.style.borderBottom = '3px solid var(--accent-color)';
+            btn.style.color = 'var(--accent-color)';
+            const tab = btn.dataset.tab;
+            const panel = container.querySelector(`.ranking-tab-content[data-tab="${tab}"]`);
+            if (panel) panel.style.display = '';
+        });
+    });
+
+    // Inicializar primer tab activo
+    const firstBtn = container.querySelector('.ranking-tab.active');
+    if (firstBtn) {
+        firstBtn.style.borderBottom = '3px solid var(--accent-color)';
+        firstBtn.style.color = 'var(--accent-color)';
     }
 }
 

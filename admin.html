@@ -235,14 +235,15 @@
             <p class="semanal-desc">Puntos acumulados por sala esta semana · Visible para CEO y Hosts de Sala · Fuente: Google Sheets.</p>
             <!-- Sub-tabs de sala -->
             <div class="semanal-subtabs">
-                <button class="semanal-subtab active" data-sala="alcatraz">🏟️ Alcatraz</button>
-                <button class="semanal-subtab" data-sala="alcatraz2">🏟️ Alcatraz 2.0</button>
-                <button class="semanal-subtab" data-sala="alcatrazmaster">⛓️ Alcatraz Master</button>
-                <button class="semanal-subtab" data-sala="zguerra">⚔️ Zona de Guerra</button>
-                <button class="semanal-subtab" data-sala="zletal">💥 Zona Letal</button>
-                <button class="semanal-subtab" data-sala="zxtreme">⚡ Zona Xtreme</button>
+                <button class="semanal-subtab active" data-sala="zguerra">⚔️ Zona de Guerra</button>
+                <button class="semanal-subtab" data-sala="zletal">💥 Zona Letal 9</button>
+                <button class="semanal-subtab" data-sala="zxtreme">⚡ Zona Xtreme 9</button>
+                <button class="semanal-subtab" data-sala="isolated7">🔒 ISOLATED 7</button>
+                <button class="semanal-subtab" data-sala="isolated8">🔒 ISOLATED 8</button>
+                <button class="semanal-subtab" data-sala="isolated9">🔒 ISOLATED 9</button>
+                <button class="semanal-subtab" data-sala="isolated10">🔒 ISOLATED 10</button>
             </div>
-            <div class="semanal-wrapper" id="semanalWrapper-alcatraz">
+            <div class="semanal-wrapper" id="semanalWrapper-alcatraz" style="display:none">
                 <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
             </div>
             <div class="semanal-wrapper" id="semanalWrapper-alcatraz2" style="display:none">
@@ -251,13 +252,25 @@
             <div class="semanal-wrapper" id="semanalWrapper-alcatrazmaster" style="display:none">
                 <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
             </div>
-            <div class="semanal-wrapper" id="semanalWrapper-zguerra" style="display:none">
+            <div class="semanal-wrapper" id="semanalWrapper-zguerra">
                 <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
             </div>
             <div class="semanal-wrapper" id="semanalWrapper-zletal" style="display:none">
                 <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
             </div>
             <div class="semanal-wrapper" id="semanalWrapper-zxtreme" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-isolated7" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-isolated8" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-isolated9" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            </div>
+            <div class="semanal-wrapper" id="semanalWrapper-isolated10" style="display:none">
                 <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
             </div>
         </div>
@@ -271,12 +284,13 @@
                 <div class="sanciones-header-actions">
                     <select id="sancionesFiltroSala" class="filter-select">
                         <option value="all">Todas las salas</option>
-                        <option value="alcatraz">🏟️ Alcatraz</option>
-                        <option value="alcatraz2">🏟️ Alcatraz 2.0</option>
-                        <option value="alcatrazmaster">⛓️ Alcatraz Master</option>
                         <option value="zguerra">⚔️ Zona de Guerra</option>
-                        <option value="zletal">💥 Zona Letal</option>
-                        <option value="zxtreme">⚡ Zona Xtreme</option>
+                        <option value="zletal">💥 Zona Letal 9</option>
+                        <option value="zxtreme">⚡ Zona Xtreme 9</option>
+                        <option value="isolated7">🔒 ISOLATED 7</option>
+                        <option value="isolated8">🔒 ISOLATED 8</option>
+                        <option value="isolated9">🔒 ISOLATED 9</option>
+                        <option value="isolated10">🔒 ISOLATED 10</option>
                     </select>
                     <button class="btn-refresh" id="btnRefreshSanciones">🔄 Actualizar</button>
                 </div>
