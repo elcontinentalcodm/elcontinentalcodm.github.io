@@ -227,12 +227,14 @@ async function loadSancionesStats() {
     try {
         // Cargar todas las hojas de salas en paralelo
         const urls = [
-            CONFIG.SEMANAL_ALCATRAZ_URL,
-            CONFIG.SEMANAL_ALCATRAZ2_URL,
-            CONFIG.SEMANAL_ALCATRAZ_MASTER_URL,
             CONFIG.SEMANAL_ZGUERRA_URL,
             CONFIG.SEMANAL_ZLETAL_URL,
             CONFIG.SEMANAL_ZXTREME_URL,
+            CONFIG.SEMANAL_ISLA_EXTERMINIO_URL,
+            CONFIG.SEMANAL_ISLA_ANIQUILACION_URL,
+            CONFIG.SEMANAL_ISLA_DEVASTACION_URL,
+            CONFIG.SEMANAL_ISLA_APOCALIPSIS_URL,
+            CONFIG.SEMANAL_ISLA_EXTINCION_URL,
         ];
         const results = await Promise.all(urls.map(u => fetchSheetData(u).catch(() => [])));
         // Col 27 = Jugador — contar filas con jugador no vacío
@@ -261,12 +263,9 @@ const SALAS_SANCIONES_CFG = {
     zguerra:        { label: '⚔️ Zona de Guerra',  url: () => CONFIG.SANCIONES_ZGUERRA_URL },
     zletal:         { label: '💥 Zona Letal 9',    url: () => CONFIG.SANCIONES_ZLETAL_URL },
     zxtreme:        { label: '⚡ Zona Xtreme 9',   url: () => CONFIG.SANCIONES_ZXTREME_URL },
-    isolated7:      { label: '🔒 ISOLATED 7',      url: () => CONFIG.SANCIONES_ISOLATED7_URL },
-    isolated8:      { label: '🔒 ISOLATED 8',      url: () => CONFIG.SANCIONES_ISOLATED8_URL },
-    isolated9:      { label: '🔒 ISOLATED 9',      url: () => CONFIG.SANCIONES_ISOLATED9_URL },
-    isolated10:     { label: '🔒 ISOLATED 10',     url: () => CONFIG.SANCIONES_ISOLATED10_URL },
+    isladevast:     { label: '💥 Isla Devastacion', url: () => CONFIG.SANCIONES_ISLA_DEVASTACION_URL },
 };
-let _sancionesData = null; // cache: { alcatraz: [...], alcatraz2: [...], ... }
+let _sancionesData = null; // cache: { zguerra: [...], zletal: [...], zxtreme: [...] }
 
 async function loadSanciones() {
     const wrapper = document.getElementById('sancionesWrapper');
@@ -500,7 +499,7 @@ function renderTabla(rows) {
         <th>Trofeos</th>
         <th>Pts Salas</th>`;
     if (rol === 'editor' || rol === 'master') {
-        headers += `<th>Alcatraz</th><th>Alc 2.0</th><th>Alc Master</th><th>Z. Guerra</th><th>Z. Letal</th><th>Z. Xtreme</th>`;
+        headers += `<th>Z. Guerra</th><th>Z. Letal</th><th>Z. Xtreme</th>`;
     }
     if (rol === 'master') {
         headers += `<th>Líder</th><th>📞 Tel. Líder</th><th>Co-Líder 1</th><th>📞 Tel. Co1</th><th>Co-Líder 2</th><th>📞 Tel. Co2</th><th>Modo de Juego</th><th>Estado</th>`;
@@ -519,9 +518,6 @@ function renderTabla(rows) {
         const oro    = parseInt(r[CONFIG.COLUMNS.ORO])          || 0;
         const plata  = parseInt(r[CONFIG.COLUMNS.PLATA])        || 0;
         const bronce = parseInt(r[CONFIG.COLUMNS.BRONCE])       || 0;
-        const alc    = parseInt(r[CONFIG.COLUMNS.ALCATRAZ])        || 0;
-        const alc2   = parseInt(r[CONFIG.COLUMNS.ALCATRAZ_2_0])    || 0;
-        const alcm   = parseInt(r[CONFIG.COLUMNS.ALCATRAZ_MASTER]) || 0;
         const zg     = parseInt(r[CONFIG.COLUMNS.ZONA_DE_GUERRA])  || 0;
         const zl     = parseInt(r[CONFIG.COLUMNS.ZONA_LETAL])      || 0;
         const zx     = parseInt(r[CONFIG.COLUMNS.ZONA_XTREME])     || 0;
@@ -564,9 +560,6 @@ function renderTabla(rows) {
             <td style="color:var(--gold);font-weight:bold;font-size:1.15rem;text-align:center">${pts}</td>`;
 
         if (rol === 'editor' || rol === 'master') {
-            row += sc(alc,  '#e6f702');
-            row += sc(alc2, '#e6f702');
-            row += sc(alcm, '#e6f702');
             row += sc(zg,   '#e6f702');
             row += sc(zl,   '#e6f702');
             row += sc(zx,   '#e6f702');
@@ -709,12 +702,10 @@ function exportContacts() {
 }
 
 function exportPuntos() {
-    let csv = 'Pos,Clan,Tag,Trofeos Oro,Trofeos Plata,Trofeos Bronce,Alcatraz,Alc2.0,Alc Master,Z.Guerra,Z.Letal,Z.Xtreme,Pts Total Salas\n';
+    let csv = 'Pos,Clan,Tag,Trofeos Oro,Trofeos Plata,Trofeos Bronce,Z.Guerra,Z.Letal,Z.Xtreme,Pts Total Salas\n';
     filteredData.forEach((r, i) => {
         csv += [i+1, `"${r[CONFIG.COLUMNS.NOMBRE_DE_CLAN]||''}"`, `"${r[CONFIG.COLUMNS.TAG_DEL_CLAN]||''}"`,
             parseInt(r[CONFIG.COLUMNS.ORO])||0, parseInt(r[CONFIG.COLUMNS.PLATA])||0, parseInt(r[CONFIG.COLUMNS.BRONCE])||0,
-            parseInt(r[CONFIG.COLUMNS.ALCATRAZ])||0, parseInt(r[CONFIG.COLUMNS.ALCATRAZ_2_0])||0,
-            parseInt(r[CONFIG.COLUMNS.ALCATRAZ_MASTER])||0,
             parseInt(r[CONFIG.COLUMNS.ZONA_DE_GUERRA])||0, parseInt(r[CONFIG.COLUMNS.ZONA_LETAL])||0,
             parseInt(r[CONFIG.COLUMNS.ZONA_XTREME])||0, calcPts(r)].join(',') + '\n';
     });
@@ -900,16 +891,14 @@ async function exportTop3AsImage() {
 
 /* ══ PUNTOS SEMANALES (multi-sala) ══ */
 const SALAS_SEMANAL = {
-    alcatraz:       { label: '🏟️ Alcatraz',        url: () => CONFIG.SEMANAL_ALCATRAZ_URL, diarios: null, sanciones: null },
-    alcatraz2:      { label: '🏟️ Alcatraz 2.0',    url: () => CONFIG.SEMANAL_ALCATRAZ2_URL, diarios: null, sanciones: null },
-    alcatrazmaster: { label: '⛓️ Alcatraz Master', url: () => CONFIG.SEMANAL_ALCATRAZ_MASTER_URL, diarios: null, sanciones: null },
     zguerra:        { label: '⚔️ Zona de Guerra',  url: () => CONFIG.SEMANAL_ZGUERRA_URL, diarios: () => CONFIG.DIARIOS_ZGUERRA_URL, sanciones: () => CONFIG.SANCIONES_ZGUERRA_URL },
     zletal:         { label: '💥 Zona Letal 9',    url: () => CONFIG.SEMANAL_ZLETAL_URL, diarios: () => CONFIG.DIARIOS_ZLETAL_URL, sanciones: () => CONFIG.SANCIONES_ZLETAL_URL },
     zxtreme:        { label: '⚡ Zona Xtreme 9',   url: () => CONFIG.SEMANAL_ZXTREME_URL, diarios: () => CONFIG.DIARIOS_ZXTREME_URL, sanciones: () => CONFIG.SANCIONES_ZXTREME_URL },
-    isolated7:      { label: '🔒 ISOLATED 7',      url: () => CONFIG.SEMANAL_ISOLATED7_URL, diarios: () => CONFIG.DIARIOS_ISOLATED7_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED7_URL },
-    isolated8:      { label: '🔒 ISOLATED 8',      url: () => CONFIG.SEMANAL_ISOLATED8_URL, diarios: () => CONFIG.DIARIOS_ISOLATED8_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED8_URL },
-    isolated9:      { label: '🔒 ISOLATED 9',      url: () => CONFIG.SEMANAL_ISOLATED9_URL, diarios: () => CONFIG.DIARIOS_ISOLATED9_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED9_URL },
-    isolated10:     { label: '🔒 ISOLATED 10',     url: () => CONFIG.SEMANAL_ISOLATED10_URL, diarios: () => CONFIG.DIARIOS_ISOLATED10_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED10_URL },
+    'isla-exterminio': { label: '🔫 Isla Exterminio', url: () => CONFIG.SEMANAL_ISLA_EXTERMINIO_URL, diarios: () => CONFIG.DIARIOS_ISLA_EXTERMINIO_URL, sanciones: () => CONFIG.SANCIONES_ISLA_EXTERMINIO_URL },
+    'isla-aniquilacion': { label: '⚡ Isla Aniquilacion', url: () => CONFIG.SEMANAL_ISLA_ANIQUILACION_URL, diarios: () => CONFIG.DIARIOS_ISLA_ANIQUILACION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_ANIQUILACION_URL },
+    'isla-devastacion': { label: '💥 Isla Devastacion', url: () => CONFIG.SEMANAL_ISLA_DEVASTACION_URL, diarios: () => CONFIG.DIARIOS_ISLA_DEVASTACION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_DEVASTACION_URL },
+    'isla-apocalipsis': { label: '☠️ Isla Apocalipsis', url: () => CONFIG.SEMANAL_ISLA_APOCALIPSIS_URL, diarios: () => CONFIG.DIARIOS_ISLA_APOCALIPSIS_URL, sanciones: () => CONFIG.SANCIONES_ISLA_APOCALIPSIS_URL },
+    'isla-extincion': { label: '🔥 Isla Extincion', url: () => CONFIG.SEMANAL_ISLA_EXTINCION_URL, diarios: () => CONFIG.DIARIOS_ISLA_EXTINCION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_EXTINCION_URL },
 };
 const semanalCargado = {}; // { alcatraz: bool, alcatraz2: bool }
 
@@ -1060,6 +1049,19 @@ async function loadSemanal(sala, forceRefresh = false) {
                 fetchSheetData(cfg.url()),
                 fetchSheetData(cfg.sanciones()),
                 fetchSheetData(CONFIG.TOPKILLER_ZLETAL_URL),
+            ]);
+            renderZonaLetalEspecial(dataDiarios, wrapper, cfg.label, dataSemanal, dataSanciones, dataTopKiller);
+            semanalCargado[sala] = true;
+            return;
+        }
+
+        // Isla Devastación con TopKiller (MISMO FORMATO QUE ZONA LETAL)
+        if (sala === 'isla-devastacion') {
+            const [dataDiarios, dataSemanal, dataSanciones, dataTopKiller] = await Promise.all([
+                fetchSheetData(cfg.diarios()),
+                fetchSheetData(cfg.url()),
+                fetchSheetData(cfg.sanciones()),
+                fetchSheetData(CONFIG.TOPKILLER_ISLA_DEVASTACION_URL),
             ]);
             renderZonaLetalEspecial(dataDiarios, wrapper, cfg.label, dataSemanal, dataSanciones, dataTopKiller);
             semanalCargado[sala] = true;
@@ -1492,7 +1494,7 @@ function renderZonaLetal(dataDiarios, wrapper, salaLabel, dataSemanal = null, da
     const isZonaLetal = firstData && /^[LMXJV]$/.test((firstData[1] || '').trim().toUpperCase());
     
     // Saltar fila de encabezado (fila 0)
-    const rows = dataDiarios.slice(1).filter(r => (r[1] || '').toString().trim() !== '');
+    const rows = dataDiarios.filter(r => (r[1] || '').toString().trim() !== '');
     if (!rows.length) {
         wrapper.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">⚠️ No hay datos esta semana.</p>';
         return;
@@ -1603,7 +1605,7 @@ function renderZonaLetal(dataDiarios, wrapper, salaLabel, dataSemanal = null, da
             lunesIdx = 3; martesIdx = 5; mierIdx = 7; juevesIdx = 9; viernesIdx = 11;
         } else {
             // Zona de Guerra y salas similares: permitir filas con puntos aunque "Equipo" venga vacío
-            semRows = dataSemanal.slice(1).filter(r => {
+            semRows = dataSemanal.filter(r => {
                 const rawName = (r[0] || '').toString().trim();
                 if (/^[-–—=]/.test(rawName)) return false;
 
@@ -1668,7 +1670,7 @@ function renderZonaLetal(dataDiarios, wrapper, salaLabel, dataSemanal = null, da
     let tbodyT3 = '';
     if (dataSanciones && dataSanciones.length) {
         let sanRows;
-        sanRows = dataSanciones.slice(1).filter(r => {
+        sanRows = dataSanciones.filter(r => {
             const hasAnyValue = r.some(c => (c || '').toString().trim() !== '');
             if (!hasAnyValue) return false;
             const c0 = (r[0] || '').toString().trim().toLowerCase();

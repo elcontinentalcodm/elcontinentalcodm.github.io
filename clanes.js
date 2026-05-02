@@ -158,30 +158,7 @@ function displayClanes(clans, container, buscando = false) {
                 <div class="clan-logros-titulo">🏆 Logros</div>
                 <div class="clan-logros-items">${clan.badges}</div>
             </div>` : ''}
-
-            <!-- Puntos por sala -->
-            <div class="clan-salas">
-                <h4>Puntos por Sala</h4>
-                <div class="sala-ranks">
-                    ${salaRow('Alcatraz', clan.salas.alc)}
-                    ${salaRow('Alcatraz 2.0', clan.salas.alc2)}
-                    ${salaRow('Alcatraz Master', clan.salas.alcm)}
-                    ${salaRow('Zona Guerra', clan.salas.zg)}
-                    ${salaRow('Zona Letal', clan.salas.zl)}
-                    ${salaRow('Zona Xtreme', clan.salas.zx)}
-                </div>
-            </div>
-
-            <div class="clan-total">
-                <span>Puntos de Salas:</span>
-                <strong>${clan.total}</strong>
-            </div>
         </div>`;
     });
     container.innerHTML = html;
-}
-
-function salaRow(nombre, pts) {
-    if (pts === 0) return `<div class="sala-rank inactive"><span class="sala-name">${nombre}</span><span class="sala-points">—</span></div>`;
-    return `<div class="sala-rank"><span class="sala-name">${nombre}</span><span class="sala-points">${pts} pts</span></div>`;
 }

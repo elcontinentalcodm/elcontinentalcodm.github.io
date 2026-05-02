@@ -1,18 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - El Continental</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/png" href="logo de sala/logo de pagina.png">
+    <link rel="icon" type="image/png" href="logo de sala/logo de pagina.jpeg">
 </head>
 <body>
 
-<!-- ══ LOGIN ══ -->
+<!-- LOGIN -->
 <div class="login-container" id="loginContainer">
     <div class="login-box">
-        <img src="logo de sala/logo de pagina.png" alt="El Continental"
+        <img src="logo de sala/logo de pagina.jpeg" alt="El Continental"
              class="login-logo" onerror="this.style.display='none'">
         <h1>🔐 Panel de Administración</h1>
         <p>El Continental - Call of Duty Mobile</p>
@@ -23,29 +23,29 @@
                 <input type="text" id="username" placeholder="Tu usuario">
             </div>
             <div class="input-group">
-                <label for="password">🔑 Contraseña</label>
+                <label for="password">🔒 Contraseña</label>
                 <input type="password" id="password" placeholder="Tu contraseña">
             </div>
             <button class="btn-login" id="btnLogin">Ingresar</button>
-            <div class="login-error" id="loginError">❌ Usuario o contraseña incorrectos</div>
+            <div class="login-error" id="loginError">⚠️ Usuario o contraseña incorrectos</div>
         </div>
 
 
         <div class="login-footer">
-            <a href="index.html">← Volver al inicio</a>
+            <a href="index.html">↩️ Volver al inicio</a>
         </div>
     </div>
 </div>
 
-<!-- ══ DASHBOARD ══ -->
+<!-- DASHBOARD -->
 <div class="admin-container" id="adminContainer" style="display:none">
 
     <nav class="admin-nav">
         <div class="nav-container">
-            <a href="index.html" class="logo"><img src="logo de sala/logo de pagina.png" alt="Logo" class="nav-logo-img"> EL CONTINENTAL</a>
+            <a href="index.html" class="logo"><img src="logo de sala/logo de pagina.jpeg" alt="Logo" class="nav-logo-img"> EL CONTINENTAL</a>
             <div class="nav-center">
                 <span class="nav-title">Panel de Administración</span>
-                <span class="rol-badge" id="rolBadge">—</span>
+                <span class="rol-badge" id="rolBadge">👤</span>
                 <button class="btn-perfil" id="btnPerfil">👤 Ver Perfil</button>
             </div>
             <button class="btn-logout" id="btnLogout">🚪 Salir del Admin</button>
@@ -57,72 +57,72 @@
         <div class="stat-card">
             <div class="stat-icon">🏆</div>
             <div class="stat-info">
-                <div class="stat-value" id="totalClanes">—</div>
+                <div class="stat-value" id="totalClanes">0</div>
                 <div class="stat-label">Clanes Totales</div>
             </div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon">✅</div>
+            <div class="stat-icon">👥</div>
             <div class="stat-info">
-                <div class="stat-value" id="clanesActivos">—</div>
+                <div class="stat-value" id="clanesActivos">0</div>
                 <div class="stat-label">Clanes Activos</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon">👥</div>
             <div class="stat-info">
-                <div class="stat-value" id="totalJugadores">—</div>
+                <div class="stat-value" id="totalJugadores">0</div>
                 <div class="stat-label">Jugadores Estimados</div>
             </div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon">🏅</div>
+            <div class="stat-icon">ð</div>
             <div class="stat-info">
-                <div class="stat-value" id="totalTrofeos">—</div>
+                <div class="stat-value" id="totalTrofeos">0</div>
                 <div class="stat-label">Trofeos Otorgados</div>
             </div>
         </div>        <div class="stat-card only-master" id="statSanciones">
             <div class="stat-icon">🚨</div>
             <div class="stat-info">
-                <div class="stat-value" id="totalSanciones">—</div>
+                <div class="stat-value" id="totalSanciones">0</div>
                 <div class="stat-label">Sanciones Activas</div>
             </div>
         </div>    </div>
 
-    <!-- ══ PESTAÑAS ══ -->
+    <!-- TABS -->
     <div class="admin-tabs" id="adminTabs">
-        <button class="admin-tab active" data-tab="clanes">📋 Clanes</button>        <button class="admin-tab" data-tab="asistencia">📅 Asistencia</button>        <button class="admin-tab" data-tab="contactos">📞 Contactos</button>
+        <button class="admin-tab active" data-tab="clanes">👥 Clanes</button>        <button class="admin-tab" data-tab="asistencia">📋 Asistencia</button>        <button class="admin-tab" data-tab="contactos">📞 Contactos</button>
         <button class="admin-tab" data-tab="medallas">🏅 Medallas</button>
         <button class="admin-tab" data-tab="top3">🏆 Top 3</button>
         <button class="admin-tab" data-tab="semanal">📊 Puntos Semanales</button>
         <button class="admin-tab only-master" data-tab="sanciones">🚨 Sanciones</button>
-        <button class="admin-tab only-master" data-tab="formulario">📝 Formulario</button>
+        <button class="admin-tab only-master" data-tab="formulario">📋 Formulario</button>
     </div>
 
-    <!-- ══ PANEL: CLANES ══ -->
+    <!-- ââ PANEL: CLANES ââ -->
     <div class="admin-panel" id="panel-clanes">
 
     <!-- Filtros -->
     <div class="admin-filters">
         <input type="text" id="searchInput" class="search-input"
-               placeholder="🔍 Buscar por nombre, tag o ID...">
+               placeholder="ð Buscar por nombre, tag o ID...">
         <select id="filterEstado" class="filter-select only-master">
             <option value="all">Todos los clanes</option>
             <option value="active">Solo activos</option>
             <option value="inactive">Solo pendientes</option>
         </select>
-        <button class="btn-refresh" id="btnRefresh">🔄 Actualizar</button>
+        <button class="btn-refresh" id="btnRefresh">ð Actualizar</button>
     </div>
 
     <!-- Tabla dinámica según rol -->
     <div class="table-container">
-        <h2>📋 Directorio de Clanes</h2>
+        <h2>ð Directorio de Clanes</h2>
         <p class="table-subtitle">Ordenado por puntos de salas (mayor a menor)</p>
         <div class="table-wrapper">
             <table class="admin-table">
                 <thead id="tablaHead"></thead>
                 <tbody id="tablaBody">
-                    <tr><td colspan="20" class="loading-cell">⏳ Cargando datos...</td></tr>
+                    <tr><td colspan="20" class="loading-cell">â³ Cargando datos...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -131,7 +131,7 @@
     <!-- Exportar solo master -->
     <div class="export-section only-master">
         <h3>📥 Exportar Datos</h3>
-        <button class="btn-export" id="btnExportContacts">📞 Exportar Contactos (CSV)</button>
+        <button class="btn-export" id="btnExportContacts">📊 Exportar Contactos (CSV)</button>
         <button class="btn-export" id="btnExportPuntos">📊 Exportar Puntos (CSV)</button>
     </div>
 
@@ -139,43 +139,43 @@
 
 
 
-    <!-- ══ PANEL: ASISTENCIA ══ -->
+    <!-- PANEL: ASISTENCIA -->
     <div class="admin-panel" id="panel-asistencia" style="display:none">
     <div class="asistencia-section">
         <div class="asistencia-header">
-            <h3>📅 Asistencia de Clanes</h3>
+            <h3>📋 Asistencia de Clanes</h3>
             <button class="btn-refresh asistencia-refresh" id="btnRefreshAsistencia">🔄 Actualizar</button>
         </div>
         <p class="asistencia-desc">
             Datos leídos desde la hoja de asistencia.
-            <span class="asist-verde">■</span> <strong>P</strong> = Presente &nbsp;
-            <span class="asist-rojo">■</span> <strong>A</strong> = Ausente &nbsp;
-            <span class="asist-gris">■</span> Sin dato
+            <span class="asist-verde">â </span> <strong>P</strong> = Presente &nbsp;
+            <span class="asist-rojo">â </span> <strong>A</strong> = Ausente &nbsp;
+            <span class="asist-gris">â </span> Sin dato
         </p>
         <div id="asistenciaWrapper">
-            <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando asistencia...</p>
+            <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando asistencia...</p>
         </div>
     </div>
     </div><!-- /panel-asistencia -->
 
-    <!-- ══ PANEL: CONTACTOS ══ -->
+    <!-- ââ PANEL: CONTACTOS ââ -->
     <div class="admin-panel" id="panel-contactos" style="display:none">
     <div class="contactos-section">
         <div class="contactos-header">
             <h3>📞 Directorio de Contactos</h3>
             <input type="text" id="contactosSearch" class="search-input" placeholder="🔍 Buscar clan, líder o modo..." style="max-width:320px">
         </div>
-        <p class="contactos-desc">Información privada — visible para CEO y Hosts de Sala. Fuente: hoja de registro.</p>
+        <p class="contactos-desc">Información privada – visible para CEO y Hosts de Sala. Fuente: hoja de registro.</p>
         <div class="contactos-grid" id="contactosGrid">
-            <p style="color:var(--muted);text-align:center;padding:3rem">⏳ Cargando contactos...</p>
+            <p style="color:var(--muted);text-align:center;padding:3rem">â³ Cargando contactos...</p>
         </div>
     </div>
     </div><!-- /panel-contactos -->
 
-    <!-- ══ PANEL: MEDALLAS ══ -->
+    <!-- ââ PANEL: MEDALLAS ââ -->
     <div class="admin-panel" id="panel-medallas" style="display:none">
     <div class="medallas-especiales-section" id="medallasSection">
-        <h3>🏅 Medallas Especiales</h3>
+        <h3>ð Medallas Especiales</h3>
         <p class="medallas-desc">
             Las medallas se cargan desde Google Sheets automáticamente.
             Solo aparecen los clanes que tienen al menos una medalla activa.
@@ -183,18 +183,18 @@
         <div class="medallas-leyenda">
             <span class="badge-medalla rubi">💎 Rubí</span>
             <small>Torneo</small>
-            <span class="badge-medalla oro-diamante">🔷 Oro+Diamante</span>
+            <span class="badge-medalla oro-diamante">👑 Oro+Diamante</span>
             <small>Entre Comunidades</small>
             <span class="badge-medalla esmeralda">💚 Esmeralda</span>
             <small>Torneo de MJ</small>
         </div>
         <div class="medallas-grid" id="medallasGrid">
-            <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando clanes...</p>
+            <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando clanes...</p>
         </div>
     </div>
     </div><!-- /panel-medallas -->
 
-    <!-- ══ PANEL: TOP 3 (CEO y Host) ══ -->
+    <!-- ââ PANEL: TOP 3 (CEO y Host) ââ -->
     <div class="admin-panel" id="panel-top3" style="display:none">
         <div class="top3-section">
             <div class="top3-header">
@@ -206,136 +206,129 @@
             <div class="top3-podio-wrap">
                 <div class="top3-podio" id="top3Podio">
                     <div class="top3-podio-title">
-                        <img src="logo de sala/logo de pagina.png" alt="Logo" class="top3-logo" onerror="this.style.display='none'">
-                        <span>EL CONTINENTAL · TOP 3</span>
+                        <img src="logo de sala/logo de pagina.jpeg" alt="Logo" class="top3-logo" onerror="this.style.display='none'">
+                        <span>EL CONTINENTAL Â· TOP 3</span>
                     </div>
                     <div class="top3-cards" id="top3Cards">
-                        <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+                        <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
                     </div>
                 </div>
             </div>
 
             <div class="top3-actions">
-                <button class="btn-export" id="btnShareTop3">📸 Compartir como imagen</button>
-                <button class="btn-refresh" id="btnRefreshTop3">🔄 Actualizar</button>
+                <button class="btn-export" id="btnShareTop3">ð¸ Compartir como imagen</button>
+                <button class="btn-refresh" id="btnRefreshTop3">ð Actualizar</button>
             </div>
         </div>
     </div><!-- /panel-top3 -->
 
-    <!-- ══ PANEL: PUNTOS SEMANALES (CEO y Host) ══ -->
+    <!-- ââ PANEL: PUNTOS SEMANALES (CEO y Host) ââ -->
     <div class="admin-panel" id="panel-semanal" style="display:none">
         <div class="semanal-section">
             <div class="semanal-header">
-                <h3>📊 Puntos Semanales</h3>
+                <h3>ð Puntos Semanales</h3>
                 <div style="display:flex;gap:0.6rem;align-items:center">
-                    <button class="btn-export" id="btnShareSemanal">📸 Compartir imagen</button>
-                    <button class="btn-refresh" id="btnRefreshSemanal">🔄 Actualizar</button>
+                    <button class="btn-export" id="btnShareSemanal">ð¸ Compartir imagen</button>
+                    <button class="btn-refresh" id="btnRefreshSemanal">ð Actualizar</button>
                 </div>
             </div>
-            <p class="semanal-desc">Puntos acumulados por sala esta semana · Visible para CEO y Hosts de Sala · Fuente: Google Sheets.</p>
+            <p class="semanal-desc">Puntos acumulados por sala esta semana Â· Visible para CEO y Hosts de Sala Â· Fuente: Google Sheets.</p>
             <!-- Sub-tabs de sala -->
             <div class="semanal-subtabs">
-                <button class="semanal-subtab active" data-sala="zguerra">⚔️ Zona de Guerra</button>
-                <button class="semanal-subtab" data-sala="zletal">💥 Zona Letal 9</button>
-                <button class="semanal-subtab" data-sala="zxtreme">⚡ Zona Xtreme 9</button>
-                <button class="semanal-subtab" data-sala="isolated7">🔒 ISOLATED 7</button>
-                <button class="semanal-subtab" data-sala="isolated8">🔒 ISOLATED 8</button>
-                <button class="semanal-subtab" data-sala="isolated9">🔒 ISOLATED 9</button>
-                <button class="semanal-subtab" data-sala="isolated10">🔒 ISOLATED 10</button>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-alcatraz" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-alcatraz2" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-alcatrazmaster" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+                <button class="semanal-subtab active" data-sala="zguerra">âï¸ Zona de Guerra</button>
+                <button class="semanal-subtab" data-sala="zletal">ð¥ Zona Letal 9</button>
+                <button class="semanal-subtab" data-sala="zxtreme">â¡ Zona Xtreme 9</button>
+                <button class="semanal-subtab" data-sala="isla-exterminio">ð« Isla Exterminio</button>
+                <button class="semanal-subtab" data-sala="isla-aniquilacion">â¡ Isla Aniquilacion</button>
+                <button class="semanal-subtab" data-sala="isla-devastacion">ð¥ Isla Devastacion</button>
+                <button class="semanal-subtab" data-sala="isla-apocalipsis">â ï¸ Isla Apocalipsis</button>
+                <button class="semanal-subtab" data-sala="isla-extincion">ð¥ Isla Extincion</button>
             </div>
             <div class="semanal-wrapper" id="semanalWrapper-zguerra">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
             </div>
             <div class="semanal-wrapper" id="semanalWrapper-zletal" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
             </div>
             <div class="semanal-wrapper" id="semanalWrapper-zxtreme" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
             </div>
-            <div class="semanal-wrapper" id="semanalWrapper-isolated7" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            <div class="semanal-wrapper" id="semanalWrapper-isla-exterminio" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
             </div>
-            <div class="semanal-wrapper" id="semanalWrapper-isolated8" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            <div class="semanal-wrapper" id="semanalWrapper-isla-aniquilacion" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
             </div>
-            <div class="semanal-wrapper" id="semanalWrapper-isolated9" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            <div class="semanal-wrapper" id="semanalWrapper-isla-devastacion" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
             </div>
-            <div class="semanal-wrapper" id="semanalWrapper-isolated10" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando...</p>
+            <div class="semanal-wrapper" id="semanalWrapper-isla-apocalipsis" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
             </div>
+            <div class="semanal-wrapper" id="semanalWrapper-isla-extincion" style="display:none">
+                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
+            </div>
+
         </div>
     </div><!-- /panel-semanal -->
 
-    <!-- ══ PANEL: SANCIONES (solo CEO) ══ -->
+    <!-- ââ PANEL: SANCIONES (solo CEO) ââ -->
     <div class="admin-panel only-master" id="panel-sanciones" style="display:none">
         <div class="sanciones-section">
             <div class="sanciones-header">
-                <h3>🚨 Control de Sanciones</h3>
+                <h3>ð¨ Control de Sanciones</h3>
                 <div class="sanciones-header-actions">
                     <select id="sancionesFiltroSala" class="filter-select">
                         <option value="all">Todas las salas</option>
-                        <option value="zguerra">⚔️ Zona de Guerra</option>
-                        <option value="zletal">💥 Zona Letal 9</option>
-                        <option value="zxtreme">⚡ Zona Xtreme 9</option>
-                        <option value="isolated7">🔒 ISOLATED 7</option>
-                        <option value="isolated8">🔒 ISOLATED 8</option>
-                        <option value="isolated9">🔒 ISOLATED 9</option>
-                        <option value="isolated10">🔒 ISOLATED 10</option>
+                        <option value="zguerra">âï¸ Zona de Guerra</option>
+                        <option value="zletal">ð¥ Zona Letal 9</option>
+                        <option value="zxtreme">â¡ Zona Xtreme 9</option>
+                        <option value="isladevast">ð¥ Isla Devastacion</option>
                     </select>
-                    <button class="btn-refresh" id="btnRefreshSanciones">🔄 Actualizar</button>
+                    <button class="btn-refresh" id="btnRefreshSanciones">ð Actualizar</button>
                 </div>
             </div>
-            <p class="sanciones-desc">Sanciones registradas en todas las salas · Solo visible para el CEO · Fuente: Google Sheets.</p>
+            <p class="sanciones-desc">Sanciones registradas en todas las salas Â· Solo visible para el CEO Â· Fuente: Google Sheets.</p>
             <div id="sancionesWrapper">
-                <p style="color:var(--muted);text-align:center;padding:2rem">⏳ Cargando sanciones...</p>
+                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando sanciones...</p>
             </div>
         </div>
     </div><!-- /panel-sanciones -->
 
-    <!-- ══ PANEL: FORMULARIO (solo CEO) ══ -->
+    <!-- ââ PANEL: FORMULARIO (solo CEO) ââ -->
     <div class="admin-panel only-master" id="panel-formulario" style="display:none">
         <div class="formulario-section">
             <div class="formulario-header">
-                <h3>📝 Registro de Equipos</h3>
+                <h3>ð Registro de Equipos</h3>
                 <p class="formulario-desc">Formulario de registro para nuevos equipos. Solo accesible para el CEO.</p>
             </div>
             <div class="formulario-container">
-                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeAdpRzmX-iZX17r4SvcYryGYg0HnIJCOCjz4t7MDfkq1HyYg/viewform?embedded=true" width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">Cargando…</iframe>
+                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeAdpRzmX-iZX17r4SvcYryGYg0HnIJCOCjz4t7MDfkq1HyYg/viewform?embedded=true" width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">Cargandoâ¦</iframe>
             </div>
         </div>
     </div><!-- /panel-formulario -->
 
 </div>
 
-<!-- ══ MODAL: PERFIL DEL ADMIN ══ -->
+<!-- ââ MODAL: PERFIL DEL ADMIN ââ -->
 <div class="perfil-modal" id="perfilModal" style="display:none">
     <div class="perfil-modal-content">
         <div class="perfil-modal-header">
-            <h2>👤 Perfil del Admin</h2>
-            <button class="perfil-modal-close" id="btnCerrarPerfil">✕</button>
+            <h2>ð¤ Perfil del Admin</h2>
+            <button class="perfil-modal-close" id="btnCerrarPerfil">â</button>
         </div>
         <div class="perfil-modal-body">
             <div class="perfil-field">
                 <label>Usuario:</label>
-                <p id="perfilUsuario">—</p>
+                <p id="perfilUsuario">â</p>
             </div>
             <div class="perfil-field">
                 <label>Rol:</label>
-                <p id="perfilRol">—</p>
+                <p id="perfilRol">â</p>
             </div>
             <div class="perfil-field">
                 <label>Tipo de Acceso:</label>
-                <p id="perfilTipo">—</p>
+                <p id="perfilTipo">â</p>
             </div>
             <div class="perfil-field">
                 <label>Estado de Sesión:</label>
@@ -354,3 +347,4 @@
 
 </body>
 </html>
+

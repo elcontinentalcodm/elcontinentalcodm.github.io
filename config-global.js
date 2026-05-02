@@ -6,7 +6,7 @@
  * Ej: logos/2026001.jpg, logos/2026002.jpg
  * Si no hay logo → logos/default.jpg
  * =====================================================
- * PUNTOS: Solo salas (Alcatraz, Zona Guerra, etc.)
+ * PUNTOS: Solo salas (Zona Guerra, Zona Letal, Zona Xtreme, etc.)
  * TROFEOS: Oro/Plata/Bronce = decorativos, NO suman puntos
  */
 
@@ -26,9 +26,7 @@ const CONFIG = {
     // Hoja de asistencia: columna A = Clanes, columnas B-AF = días 1-31
     ASISTENCIA_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=1400235060&single=true&output=csv',
 
-    // Hojas de puntos semanales (solo CEO): una por sala
-    SEMANAL_ALCATRAZ_URL:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=940985454&single=true&output=csv',
-    SEMANAL_ALCATRAZ2_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=1316935411&single=true&output=csv',
+    // Hojas de puntos semanales: una por sala
     DIARIOS_ZGUERRA_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vRw0yyRYk7ik9KZNiKJpEhSG18CJ4bl2T38CpIJV3ErgYqAV2MZZAoYa6V7GwMBvKP84pGppxCW7wao/pub?gid=0&single=true&output=csv',
     SEMANAL_ZGUERRA_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vRw0yyRYk7ik9KZNiKJpEhSG18CJ4bl2T38CpIJV3ErgYqAV2MZZAoYa6V7GwMBvKP84pGppxCW7wao/pub?gid=1433759351&single=true&output=csv',
     SANCIONES_ZGUERRA_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRw0yyRYk7ik9KZNiKJpEhSG18CJ4bl2T38CpIJV3ErgYqAV2MZZAoYa6V7GwMBvKP84pGppxCW7wao/pub?gid=711294694&single=true&output=csv',
@@ -39,19 +37,31 @@ const CONFIG = {
     DIARIOS_ZXTREME_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vTT0Vk1AL1zvuMHa3sHbfe3cSLXJH4-gZSQL6M0POexEAAy0iRPuPcN0hcBv__DMMeiGEPP6caZrKqR/pub?gid=0&single=true&output=csv',
     SEMANAL_ZXTREME_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vTT0Vk1AL1zvuMHa3sHbfe3cSLXJH4-gZSQL6M0POexEAAy0iRPuPcN0hcBv__DMMeiGEPP6caZrKqR/pub?gid=1433759351&single=true&output=csv',
     SANCIONES_ZXTREME_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vTT0Vk1AL1zvuMHa3sHbfe3cSLXJH4-gZSQL6M0POexEAAy0iRPuPcN0hcBv__DMMeiGEPP6caZrKqR/pub?gid=711294694&single=true&output=csv',
-    SEMANAL_ALCATRAZ_MASTER_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=1392627225&single=true&output=csv',
-    DIARIOS_ISOLATED8_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vTskwlXkt9eMUeRsd7wQ5mi1HrpC7mx5EnrMMyDcwR2lTQVrcH4XxNc_LdrFQtU4bx3lqdswMPqcKXv/pub?gid=0&single=true&output=csv',
-    SEMANAL_ISOLATED8_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vTskwlXkt9eMUeRsd7wQ5mi1HrpC7mx5EnrMMyDcwR2lTQVrcH4XxNc_LdrFQtU4bx3lqdswMPqcKXv/pub?gid=1433759351&single=true&output=csv',
-    SANCIONES_ISOLATED8_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTskwlXkt9eMUeRsd7wQ5mi1HrpC7mx5EnrMMyDcwR2lTQVrcH4XxNc_LdrFQtU4bx3lqdswMPqcKXv/pub?gid=711294694&single=true&output=csv',
-    DIARIOS_ISOLATED7_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRu5iaP0AtsVg1saj_6GNUEksV2u-iJbumqtHM5dfSafVawjhZRH07a6D4oCtcMcdyNJTdDCf7t_mFB/pub?gid=0&single=true&output=csv',
-    SEMANAL_ISOLATED7_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRu5iaP0AtsVg1saj_6GNUEksV2u-iJbumqtHM5dfSafVawjhZRH07a6D4oCtcMcdyNJTdDCf7t_mFB/pub?gid=1433759351&single=true&output=csv',
-    SANCIONES_ISOLATED7_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRu5iaP0AtsVg1saj_6GNUEksV2u-iJbumqtHM5dfSafVawjhZRH07a6D4oCtcMcdyNJTdDCf7t_mFB/pub?gid=711294694&single=true&output=csv',
-    DIARIOS_ISOLATED10_URL:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0HZ8ToMMfJs1nVXwoCgNVd1MVuh2towxEmz12yd0QylbjHZHU7f1m-q42gFnArv6Z9K6m9Qxh34oX/pub?gid=0&single=true&output=csv',
-    SEMANAL_ISOLATED10_URL:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0HZ8ToMMfJs1nVXwoCgNVd1MVuh2towxEmz12yd0QylbjHZHU7f1m-q42gFnArv6Z9K6m9Qxh34oX/pub?gid=1433759351&single=true&output=csv',
-    SANCIONES_ISOLATED10_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vR0HZ8ToMMfJs1nVXwoCgNVd1MVuh2towxEmz12yd0QylbjHZHU7f1m-q42gFnArv6Z9K6m9Qxh34oX/pub?gid=711294694&single=true&output=csv',
-    DIARIOS_ISOLATED9_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-kuK34KfgLpKH5h3h8nhJ9ksnnoi9WN1JfFFFm8XDzJzeVBFYp7hqDqo3LAczbyP0FLy69pR4cc7y/pub?gid=0&single=true&output=csv',
-    SEMANAL_ISOLATED9_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-kuK34KfgLpKH5h3h8nhJ9ksnnoi9WN1JfFFFm8XDzJzeVBFYp7hqDqo3LAczbyP0FLy69pR4cc7y/pub?gid=1433759351&single=true&output=csv',
-    SANCIONES_ISOLATED9_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-kuK34KfgLpKH5h3h8nhJ9ksnnoi9WN1JfFFFm8XDzJzeVBFYp7hqDqo3LAczbyP0FLy69pR4cc7y/pub?gid=711294694&single=true&output=csv',
+
+    // ══════════════════════════════════════════════
+    // SALAS REBIRTH ISLAND
+    // TODO: Reemplaza estas URLs con las de tus hojas de Google Sheets
+    // ══════════════════════════════════════════════
+    DIARIOS_ISLA_EXTERMINIO_URL:     'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=0&single=true&output=csv',
+    SEMANAL_ISLA_EXTERMINIO_URL:     'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=1433759351&single=true&output=csv',
+    SANCIONES_ISLA_EXTERMINIO_URL:   'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=711294694&single=true&output=csv',
+
+    DIARIOS_ISLA_ANIQUILACION_URL:     'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=0&single=true&output=csv',
+    SEMANAL_ISLA_ANIQUILACION_URL:     'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=1433759351&single=true&output=csv',
+    SANCIONES_ISLA_ANIQUILACION_URL:   'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=711294694&single=true&output=csv',
+
+    DIARIOS_ISLA_DEVASTACION_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTfBwcHIT0bPWd9mP__N338NdZ2AwKT7S-pXT36TYeeWjqatuR-QhGR4Ln8znfDTW9_SaEMeUbOSlB/pub?gid=1468647519&single=true&output=csv',
+    SEMANAL_ISLA_DEVASTACION_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTfBwcHIT0bPWd9mP__N338NdZ2AwKT7S-pXT36TYeeWjqatuR-QhGR4Ln8znfDTW9_SaEMeUbOSlB/pub?gid=515735007&single=true&output=csv',
+    SANCIONES_ISLA_DEVASTACION_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTfBwcHIT0bPWd9mP__N338NdZ2AwKT7S-pXT36TYeeWjqatuR-QhGR4Ln8znfDTW9_SaEMeUbOSlB/pub?gid=1459408902&single=true&output=csv',
+    TOPKILLER_ISLA_DEVASTACION_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTfBwcHIT0bPWd9mP__N338NdZ2AwKT7S-pXT36TYeeWjqatuR-QhGR4Ln8znfDTW9_SaEMeUbOSlB/pub?gid=424324350&single=true&output=csv',
+
+    DIARIOS_ISLA_APOCALIPSIS_URL:     'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=0&single=true&output=csv',
+    SEMANAL_ISLA_APOCALIPSIS_URL:     'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=1433759351&single=true&output=csv',
+    SANCIONES_ISLA_APOCALIPSIS_URL:   'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=711294694&single=true&output=csv',
+
+    DIARIOS_ISLA_EXTINCION_URL:     'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=0&single=true&output=csv',
+    SEMANAL_ISLA_EXTINCION_URL:     'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=1433759351&single=true&output=csv',
+    SANCIONES_ISLA_EXTINCION_URL:   'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=711294694&single=true&output=csv',
 
     // ══════════════════════════════════════════════
     // HOJA DE CONTACTOS (solo visible para el CEO)
@@ -120,9 +130,6 @@ const CONFIG = {
     },
 
     SALAS: {
-        ALCATRAZ:         'Alcatraz',
-        ALCATRAZ_2_0:     'Alcatraz2.0',
-        ALCATRAZ_MASTER:  'Alcatraz Master',
         ZONA_DE_GUERRA:   'Zona de Guerra',
         ZONA_LETAL:       'Zona Letal',
         ZONA_XTREME:      'Zona Xtreme'
@@ -207,28 +214,9 @@ function _findSem(nombre, semMap) {
     return null;
 }
 
-/* Construye un semMap { normName → {alc,alc2,alcm,zg,zl,zx} } desde las 6 hojas semanales */
+/* Construye un semMap (actualmente vacío, compatibilidad) */
 async function buildSemMap() {
-    const semUrls = [
-        CONFIG.SEMANAL_ALCATRAZ_URL,
-        CONFIG.SEMANAL_ALCATRAZ2_URL,
-        CONFIG.SEMANAL_ALCATRAZ_MASTER_URL,
-        CONFIG.SEMANAL_ZGUERRA_URL,
-        CONFIG.SEMANAL_ZLETAL_URL,
-        CONFIG.SEMANAL_ZXTREME_URL,
-    ];
-    const semKeys = ['alc', 'alc2', 'alcm', 'zg', 'zl', 'zx'];
-    const results = await Promise.all(semUrls.map(u => fetchSheetData(u).catch(() => [])));
-    const semMap = {};
-    results.forEach((data, si) => {
-        data.filter(r => (r[17] || '').toString().trim() !== '').forEach(r => {
-            const k = _normName(r[17]);
-            if (!k) return;
-            if (!semMap[k]) semMap[k] = { alc:0, alc2:0, alcm:0, zg:0, zl:0, zx:0 };
-            semMap[k][semKeys[si]] += parseFloat(r[23]) || 0;
-        });
-    });
-    return semMap;
+    return {};
 }
 
 /* CSV Parser */

@@ -5,16 +5,14 @@
  */
 
 const SALAS_RANKING_CFG = {
-    'Alcatraz':        { url: () => CONFIG.SEMANAL_ALCATRAZ_URL,        icon: '🏙️', diarios: null, sanciones: null },
-    'Alcatraz 2.0':    { url: () => CONFIG.SEMANAL_ALCATRAZ2_URL,       icon: '🏙️', diarios: null, sanciones: null },
-    'Alcatraz Master': { url: () => CONFIG.SEMANAL_ALCATRAZ_MASTER_URL, icon: '⛓️', diarios: null, sanciones: null },
     'ZONA DE GUERRA 8': { url: () => CONFIG.SEMANAL_ZGUERRA_URL,        icon: '⚔️', diarios: () => CONFIG.DIARIOS_ZGUERRA_URL, sanciones: () => CONFIG.SANCIONES_ZGUERRA_URL },
     'ZONA LETAL 9':     { url: () => CONFIG.SEMANAL_ZLETAL_URL,         icon: '💥', diarios: () => CONFIG.DIARIOS_ZLETAL_URL, sanciones: () => CONFIG.SANCIONES_ZLETAL_URL },
     'ZONA XTREME 9':    { url: () => CONFIG.SEMANAL_ZXTREME_URL,        icon: '⚡', diarios: () => CONFIG.DIARIOS_ZXTREME_URL, sanciones: () => CONFIG.SANCIONES_ZXTREME_URL },
-    'ISOLATED 7':      { url: () => CONFIG.SEMANAL_ISOLATED7_URL,       icon: '🔒', diarios: () => CONFIG.DIARIOS_ISOLATED7_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED7_URL },
-    'ISOLATED 8':      { url: () => CONFIG.SEMANAL_ISOLATED8_URL,       icon: '🔒', diarios: () => CONFIG.DIARIOS_ISOLATED8_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED8_URL },
-    'ISOLATED 9':      { url: () => CONFIG.SEMANAL_ISOLATED9_URL,       icon: '🔒', diarios: () => CONFIG.DIARIOS_ISOLATED9_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED9_URL },
-    'ISOLATED 10':     { url: () => CONFIG.SEMANAL_ISOLATED10_URL,      icon: '🔒', diarios: () => CONFIG.DIARIOS_ISOLATED10_URL, sanciones: () => CONFIG.SANCIONES_ISOLATED10_URL },
+    'Isla Exterminio':  { url: () => CONFIG.SEMANAL_ISLA_EXTERMINIO_URL,  icon: '🔫', diarios: () => CONFIG.DIARIOS_ISLA_EXTERMINIO_URL, sanciones: () => CONFIG.SANCIONES_ISLA_EXTERMINIO_URL },
+    'Isla Aniquilacion': { url: () => CONFIG.SEMANAL_ISLA_ANIQUILACION_URL, icon: '⚡', diarios: () => CONFIG.DIARIOS_ISLA_ANIQUILACION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_ANIQUILACION_URL },
+    'Isla Devastacion': { url: () => CONFIG.SEMANAL_ISLA_DEVASTACION_URL,  icon: '💥', diarios: () => CONFIG.DIARIOS_ISLA_DEVASTACION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_DEVASTACION_URL },
+    'Isla Apocalipsis':  { url: () => CONFIG.SEMANAL_ISLA_APOCALIPSIS_URL, icon: '☠️', diarios: () => CONFIG.DIARIOS_ISLA_APOCALIPSIS_URL, sanciones: () => CONFIG.SANCIONES_ISLA_APOCALIPSIS_URL },
+    'Isla Extincion':   { url: () => CONFIG.SEMANAL_ISLA_EXTINCION_URL,   icon: '🔥', diarios: () => CONFIG.DIARIOS_ISLA_EXTINCION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_EXTINCION_URL },
 };
 
 document.addEventListener('DOMContentLoaded', function () { initRanking(); initHamburger(); });
@@ -27,7 +25,15 @@ async function initRanking() {
         const active  = filterActiveClans(data);
         if (active.length === 0) { container.innerHTML = '<div class="error-message">No hay clanes registrados aún</div>'; return; }
         const rankings = prepareRankings(active, semMap);
-        displayRanking(rankings, 'general', container);
+        
+        // Mostrar la primera sala disponible en los botones
+        const firstSala = filterBtns.length > 0 ? filterBtns[0].getAttribute('data-sala') : 'general';
+        if (firstSala === 'general') {
+            displayRanking(rankings, 'general', container);
+        } else {
+            displaySalaRanking(firstSala, container);
+        }
+        
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => b.classList.remove('active'));
@@ -54,7 +60,7 @@ async function displaySalaRanking(sala, container) {
         // Las salas especiales se muestran como ranking simple en público.
         if (cfg.diarios && cfg.sanciones) {
             const dataSemanal = await fetchSheetData(cfg.url());
-            const isZonaLetal = sala === 'ZONA LETAL 9';
+            const isZonaLetal = sala === 'ZONA LETAL 9' || sala === 'Isla Devastacion';
             const items = buildSalaRankingItems(dataSemanal, isZonaLetal);
 
             if (!items.length) {
@@ -107,7 +113,7 @@ function buildSalaRankingItems(dataSemanal, isZonaLetal) {
 
     const rows = isZonaLetal
         ? dataSemanal.filter(r => /^\d+$/.test((r[0] || '').toString().trim()))
-        : dataSemanal.slice(1).filter(r =>
+        : dataSemanal.filter(r =>
             (r[0] || '').toString().trim() !== '' &&
             !/^[-–—=]/.test((r[0] || '').toString().trim())
         );
