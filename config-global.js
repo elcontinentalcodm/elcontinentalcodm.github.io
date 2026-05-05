@@ -28,7 +28,7 @@ const CONFIG = {
 
     // Hojas de puntos semanales: una por sala
     DIARIOS_ZGUERRA_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vRw0yyRYk7ik9KZNiKJpEhSG18CJ4bl2T38CpIJV3ErgYqAV2MZZAoYa6V7GwMBvKP84pGppxCW7wao/pub?gid=0&single=true&output=csv',
-    SEMANAL_ZGUERRA_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vRw0yyRYk7ik9KZNiKJpEhSG18CJ4bl2T38CpIJV3ErgYqAV2MZZAoYa6V7GwMBvKP84pGppxCW7wao/pub?gid=1433759351&single=true&output=csv',
+    SEMANAL_ZGUERRA_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnhpfq-UuD76QAXSAStOxKAqlsqZQmz4uRQWbV5l0GiDVGBBlBZbg0GS4_Qe8HLuHqMhja3h7G_emG/pub?gid=1475745879&single=true&output=csv',
     SANCIONES_ZGUERRA_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vRw0yyRYk7ik9KZNiKJpEhSG18CJ4bl2T38CpIJV3ErgYqAV2MZZAoYa6V7GwMBvKP84pGppxCW7wao/pub?gid=711294694&single=true&output=csv',
     DIARIOS_ZLETAL_URL:      'https://docs.google.com/spreadsheets/d/e/2PACX-1vRshryBvdv7_fnllfpEd5TFO5-VJBOG3_q1YzTvGwdh-F8tGaPUXrJu0Fxb5LDUfbVbGvcxRw58Y3is/pub?gid=1468647519&single=true&output=csv',
     SEMANAL_ZLETAL_URL:      'https://docs.google.com/spreadsheets/d/e/2PACX-1vRshryBvdv7_fnllfpEd5TFO5-VJBOG3_q1YzTvGwdh-F8tGaPUXrJu0Fxb5LDUfbVbGvcxRw58Y3is/pub?gid=515735007&single=true&output=csv',

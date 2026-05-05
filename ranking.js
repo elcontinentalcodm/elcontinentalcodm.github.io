@@ -111,34 +111,49 @@ async function displaySalaRanking(sala, container) {
 function buildSalaRankingItems(dataSemanal, isZonaLetal) {
     if (!dataSemanal || !dataSemanal.length) return [];
 
-    const rows = isZonaLetal
-        ? dataSemanal.filter(r => /^\d+$/.test((r[0] || '').toString().trim()))
-        : dataSemanal.filter(r =>
-            (r[0] || '').toString().trim() !== '' &&
-            !/^[-–—=]/.test((r[0] || '').toString().trim())
-        );
+    // Detectar estructura del CSV automaticamente
+    // ZONA DE GUERRA 8: Slot es numero, Total en indice 13
+    // ZONA LETAL/Devastacion: Kills en indices 3,5,7,9,11
+    
+    const hasNewStructure = dataSemanal.length > 3 && 
+        dataSemanal.slice(3).some(r => r[13] !== undefined && parseFloat(r[13]) > 0);
+    
+    if (hasNewStructure) {
+        // NUEVA ESTRUCTURA (ZONA DE GUERRA 8)
+        const startIdx = 3;
+        const rows = dataSemanal.slice(startIdx).filter(r => {
+            const slot = (r[0] || '').toString().trim();
+            const clan = (r[1] || '').toString().trim();
+            return slot !== '' && clan !== '' && /^\d+$/.test(slot);
+        });
 
-    const items = rows.map(r => {
-        if (isZonaLetal) {
+        const items = rows.map(r => {
+            const nombre = (r[1] || '').trim();
+            const total = parseFloat(r[13]) || 0;
+            return { nombre, puntos: total };
+        }).filter(item => item.nombre && item.puntos > 0);
+
+        return items.sort((a, b) => b.puntos - a.puntos);
+    } else {
+        // ESTRUCTURA ANTIGUA (ZONA LETAL, Isla Devastacion)
+        const rows = dataSemanal.filter(r => {
+            const slot = (r[0] || '').toString().trim();
+            return slot !== '' && /^\d+$/.test(slot);
+        });
+
+        const items = rows.map(r => {
+            const nombre = (r[1] || '').trim();
             const lunes = parseFloat(r[3]) || 0;
             const martes = parseFloat(r[5]) || 0;
             const mier = parseFloat(r[7]) || 0;
             const jueves = parseFloat(r[9]) || 0;
             const viernes = parseFloat(r[11]) || 0;
-            const total = parseFloat(r[12]) || (lunes + martes + mier + jueves + viernes);
-            return {
-                nombre: (r[1] || '').trim(),
-                puntos: total
-            };
-        }
+            const total = lunes + martes + mier + jueves + viernes;
+            return { nombre, puntos: total };
+        }).filter(item => item.nombre && item.puntos > 0);
 
-        return {
-            nombre: (r[0] || '').trim(),
-            puntos: parseFloat(r[6]) || 0
-        };
-    }).filter(item => item.nombre);
-
-    return items.sort((a, b) => b.puntos - a.puntos);
+        return items.sort((a, b) => b.puntos - a.puntos);
+    }
 }
 
 function renderSalaRankingItems(container, sala, icon, items) {
