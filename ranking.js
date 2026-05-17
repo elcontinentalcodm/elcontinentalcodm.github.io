@@ -10,7 +10,7 @@ const SALAS_RANKING_CFG = {
     'ZONA XTREME 9':    { url: () => CONFIG.SEMANAL_ZXTREME_URL,        icon: '⚡', diarios: () => CONFIG.DIARIOS_ZXTREME_URL, sanciones: () => CONFIG.SANCIONES_ZXTREME_URL },
     'Isla Exterminio':  { url: () => CONFIG.SEMANAL_ISLA_EXTERMINIO_URL,  icon: '🔫', diarios: () => CONFIG.DIARIOS_ISLA_EXTERMINIO_URL, sanciones: () => CONFIG.SANCIONES_ISLA_EXTERMINIO_URL },
     'Isla Aniquilacion': { url: () => CONFIG.SEMANAL_ISLA_ANIQUILACION_URL, icon: '⚡', diarios: () => CONFIG.DIARIOS_ISLA_ANIQUILACION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_ANIQUILACION_URL },
-    'Isla Devastacion': { url: () => CONFIG.SEMANAL_ISLA_DEVASTACION_URL,  icon: '💥', diarios: () => CONFIG.DIARIOS_ISLA_DEVASTACION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_DEVASTACION_URL },
+    'Zona Devastacion': { url: () => CONFIG.SEMANAL_ISLA_DEVASTACION_URL,  icon: '💥', diarios: () => CONFIG.DIARIOS_ISLA_DEVASTACION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_DEVASTACION_URL },
     'Isla Apocalipsis':  { url: () => CONFIG.SEMANAL_ISLA_APOCALIPSIS_URL, icon: '☠️', diarios: () => CONFIG.DIARIOS_ISLA_APOCALIPSIS_URL, sanciones: () => CONFIG.SANCIONES_ISLA_APOCALIPSIS_URL },
     'Isla Extincion':   { url: () => CONFIG.SEMANAL_ISLA_EXTINCION_URL,   icon: '🔥', diarios: () => CONFIG.DIARIOS_ISLA_EXTINCION_URL, sanciones: () => CONFIG.SANCIONES_ISLA_EXTINCION_URL },
 };
@@ -60,8 +60,7 @@ async function displaySalaRanking(sala, container) {
         // Las salas especiales se muestran como ranking simple en público.
         if (cfg.diarios && cfg.sanciones) {
             const dataSemanal = await fetchSheetData(cfg.url());
-            const isZonaLetal = sala === 'ZONA LETAL 9' || sala === 'Isla Devastacion';
-            const items = buildSalaRankingItems(dataSemanal, isZonaLetal);
+            const items = buildSalaRankingItems(dataSemanal, sala);
 
             if (!items.length) {
                 container.innerHTML = `<div class="error-message">Sin datos para ${sala} esta semana</div>`;
@@ -108,12 +107,13 @@ async function displaySalaRanking(sala, container) {
     }
 }
 
-function buildSalaRankingItems(dataSemanal, isZonaLetal) {
+function buildSalaRankingItems(dataSemanal, sala) {
     if (!dataSemanal || !dataSemanal.length) return [];
 
     // Detectar estructura del CSV automaticamente
     // ZONA DE GUERRA 8: Slot es numero, Total en indice 13
-    // ZONA LETAL/Devastacion: Kills en indices 3,5,7,9,11
+    // ZONA LETAL: estructura antigua con kills en indices especificos
+    // ZONA DEVASTACION: agrupar por slot+nombre y sumar totales
     
     const hasNewStructure = dataSemanal.length > 3 && 
         dataSemanal.slice(3).some(r => r[13] !== undefined && parseFloat(r[13]) > 0);
@@ -134,8 +134,9 @@ function buildSalaRankingItems(dataSemanal, isZonaLetal) {
         }).filter(item => item.nombre && item.puntos > 0);
 
         return items.sort((a, b) => b.puntos - a.puntos);
-    } else {
-        // ESTRUCTURA ANTIGUA (ZONA LETAL, Isla Devastacion)
+    } else if (sala === 'ZONA LETAL 9') {
+        // ESTRUCTURA ANTIGUA - ZONA LETAL
+        // Mantener el código original de Zona Letal
         const rows = dataSemanal.filter(r => {
             const slot = (r[0] || '').toString().trim();
             return slot !== '' && /^\d+$/.test(slot);
@@ -149,6 +150,47 @@ function buildSalaRankingItems(dataSemanal, isZonaLetal) {
             const jueves = parseFloat(r[9]) || 0;
             const viernes = parseFloat(r[11]) || 0;
             const total = lunes + martes + mier + jueves + viernes;
+            return { nombre, puntos: total };
+        }).filter(item => item.nombre && item.puntos > 0);
+
+        return items.sort((a, b) => b.puntos - a.puntos);
+    } else if (sala === 'Zona Devastacion') {
+        // ESTRUCTURA DIARIOS - ZONA DEVASTACION
+        // Agrupar por SLOT + NOMBRE y sumar TOTAL (columna 9)
+        const equipos = {};
+        
+        dataSemanal.forEach(r => {
+            const slot = (r[0] || '').toString().trim();
+            const nombre = (r[1] || '').toString().trim();
+            const total = parseFloat(r[9]) || 0;
+            
+            // Agrupar por SLOT + NOMBRE para no juntar equipos con mismo nombre pero diferente slot
+            if (slot && nombre && /^\d+$/.test(slot)) {
+                const key = `${slot}|${nombre}`;
+                
+                if (!equipos[key]) {
+                    equipos[key] = { nombre, puntos: 0 };
+                }
+                
+                equipos[key].puntos += total;
+            }
+        });
+
+        const items = Object.values(equipos)
+            .filter(item => item.puntos > 0)
+            .sort((a, b) => b.puntos - a.puntos);
+
+        return items;
+    } else {
+        // Estructura genérica para otras salas
+        const rows = dataSemanal.filter(r => {
+            const slot = (r[0] || '').toString().trim();
+            return slot !== '' && /^\d+$/.test(slot);
+        });
+
+        const items = rows.map(r => {
+            const nombre = (r[1] || '').trim();
+            const total = parseFloat(r[7]) || 0;
             return { nombre, puntos: total };
         }).filter(item => item.nombre && item.puntos > 0);
 

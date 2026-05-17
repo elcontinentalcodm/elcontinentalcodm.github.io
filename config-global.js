@@ -50,8 +50,8 @@ const CONFIG = {
     SEMANAL_ISLA_ANIQUILACION_URL:     'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=1433759351&single=true&output=csv',
     SANCIONES_ISLA_ANIQUILACION_URL:   'https://docs.google.com/spreadsheets/d/PLACEHOLDER_ID/pub?gid=711294694&single=true&output=csv',
 
-    DIARIOS_ISLA_DEVASTACION_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTfBwcHIT0bPWd9mP__N338NdZ2AwKT7S-pXT36TYeeWjqatuR-QhGR4Ln8znfDTW9_SaEMeUbOSlB/pub?gid=1468647519&single=true&output=csv',
-    SEMANAL_ISLA_DEVASTACION_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTfBwcHIT0bPWd9mP__N338NdZ2AwKT7S-pXT36TYeeWjqatuR-QhGR4Ln8znfDTW9_SaEMeUbOSlB/pub?gid=515735007&single=true&output=csv',
+    DIARIOS_ISLA_DEVASTACION_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6TIejNV5GW01FIxx4RCzZjiLd8lPxOppNdqveXlQmU-zsdBMUnm9rMrvOvaQwW7Gtwlv4AWajlpaW/pub?gid=515735007&single=true&output=csv',
+    SEMANAL_ISLA_DEVASTACION_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6TIejNV5GW01FIxx4RCzZjiLd8lPxOppNdqveXlQmU-zsdBMUnm9rMrvOvaQwW7Gtwlv4AWajlpaW/pub?gid=1468647519&single=true&output=csv',
     SANCIONES_ISLA_DEVASTACION_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTfBwcHIT0bPWd9mP__N338NdZ2AwKT7S-pXT36TYeeWjqatuR-QhGR4Ln8znfDTW9_SaEMeUbOSlB/pub?gid=1459408902&single=true&output=csv',
     TOPKILLER_ISLA_DEVASTACION_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTfBwcHIT0bPWd9mP__N338NdZ2AwKT7S-pXT36TYeeWjqatuR-QhGR4Ln8znfDTW9_SaEMeUbOSlB/pub?gid=424324350&single=true&output=csv',
 
