@@ -1429,14 +1429,51 @@ tbody td { padding:0.85rem 1rem;color:var(--text);vertical-align:middle; }
 @media (max-width: 768px) {
   .hamburger { display: flex; }
   .nav-links {
-    position:absolute;top:100%;left:0;right:0;
-    background:rgba(0,0,0,0.98);border-bottom:2px solid var(--gold);
-    flex-direction:column;padding:1.5rem;gap:0.5rem;
-    transform:translateY(-110%);opacity:0;pointer-events:none;transition:all 0.35s ease;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.98), rgba(10,10,10,0.96));
+    border-bottom: 2px solid var(--gold);
+    flex-direction: column;
+    padding: 2rem 1.5rem 3rem;
+    gap: 1rem;
+    transform: translateY(-150%);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+    z-index: 999;
+    overflow-y: auto;
   }
-  .nav-links.open   { transform:translateY(0);opacity:1;pointer-events:all; }
-  .nav-links.active { transform:translateY(0);opacity:1;pointer-events:all; }
-  .nav-links a { padding:0.7rem 1rem;border-radius:8px;text-align:center; }
+  .nav-links.open   { transform: translateY(0); opacity: 1; pointer-events: all; }
+  .nav-links.active { transform: translateY(0); opacity: 1; pointer-events: all; }
+  .nav-links a { 
+    display: block;
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    border: 1px solid rgba(255,215,0,0.1);
+  }
+  .nav-links a:hover { 
+    background: rgba(255,215,0,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .nav-links .cta-button {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #000;
+    border: none;
+    font-weight: 700;
+  }
+  .nav-links .cta-button:hover {
+    background: linear-gradient(135deg, var(--gold2), var(--gold));
+    box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+  }
 
   .stats-grid      { grid-template-columns: repeat(2,1fr); }
   .stats-container { grid-template-columns: repeat(2,1fr); }
