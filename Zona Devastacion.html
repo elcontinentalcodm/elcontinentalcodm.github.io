@@ -30,9 +30,9 @@
              onerror="this.style.display='none'">
         <div class="sala-hero-content">
             <div class="sala-hero-back"><a href="salas.html">â Volver a Salas</a></div>
-            <h1 class="sala-hero-title">Isla Devastacion</h1>
-            <p class="sala-hero-desc">Isla Devastacion es la prueba máxima de resistencia y habilidad. En este mapa de Rebirth Island, la destrucción es el lenguaje universal. Las armas hablan más fuerte que las palabras, y solo los clanes que pueden llevar la devastación a sus enemigos prevalecerán. Aquí, cada granada, cada bala, cada movimiento cuenta. La isla queda devastada tras el paso de los verdaderos guerreros.</p>
-            <div class="sala-hero-badge">ð 8:00 p.m. &nbsp;â¢&nbsp; Host: Sistema</div>
+            <h1 class="sala-hero-title">Zona Devastacion</h1>
+            <p class="sala-hero-desc">Zona Devastacion es la prueba máxima de resistencia y habilidad. En este mapa de Isolated, la destrucción es el lenguaje universal. Las armas hablan más fuerte que las palabras, y solo los clanes que pueden llevar la devastación a sus enemigos prevalecerán. Aquí, cada granada, cada bala, cada movimiento cuenta. La isla queda devastada tras el paso de los verdaderos guerreros.</p>
+            <div class="sala-hero-badge">🕐 8:00 p.m. &nbsp;•&nbsp; Host: Eva</div>
         </div>
     </section>
 
@@ -42,21 +42,20 @@
         <div class="features-grid">
 
             <div class="feature-box">
-                <h3>ð¥ SOBRE ISLA DEVASTACION</h3>
+                <h3>🥊 SOBRE ZONA DEVASTACION</h3>
                 <ul>
-                    <li>ðºï¸ Mapa: Rebirth Island â arena de devastaciÃ³n</li>
-                    <li>ð¥ 10 escuadras de 4 jugadores</li>
-                    <li>ð Zona con cierre normal</li>
-                    <li>â ï¸ Sin respawn â caidas permanentes</li>
-                    <li>ð¯ Objetivo: arrasar la competencia</li>
+                    <li>🗺️ Mapa: Isolated</li>
+                    <li>👥 20 escuadras de 4 jugadores</li>
+                    <li>🎯 Zona con cierre normal</li>
+                    <li>🎯 Objetivo: arrasar la competencia</li>
                     <li>🔥 Sala de máxima potencia de fuego</li>
                 </ul>
             </div>
 
             <div class="feature-box">
-                <h3>ð REGLAS GENERALES</h3>
+                <h3>📋 REGLAS GENERALES</h3>
                 <ul>
-                    <li>ð·ï¸ Tag del clan obligatorio</li>
+                    <li>📝️ Tag del clan obligatorio</li>
                     <li>✅ Participación exclusiva de clanes registrados</li>
                     <li>🚫 Modo transmisión: Prohibido</li>
                     <li>⏰ Tolerancia máxima de ingreso: 3 minutos</li>
@@ -64,10 +63,10 @@
             </div>
 
             <div class="feature-box">
-                <h3>âï¸ CONFIGURACIÃN DE SALA</h3>
+                <h3>⚙️ CONFIGURACIÓN DE SALA</h3>
                 <ul>
-                    <li>ð¥ 20 escuadras</li>
-                    <li>ðºï¸ Mapa: Rebirth Island</li>
+                    <li>👥 20 escuadras</li>
+                    <li>🗺️ Mapa: Isolated</li>
                     <li>❤️ Reanimación automática: Activada</li>
                     <li>♾️ Balas infinitas: Activadas</li>
                     <li>💨 Zona normal con 200 de energía</li>
@@ -75,7 +74,7 @@
             </div>
 
             <div class="feature-box feature-box-danger">
-                <h3>ð« TOTALMENTE PROHIBIDO</h3>
+                <h3>🚫 TOTALMENTE PROHIBIDO</h3>
                 <ul>
                     <li>Uso de bugs, glitches o exploits</li>
                     <li>Uso de emuladores, macros o apps externas</li>
@@ -85,7 +84,7 @@
             </div>
 
             <div class="feature-box">
-                <h3>ð¤ CONDUCTA Y DISCIPLINA</h3>
+                <h3>🛡️ CONDUCTA Y DISCIPLINA</h3>
                 <ul>
                     <li>Respeto absoluto entre jugadores</li>
                     <li>Cero tolerancia a toxicidad , 3 reportes = suspensión 1 semana</li>
@@ -95,7 +94,7 @@
             </div>
 
             <div class="feature-box">
-                <h3>ð¸ EVIDENCIAS Y REPORTES</h3>
+                <h3>📹 EVIDENCIAS Y REPORTES</h3>
                 <ul>
                     <li>📹 Video completo: 5 min antes y después del incidente</li>
                     <li>🎯 ID del jugador reportado</li>
@@ -110,7 +109,7 @@
 
     <!-- Ranking Semanal -->
     <section class="sala-semanal-section">
-        <h2 class="sala-section-title">ð Ranking Semanal</h2>
+        <h2 class="sala-section-title">🏆 Ranking Semanal</h2>
         <div id="rankingSemanalPublico">&#9203; Cargando ranking...</div>
     </section>
 
@@ -146,7 +145,40 @@
     </footer>
 
     <script src="config-global.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', () => { initHamburger(); loadRankingSemanalPublic(CONFIG.SEMANAL_ISLA_DEVASTACION_URL, 'rankingSemanalPublico'); });</script>
+    <script src="ranking.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => { 
+        initHamburger();
+        const cfg = { url: () => CONFIG.DIARIOS_ISLA_DEVASTACION_URL, icon: '💥' };
+        const dataSemanal = await fetchSheetData(cfg.url());
+        const items = buildSalaRankingItems(dataSemanal, 'Zona Devastacion');
+        
+        let html = '';
+        if (items.length === 0) {
+            html = '<div class="error-message">Sin datos para Zona Devastacion esta semana</div>';
+        } else {
+            const medals = ['🥇', '🥈', '🥉'];
+            items.forEach((clan, i) => {
+                const pos = i + 1;
+                const topCl = pos <= 3 ? `top-${pos}` : '';
+                const posLabel = medals[i] || pos;
+                html += `
+                <div class="ranking-item no-logo ${topCl}">
+                    <div class="ranking-posicion">${posLabel}</div>
+                    <div class="ranking-info">
+                        <div class="ranking-nombre">${clan.nombre}</div>
+                        <div class="ranking-sala">💥 Zona Devastacion · Semana actual</div>
+                    </div>
+                    <div class="ranking-puntos">
+                        <div class="ranking-score">${clan.puntos}</div>
+                        <div class="ranking-label">puntos</div>
+                    </div>
+                </div>`;
+            });
+        }
+        document.getElementById('rankingSemanalPublico').innerHTML = html;
+    });
+    </script>
 </body>
 </html>
 

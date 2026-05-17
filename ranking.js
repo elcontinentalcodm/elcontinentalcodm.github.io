@@ -59,7 +59,9 @@ async function displaySalaRanking(sala, container) {
     try {
         // Las salas especiales se muestran como ranking simple en público.
         if (cfg.diarios && cfg.sanciones) {
-            const dataSemanal = await fetchSheetData(cfg.url());
+            // Zona Devastacion usa puntos diarios, otras usan resumen semanal
+            const dataUrl = sala === 'Zona Devastacion' ? cfg.diarios() : cfg.url();
+            const dataSemanal = await fetchSheetData(dataUrl);
             const items = buildSalaRankingItems(dataSemanal, sala);
 
             if (!items.length) {
@@ -155,16 +157,15 @@ function buildSalaRankingItems(dataSemanal, sala) {
 
         return items.sort((a, b) => b.puntos - a.puntos);
     } else if (sala === 'Zona Devastacion') {
-        // ESTRUCTURA DIARIOS - ZONA DEVASTACION
-        // Agrupar por SLOT + NOMBRE y sumar TOTAL (columna 9)
+        // PUNTOS DIARIOS - ZONA DEVASTACION
+        // Agrupar por SLOT + NOMBRE y sumar todos los puntos (hay múltiples filas por día)
         const equipos = {};
         
         dataSemanal.forEach(r => {
             const slot = (r[0] || '').toString().trim();
             const nombre = (r[1] || '').toString().trim();
-            const total = parseFloat(r[9]) || 0;
             
-            // Agrupar por SLOT + NOMBRE para no juntar equipos con mismo nombre pero diferente slot
+            // Agrupar por SLOT + NOMBRE
             if (slot && nombre && /^\d+$/.test(slot)) {
                 const key = `${slot}|${nombre}`;
                 
@@ -172,6 +173,8 @@ function buildSalaRankingItems(dataSemanal, sala) {
                     equipos[key] = { nombre, puntos: 0 };
                 }
                 
+                // Sumar el valor total de la columna M (TOTAL)
+                const total = parseFloat(r[12]) || 0;
                 equipos[key].puntos += total;
             }
         });

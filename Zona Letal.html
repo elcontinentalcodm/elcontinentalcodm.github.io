@@ -146,7 +146,40 @@
     </footer>
 
     <script src="config-global.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', () => { initHamburger(); loadRankingSemanalPublic(CONFIG.SEMANAL_ZLETAL_URL, 'rankingSemanalPublico'); });</script>
+    <script src="ranking.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => { 
+        initHamburger();
+        const cfg = { url: () => CONFIG.SEMANAL_ZLETAL_URL, icon: '💥' };
+        const dataSemanal = await fetchSheetData(cfg.url());
+        const items = buildSalaRankingItems(dataSemanal, 'ZONA LETAL 9');
+        
+        let html = '';
+        if (items.length === 0) {
+            html = '<div class="error-message">Sin datos para Zona Letal esta semana</div>';
+        } else {
+            const medals = ['🥇', '🥈', '🥉'];
+            items.forEach((clan, i) => {
+                const pos = i + 1;
+                const topCl = pos <= 3 ? `top-${pos}` : '';
+                const posLabel = medals[i] || pos;
+                html += `
+                <div class="ranking-item no-logo ${topCl}">
+                    <div class="ranking-posicion">${posLabel}</div>
+                    <div class="ranking-info">
+                        <div class="ranking-nombre">${clan.nombre}</div>
+                        <div class="ranking-sala">💥 Zona Letal · Semana actual</div>
+                    </div>
+                    <div class="ranking-puntos">
+                        <div class="ranking-score">${clan.puntos}</div>
+                        <div class="ranking-label">puntos</div>
+                    </div>
+                </div>`;
+            });
+        }
+        document.getElementById('rankingSemanalPublico').innerHTML = html;
+    });
+    </script>
 </body>
 </html>
 
