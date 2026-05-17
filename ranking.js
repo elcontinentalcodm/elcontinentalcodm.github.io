@@ -57,6 +57,20 @@ async function displaySalaRanking(sala, container) {
     if (!cfg) return;
     container.innerHTML = `<div class="loading-message">⏳ Cargando ${sala}...</div>`;
     try {
+        // ZONA XTREME 9: Lógica separada con TOP 3 MENSUAL
+        if (sala === 'ZONA XTREME 9') {
+            const dataSemanal = await fetchSheetData(cfg.url());
+            const items = buildZonaXtremeRankingItems(dataSemanal);
+            
+            if (!items.length) {
+                container.innerHTML = `<div class="error-message">Sin datos para ${sala} esta semana</div>`;
+                return;
+            }
+            
+            renderSalaRankingItems(container, sala, cfg.icon, items);
+            return;
+        }
+
         // Las salas especiales se muestran como ranking simple en público.
         if (cfg.diarios && cfg.sanciones) {
             // Zona Devastacion usa puntos diarios, otras usan resumen semanal
@@ -107,6 +121,66 @@ async function displaySalaRanking(sala, container) {
         console.error(e);
         container.innerHTML = `<div class="error-message">❌ Error al cargar ${sala}</div>`;
     }
+}
+
+function buildZonaXtremeRankingItems(dataSemanal) {
+    if (!dataSemanal || !dataSemanal.length) return [];
+
+    console.log('🔍 Zona Xtreme - Total filas:', dataSemanal.length);
+
+    // Filtrar filas vacías
+    const filasConDatos = dataSemanal.filter(row => {
+        return row && row.some(cell => cell && cell.toString().trim() !== '');
+    });
+
+    console.log('📊 Zona Xtreme - Filas con datos:', filasConDatos.length);
+
+    // Buscar la PRIMERA fila con "Lugar" para encontrar dónde comienzan los datos
+    let lugarIdx = -1, equipoIdx = -1, puntosIdx = -1;
+    let headerRowIdx = -1;
+
+    for (let i = 0; i < filasConDatos.length; i++) {
+        const row = filasConDatos[i];
+        const lugarPos = row.findIndex(cell => (cell || '').toString().trim() === 'Lugar');
+        
+        if (lugarPos !== -1) {
+            lugarIdx = lugarPos;
+            equipoIdx = lugarPos + 1;
+            puntosIdx = lugarPos + 2;
+            headerRowIdx = i;
+            console.log(`✅ Encontrado PRIMER header en fila ${i}: Lugar[${lugarIdx}], Equipo[${equipoIdx}], Puntos[${puntosIdx}]`);
+            break;  // ← Usar el PRIMER header encontrado, no el último
+        }
+    }
+
+    if (lugarIdx === -1) {
+        console.error('❌ No se encontró la fila de encabezados');
+        return [];
+    }
+
+    // Procesar las filas después del header
+    const items = filasConDatos
+        .slice(headerRowIdx + 1)
+        .filter(r => {
+            const lugar = (r[lugarIdx] || '').toString().trim();
+            const equipo = (r[equipoIdx] || '').toString().trim();
+            
+            console.log(`   Lugar: "${lugar}", Equipo: "${equipo}", Puntos: "${r[puntosIdx]}"`);
+            
+            // Filtrar filas que empiezan con número seguido de °
+            return lugar && equipo && /^\d+°/.test(lugar);
+        })
+        .map(r => {
+            const nombre = (r[equipoIdx] || '').trim();
+            const puntos = parseFloat((r[puntosIdx] || '').toString().replace(/[^\d.]/g, '')) || 0;
+            console.log(`   ✅ Agregado: ${nombre} - ${puntos} puntos`);
+            return { nombre, puntos };
+        })
+        .filter(item => item.nombre && item.puntos > 0)
+        .sort((a, b) => b.puntos - a.puntos);
+    
+    console.log('✅ Items finales:', items);
+    return items;
 }
 
 function buildSalaRankingItems(dataSemanal, sala) {

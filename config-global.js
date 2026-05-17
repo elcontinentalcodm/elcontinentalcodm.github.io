@@ -34,8 +34,8 @@ const CONFIG = {
     SEMANAL_ZLETAL_URL:      'https://docs.google.com/spreadsheets/d/e/2PACX-1vRshryBvdv7_fnllfpEd5TFO5-VJBOG3_q1YzTvGwdh-F8tGaPUXrJu0Fxb5LDUfbVbGvcxRw58Y3is/pub?gid=515735007&single=true&output=csv',
     SANCIONES_ZLETAL_URL:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRshryBvdv7_fnllfpEd5TFO5-VJBOG3_q1YzTvGwdh-F8tGaPUXrJu0Fxb5LDUfbVbGvcxRw58Y3is/pub?gid=1459408902&single=true&output=csv',
     TOPKILLER_ZLETAL_URL:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRshryBvdv7_fnllfpEd5TFO5-VJBOG3_q1YzTvGwdh-F8tGaPUXrJu0Fxb5LDUfbVbGvcxRw58Y3is/pub?gid=424324350&single=true&output=csv',
-    DIARIOS_ZXTREME_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vTT0Vk1AL1zvuMHa3sHbfe3cSLXJH4-gZSQL6M0POexEAAy0iRPuPcN0hcBv__DMMeiGEPP6caZrKqR/pub?gid=0&single=true&output=csv',
-    SEMANAL_ZXTREME_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vTT0Vk1AL1zvuMHa3sHbfe3cSLXJH4-gZSQL6M0POexEAAy0iRPuPcN0hcBv__DMMeiGEPP6caZrKqR/pub?gid=1433759351&single=true&output=csv',
+    DIARIOS_ZXTREME_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vSkx8mzwSI1FzjT992BhPLxwCQ2ae4557vtvpO4B95rdF1ulYLihXu1NhT977QTftq-1k0T8AvAsce6/pub?gid=1235108440&single=true&output=csv',
+    SEMANAL_ZXTREME_URL:     'https://docs.google.com/spreadsheets/d/e/2PACX-1vSkx8mzwSI1FzjT992BhPLxwCQ2ae4557vtvpO4B95rdF1ulYLihXu1NhT977QTftq-1k0T8AvAsce6/pub?gid=1235108440&single=true&output=csv',
     SANCIONES_ZXTREME_URL:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vTT0Vk1AL1zvuMHa3sHbfe3cSLXJH4-gZSQL6M0POexEAAy0iRPuPcN0hcBv__DMMeiGEPP6caZrKqR/pub?gid=711294694&single=true&output=csv',
 
     // ══════════════════════════════════════════════
