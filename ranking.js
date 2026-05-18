@@ -200,7 +200,9 @@ function buildSalaRankingItems(dataSemanal, sala) {
         const rows = dataSemanal.slice(startIdx).filter(r => {
             const slot = (r[0] || '').toString().trim();
             const clan = (r[1] || '').toString().trim();
-            return slot !== '' && clan !== '' && /^\d+$/.test(slot);
+            // Permitir filas con clan válido, independientemente del slot
+            // (slot puede estar vacío o ser un número válido)
+            return clan !== '' && (slot === '' || /^\d+$/.test(slot));
         });
 
         const items = rows.map(r => {
