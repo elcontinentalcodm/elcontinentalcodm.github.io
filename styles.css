@@ -206,6 +206,61 @@ nav {
   letter-spacing: 2px;
 }
 
+/* ── BOTÓN ACTUALIZAR ── */
+.btn-actualizar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  padding: 0.9rem 2.2rem;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #000;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  border-radius: 25px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+  text-decoration: none;
+}
+
+.btn-actualizar:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(255, 215, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-actualizar:active {
+  transform: translateY(-1px);
+}
+
+.btn-actualizar .btn-icon {
+  font-size: 1.3rem;
+  animation: spin 2s linear infinite;
+}
+
+.btn-actualizar:hover .btn-icon {
+  animation: spinFast 1s linear infinite;
+}
+
+.btn-actualizar .btn-text {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinFast {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* ── CONTAINER ── */
 .container { position: relative; z-index: 1; max-width: 1400px; margin: 2rem auto; padding: 0 2rem 4rem; }
 
@@ -1135,6 +1190,107 @@ tbody td { padding:0.85rem 1rem;color:var(--text);vertical-align:middle; }
     transform:translateY(-2px);
     box-shadow:0 8px 25px rgba(255,215,0,0.4);
     filter:brightness(1.1);
+}
+
+/* ═══════════════════════════════════════
+   SALAS - LOGO Y CONTADOR
+═══════════════════════════════════════ */
+.room-logo {
+    font-size:3.5rem;
+    text-align:center;
+    margin-bottom:0.5rem;
+    animation:logoFloat 3s ease-in-out infinite;
+}
+
+.logo-img {
+    max-width:100%;
+    height:auto;
+    max-height:120px;
+    border-radius:12px;
+    border:2px solid rgba(255,215,0,0.3);
+    box-shadow:0 4px 15px rgba(255,215,0,0.2);
+    object-fit:contain;
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform:translateY(0px); }
+    50% { transform:translateY(-8px); }
+}
+
+.room-timer-section {
+    display:flex;
+    flex-direction:column;
+    gap:0.4rem;
+    align-items:center;
+}
+
+.room-countdown {
+    font-family:'Rajdhani',sans-serif;
+    font-size:0.85rem;
+    letter-spacing:1px;
+    text-align:center;
+    font-weight:600;
+    padding:0.4rem 0.8rem;
+    border-radius:8px;
+    min-height:1.8rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* Estados de la sala */
+.room-time.status-normal {
+    color:var(--accent);
+    background:rgba(76,175,80,0.1);
+    padding:0.4rem 0.8rem;
+    border-radius:8px;
+    border:1px solid rgba(76,175,80,0.3);
+    transition:all 0.3s ease;
+}
+
+.room-time.status-warning {
+    color:#fff;
+    background:linear-gradient(135deg,rgba(255,193,7,0.25),rgba(255,152,0,0.25));
+    padding:0.4rem 0.8rem;
+    border-radius:8px;
+    border:1.5px solid #ffc107;
+    font-weight:700;
+    animation:warningPulse 1.5s ease-in-out infinite;
+    box-shadow:0 0 15px rgba(255,193,7,0.3);
+}
+
+.room-time.status-active {
+    color:#fff;
+    background:linear-gradient(135deg,rgba(244,67,54,0.35),rgba(211,47,47,0.35));
+    padding:0.4rem 0.8rem;
+    border-radius:8px;
+    border:2px solid #f44336;
+    font-weight:900;
+    animation:activePulse 0.8s ease-in-out infinite;
+    box-shadow:0 0 25px rgba(244,67,54,0.5);
+    letter-spacing:3px;
+}
+
+@keyframes warningPulse {
+    0%, 100% { 
+        box-shadow:0 0 10px rgba(255,193,7,0.3), inset 0 0 10px rgba(255,193,7,0.1);
+        transform:scale(1);
+    }
+    50% { 
+        box-shadow:0 0 20px rgba(255,193,7,0.6), inset 0 0 15px rgba(255,193,7,0.2);
+        transform:scale(1.02);
+    }
+}
+
+@keyframes activePulse {
+    0%, 100% { 
+        box-shadow:0 0 15px rgba(244,67,54,0.4), inset 0 0 10px rgba(244,67,54,0.1);
+        transform:scale(1);
+    }
+    50% { 
+        box-shadow:0 0 30px rgba(244,67,54,0.8), inset 0 0 20px rgba(244,67,54,0.2);
+        transform:scale(1.03);
+    }
 }
 
 @media(max-width:600px) {

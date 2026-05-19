@@ -13,6 +13,9 @@
 const CONFIG = {
     SHEET_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRa9VQLs3q_CXPQ_14S9SZ0snUA3AGmpYijAaUzbqut5LkSFepscbaLWvGb_AFt-24utnbdA4K02XEg/pub?gid=1070970565&single=true&output=csv',
 
+    // Hoja de Clanes - Datos públicos de clanes
+    CLANES_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRokGDiYpw_QV0WtS7dqPXdZFsBRrQWawAH5kzK9Jodgun6Cy2lNalOhRiE6XIZ69pwtJFwHWmZBRTP/pub?gid=2010911080&single=true&output=csv',
+
     // ══════════════════════════════════════════════
     // HOJA DEL TORNEO (bracket dinámico)
     // 1. Abre tu nuevo Google Sheet del torneo
@@ -108,25 +111,34 @@ const CONFIG = {
         NOMBRE_DE_CLAN:   1,
         TAG_DEL_CLAN:     2,
         LOGO:             3,
-        ID:               4,
-        ORO:              5,
-        PLATA:            6,
-        BRONCE:           7,
-        // ─────────────────────────────────────────────────────────────
-        // MEDALLAS ESPECIALES — Columnas I, J, K de tu Google Sheet
-        // Para ACTIVAR: escribe cualquier valor (1, SI, ✓, GANADOR...)
-        // Para DESACTIVAR: deja la celda vacía o pon 0
-        //   Columna I (índice 8)  → RUBI         → Torneo
-        //   Columna J (índice 9)  → ORO_DIAMANTE → Torneo entre comunidades
-        //   Columna K (índice 10) → ESMERALDA    → Torneo de MJ
-        // ─────────────────────────────────────────────────────────────
-        RUBI:             8,
-        ORO_DIAMANTE:     9,
-        ESMERALDA:        10,
-        // Col 11 = "Nombre del Equipo" (usado por clanes.js para cruzar con hojas semanales)
-        // Los datos de contacto (líder, teléfonos, co-líderes, modo de juego)
-        // se leen desde CONFIG.CONTACTO_URL (hoja separada del form de registro).
-        // Ver CONTACTO_COLUMNS más abajo.
+        NOMBRE_LIDER:     4,
+        TELEFONO_LIDER:   5,
+        NOMBRE_COLIDER1:  6,
+        TELEFONO_COLIDER1:7,
+        NOMBRE_COLIDER2:  8,
+        TELEFONO_COLIDER2:9,
+        ID:               10,
+        ORO:              11,
+        PLATA:            12,
+        BRONCE:           13,
+    },
+
+    // Estructura de la hoja de CLANES (CONFIG.CLANES_URL)
+    CLANES_COLUMNS: {
+        TIMESTAMP:        0,
+        NOMBRE_DE_CLAN:   1,
+        TAG_DEL_CLAN:     2,
+        LOGO:             3,
+        NOMBRE_LIDER:     4,
+        TELEFONO_LIDER:   5,
+        NOMBRE_COLIDER1:  6,
+        TELEFONO_COLIDER1:7,
+        NOMBRE_COLIDER2:  8,
+        TELEFONO_COLIDER2:9,
+        ID:               10,
+        ORO:              11,
+        PLATA:            12,
+        BRONCE:           13,
     },
 
     SALAS: {

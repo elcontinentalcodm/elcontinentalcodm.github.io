@@ -3,348 +3,583 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - El Continental</title>
+    <title>Panel Admin - El Continental</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="logo de sala/logo de pagina.jpeg">
+    <style>
+        /* ═════════════════════════════════════════════════
+           ADMIN CUSTOM STYLES
+           ═════════════════════════════════════════════════ */
+
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+            background: var(--bg);
+        }
+
+        /* ── LOGIN ── */
+        .login-section {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.05) 0%, rgba(255,215,0,0.02) 100%);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .login-card h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.5rem;
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .login-card p {
+            text-align: center;
+            color: var(--muted);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .login-input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 8px;
+            padding: 0.9rem 1.2rem;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(0,0,0,0.5);
+            box-shadow: 0 0 15px rgba(255,215,0,0.2);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            border: none;
+            color: #000;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.4);
+        }
+
+        .login-error {
+            color: #ff4d4d;
+            text-align: center;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .login-error.show {
+            display: block;
+        }
+
+        /* ── DASHBOARD ── */
+        .admin-dashboard {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-header {
+            background: linear-gradient(90deg, rgba(255,215,0,0.1), rgba(255,215,0,0.02));
+            border-bottom: 2px solid rgba(255,215,0,0.2);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-role {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: var(--gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .admin-logout-btn {
+            background: rgba(255,77,77,0.1);
+            border: 1px solid rgba(255,77,77,0.3);
+            color: #ff4d4d;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .admin-logout-btn:hover {
+            background: rgba(255,77,77,0.2);
+        }
+
+        /* ── TABS ── */
+        .admin-tabs-container {
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,215,0,0.1);
+            padding: 1rem 2rem;
+            overflow-x: auto;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .admin-tab-btn {
+            background: transparent;
+            border: 1px solid rgba(255,215,0,0.2);
+            color: var(--text);
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .admin-tab-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .admin-tab-btn.active {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1));
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* ── CONTENT ── */
+        .admin-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── STATS ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.05) 0%, rgba(255,215,0,0.02) 100%);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            font-weight: 900;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* ── FORMS & FILTERS ── */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input,
+        .filter-select {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(0,0,0,0.5);
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold2));
+            border: none;
+            color: #000;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,215,0,0.3);
+        }
+
+        /* ── TABLES ── */
+        .table-wrapper {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,215,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .admin-table thead {
+            background: rgba(255,215,0,0.05);
+            border-bottom: 2px solid rgba(255,215,0,0.2);
+        }
+
+        .admin-table th {
+            padding: 1rem;
+            text-align: left;
+            color: var(--gold);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .admin-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,215,0,0.1);
+            color: var(--text);
+        }
+
+        .admin-table tbody tr:hover {
+            background: rgba(255,215,0,0.05);
+        }
+
+        /* ── GRID LAYOUTS ── */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,215,0,0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: rgba(255,215,0,0.3);
+            background: rgba(0,0,0,0.4);
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--muted);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* ── ONLY MASTER ── */
+        .only-master {
+            display: none;
+        }
+
+        .only-master.show {
+            display: block;
+        }
+
+        .only-master-tab {
+            display: none;
+        }
+
+        .only-master-tab.show {
+            display: inline-block;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .admin-wrapper { flex-direction: column; }
+            .admin-header { flex-direction: column; gap: 1rem; }
+            .admin-tabs-container { overflow-x: auto; }
+            .admin-content { padding: 1rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .filter-bar { flex-direction: column; }
+            .search-input { min-width: 100%; }
+        }
+    </style>
 </head>
 <body>
-
-<!-- LOGIN -->
-<div class="login-container" id="loginContainer">
-    <div class="login-box">
-        <img src="logo de sala/logo de pagina.jpeg" alt="El Continental"
-             class="login-logo" onerror="this.style.display='none'">
-        <h1>🔐 Panel de Administración</h1>
-        <p>El Continental - Call of Duty Mobile</p>
-
-        <div class="login-form">
-            <div class="input-group">
-                <label for="username">👤 Usuario</label>
-                <input type="text" id="username" placeholder="Tu usuario">
-            </div>
-            <div class="input-group">
-                <label for="password">🔒 Contraseña</label>
-                <input type="password" id="password" placeholder="Tu contraseña">
-            </div>
-            <button class="btn-login" id="btnLogin">Ingresar</button>
-            <div class="login-error" id="loginError">⚠️ Usuario o contraseña incorrectos</div>
-        </div>
-
-
-        <div class="login-footer">
-            <a href="index.html">↩️ Volver al inicio</a>
-        </div>
-    </div>
-</div>
-
-<!-- DASHBOARD -->
-<div class="admin-container" id="adminContainer" style="display:none">
-
-    <nav class="admin-nav">
+    <nav>
         <div class="nav-container">
             <a href="index.html" class="logo"><img src="logo de sala/logo de pagina.jpeg" alt="Logo" class="nav-logo-img"> EL CONTINENTAL</a>
-            <div class="nav-center">
-                <span class="nav-title">Panel de Administración</span>
-                <span class="rol-badge" id="rolBadge">👤</span>
-                <button class="btn-perfil" id="btnPerfil">👤 Ver Perfil</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="clanes.html">Clanes</a></li>
+                <li><a href="ranking.html">Ranking</a></li>
+                <li><a href="salas.html">Salas</a></li>
+                <li><a href="https://forms.gle/6PdbKF8PYXojmiov9" target="_blank" rel="noopener" class="cta-button">✚ Registrar Clan</a></li>
+                <li><a href="settings.html" class="settings-link">⚙️ Configuración</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span><span></span><span></span>
             </div>
-            <button class="btn-logout" id="btnLogout">🚪 Salir del Admin</button>
         </div>
     </nav>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon">🏆</div>
-            <div class="stat-info">
-                <div class="stat-value" id="totalClanes">0</div>
-                <div class="stat-label">Clanes Totales</div>
+    <div class="admin-wrapper">
+        <!-- LOGIN -->
+        <div class="login-section" id="loginSection">
+            <div class="login-card">
+                <h1>🔐 ADMIN</h1>
+                <p>Panel de Administración - El Continental</p>
+                <form class="login-form" id="loginForm">
+                    <input type="text" id="username" class="login-input" placeholder="👤 Usuario" required>
+                    <input type="password" id="password" class="login-input" placeholder="🔒 Contraseña" required>
+                    <button type="submit" class="login-btn">Ingresar</button>
+                    <div class="login-error" id="loginError">⚠️ Usuario o contraseña incorrectos</div>
+                </form>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon">👥</div>
-            <div class="stat-info">
-                <div class="stat-value" id="clanesActivos">0</div>
-                <div class="stat-label">Clanes Activos</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">👥</div>
-            <div class="stat-info">
-                <div class="stat-value" id="totalJugadores">0</div>
-                <div class="stat-label">Jugadores Estimados</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">ð</div>
-            <div class="stat-info">
-                <div class="stat-value" id="totalTrofeos">0</div>
-                <div class="stat-label">Trofeos Otorgados</div>
-            </div>
-        </div>        <div class="stat-card only-master" id="statSanciones">
-            <div class="stat-icon">🚨</div>
-            <div class="stat-info">
-                <div class="stat-value" id="totalSanciones">0</div>
-                <div class="stat-label">Sanciones Activas</div>
-            </div>
-        </div>    </div>
 
-    <!-- TABS -->
-    <div class="admin-tabs" id="adminTabs">
-        <button class="admin-tab active" data-tab="clanes">👥 Clanes</button>        <button class="admin-tab" data-tab="asistencia">📋 Asistencia</button>        <button class="admin-tab" data-tab="contactos">📞 Contactos</button>
-        <button class="admin-tab" data-tab="medallas">🏅 Medallas</button>
-        <button class="admin-tab" data-tab="top3">🏆 Top 3</button>
-        <button class="admin-tab" data-tab="semanal">📊 Puntos Semanales</button>
-        <button class="admin-tab only-master" data-tab="sanciones">🚨 Sanciones</button>
-        <button class="admin-tab only-master" data-tab="formulario">📋 Formulario</button>
-    </div>
-
-    <!-- ââ PANEL: CLANES ââ -->
-    <div class="admin-panel" id="panel-clanes">
-
-    <!-- Filtros -->
-    <div class="admin-filters">
-        <input type="text" id="searchInput" class="search-input"
-               placeholder="ð Buscar por nombre, tag o ID...">
-        <select id="filterEstado" class="filter-select only-master">
-            <option value="all">Todos los clanes</option>
-            <option value="active">Solo activos</option>
-            <option value="inactive">Solo pendientes</option>
-        </select>
-        <button class="btn-refresh" id="btnRefresh">ð Actualizar</button>
-    </div>
-
-    <!-- Tabla dinámica según rol -->
-    <div class="table-container">
-        <h2>ð Directorio de Clanes</h2>
-        <p class="table-subtitle">Ordenado por puntos de salas (mayor a menor)</p>
-        <div class="table-wrapper">
-            <table class="admin-table">
-                <thead id="tablaHead"></thead>
-                <tbody id="tablaBody">
-                    <tr><td colspan="20" class="loading-cell">â³ Cargando datos...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Exportar solo master -->
-    <div class="export-section only-master">
-        <h3>📥 Exportar Datos</h3>
-        <button class="btn-export" id="btnExportContacts">📊 Exportar Contactos (CSV)</button>
-        <button class="btn-export" id="btnExportPuntos">📊 Exportar Puntos (CSV)</button>
-    </div>
-
-    </div><!-- /panel-clanes -->
-
-
-
-    <!-- PANEL: ASISTENCIA -->
-    <div class="admin-panel" id="panel-asistencia" style="display:none">
-    <div class="asistencia-section">
-        <div class="asistencia-header">
-            <h3>📋 Asistencia de Clanes</h3>
-            <button class="btn-refresh asistencia-refresh" id="btnRefreshAsistencia">🔄 Actualizar</button>
-        </div>
-        <p class="asistencia-desc">
-            Datos leídos desde la hoja de asistencia.
-            <span class="asist-verde">â </span> <strong>P</strong> = Presente &nbsp;
-            <span class="asist-rojo">â </span> <strong>A</strong> = Ausente &nbsp;
-            <span class="asist-gris">â </span> Sin dato
-        </p>
-        <div id="asistenciaWrapper">
-            <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando asistencia...</p>
-        </div>
-    </div>
-    </div><!-- /panel-asistencia -->
-
-    <!-- ââ PANEL: CONTACTOS ââ -->
-    <div class="admin-panel" id="panel-contactos" style="display:none">
-    <div class="contactos-section">
-        <div class="contactos-header">
-            <h3>📞 Directorio de Contactos</h3>
-            <input type="text" id="contactosSearch" class="search-input" placeholder="🔍 Buscar clan, líder o modo..." style="max-width:320px">
-        </div>
-        <p class="contactos-desc">Información privada – visible para CEO y Hosts de Sala. Fuente: hoja de registro.</p>
-        <div class="contactos-grid" id="contactosGrid">
-            <p style="color:var(--muted);text-align:center;padding:3rem">â³ Cargando contactos...</p>
-        </div>
-    </div>
-    </div><!-- /panel-contactos -->
-
-    <!-- ââ PANEL: MEDALLAS ââ -->
-    <div class="admin-panel" id="panel-medallas" style="display:none">
-    <div class="medallas-especiales-section" id="medallasSection">
-        <h3>ð Medallas Especiales</h3>
-        <p class="medallas-desc">
-            Las medallas se cargan desde Google Sheets automáticamente.
-            Solo aparecen los clanes que tienen al menos una medalla activa.
-        </p>
-        <div class="medallas-leyenda">
-            <span class="badge-medalla rubi">💎 Rubí</span>
-            <small>Torneo</small>
-            <span class="badge-medalla oro-diamante">👑 Oro+Diamante</span>
-            <small>Entre Comunidades</small>
-            <span class="badge-medalla esmeralda">💚 Esmeralda</span>
-            <small>Torneo de MJ</small>
-        </div>
-        <div class="medallas-grid" id="medallasGrid">
-            <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando clanes...</p>
-        </div>
-    </div>
-    </div><!-- /panel-medallas -->
-
-    <!-- ââ PANEL: TOP 3 (CEO y Host) ââ -->
-    <div class="admin-panel" id="panel-top3" style="display:none">
-        <div class="top3-section">
-            <div class="top3-header">
-                <h3>🏆 Top 3 Destacados</h3>
-                <p class="top3-desc">Los 3 clanes con más puntos de salas. Puedes compartir el podio como imagen.</p>
+        <!-- DASHBOARD -->
+        <div class="admin-dashboard" id="adminDashboard" style="display:none;">
+            <!-- Header -->
+            <div class="admin-header">
+                <div class="admin-title">🏢 PANEL ADMIN</div>
+                <div class="admin-user">
+                    <div class="admin-role" id="userRole">👤 Administrador</div>
+                    <button class="admin-logout-btn" id="logoutBtn">🚪 Salir</button>
+                </div>
             </div>
 
-            <!-- Tarjeta del podio (se captura esta para la imagen) -->
-            <div class="top3-podio-wrap">
-                <div class="top3-podio" id="top3Podio">
-                    <div class="top3-podio-title">
-                        <img src="logo de sala/logo de pagina.jpeg" alt="Logo" class="top3-logo" onerror="this.style.display='none'">
-                        <span>EL CONTINENTAL Â· TOP 3</span>
+            <!-- Tabs -->
+            <div class="admin-tabs-container">
+                <ul class="admin-tabs">
+                    <li><button class="admin-tab-btn active" data-tab="clanes">👥 Clanes</button></li>
+                    <li><button class="admin-tab-btn" data-tab="rankings">📊 Rankings</button></li>
+                    <li><button class="admin-tab-btn" data-tab="top3">🏆 Top 3</button></li>
+                    <li><button class="admin-tab-btn" data-tab="asistencia">📋 Asistencia</button></li>
+                    <li><button class="admin-tab-btn" data-tab="contactos">📞 Contactos</button></li>
+                    <li class="only-master-tab"><button class="admin-tab-btn" data-tab="sanciones">🚨 Sanciones</button></li>
+                </ul>
+            </div>
+
+            <!-- Content -->
+            <div class="admin-content">
+                <!-- TAB: CLANES -->
+                <div class="tab-panel active" id="tab-clanes">
+                    <h2>👥 Directorio de Clanes</h2>
+                    <div class="filter-bar">
+                        <input type="text" id="searchClanes" class="search-input" placeholder="🔍 Buscar clan, tag o líder...">
+                        <select id="filterEstado" class="filter-select">
+                            <option value="all">Todos</option>
+                            <option value="active">Activos</option>
+                            <option value="inactive">Inactivos</option>
+                        </select>
+                        <button class="btn-primary" id="refreshClanes">🔄 Actualizar</button>
                     </div>
-                    <div class="top3-cards" id="top3Cards">
-                        <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
+                    <div class="table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Logo</th>
+                                    <th>Nombre</th>
+                                    <th>Tag</th>
+                                    <th>Líder</th>
+                                    <th>Puntos</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clanesTableBody">
+                                <tr><td colspan="6" class="empty-state">⏳ Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB: RANKINGS -->
+                <div class="tab-panel" id="tab-rankings">
+                    <h2>📊 Rankings Semanales</h2>
+                    <div class="filter-bar">
+                        <select id="rankingsSala" class="filter-select">
+                            <option value="zguerra">⚔️ Zona de Guerra</option>
+                            <option value="zletal">💥 Zona Letal 9</option>
+                            <option value="zxtreme">⚡ Zona Xtreme 9</option>
+                            <option value="isla-exterminio">🔫 Isla Exterminio</option>
+                            <option value="isla-devastacion">💥 Zona Devastacion</option>
+                        </select>
+                        <button class="btn-primary" id="refreshRankings">🔄 Actualizar</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Clan</th>
+                                    <th>Puntos</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rankingsTableBody">
+                                <tr><td colspan="3" class="empty-state">⏳ Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB: TOP 3 -->
+                <div class="tab-panel" id="tab-top3">
+                    <h2>🏆 Top 3 Destacados</h2>
+                    <p style="color: var(--muted); margin-bottom: 1.5rem;">Los 3 clanes con más puntos generales.</p>
+                    <div class="stats-grid" id="top3Container">
+                        <div class="empty-state">⏳ Cargando...</div>
+                    </div>
+                </div>
+
+                <!-- TAB: ASISTENCIA -->
+                <div class="tab-panel" id="tab-asistencia">
+                    <h2>📋 Asistencia de Clanes</h2>
+                    <button class="btn-primary" id="refreshAsistencia" style="margin-bottom: 1.5rem;">🔄 Actualizar</button>
+                    <div id="asistenciaContainer">
+                        <div class="empty-state">⏳ Cargando...</div>
+                    </div>
+                </div>
+
+                <!-- TAB: CONTACTOS -->
+                <div class="tab-panel" id="tab-contactos">
+                    <h2>📞 Directorio de Contactos</h2>
+                    <div class="filter-bar">
+                        <input type="text" id="searchContactos" class="search-input" placeholder="🔍 Buscar clan, líder, teléfono...">
+                    </div>
+                    <div class="grid-2col" id="contactosContainer">
+                        <div class="empty-state">⏳ Cargando...</div>
+                    </div>
+                </div>
+
+                <!-- TAB: SANCIONES (ONLY MASTER) -->
+                <div class="tab-panel" id="tab-sanciones">
+                    <h2>🚨 Control de Sanciones</h2>
+                    <div class="filter-bar">
+                        <select id="sancionesSala" class="filter-select">
+                            <option value="all">Todas las salas</option>
+                            <option value="zguerra">⚔️ Zona de Guerra</option>
+                            <option value="zletal">💥 Zona Letal 9</option>
+                            <option value="zxtreme">⚡ Zona Xtreme 9</option>
+                            <option value="isla-devastacion">💥 Zona Devastacion</option>
+                        </select>
+                        <button class="btn-primary" id="refreshSanciones">🔄 Actualizar</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Clan</th>
+                                    <th>Sala</th>
+                                    <th>Puntos</th>
+                                    <th>Razón</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sancionesTableBody">
+                                <tr><td colspan="5" class="empty-state">⏳ Cargando...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
-            <div class="top3-actions">
-                <button class="btn-export" id="btnShareTop3">ð¸ Compartir como imagen</button>
-                <button class="btn-refresh" id="btnRefreshTop3">ð Actualizar</button>
-            </div>
-        </div>
-    </div><!-- /panel-top3 -->
-
-    <!-- ââ PANEL: PUNTOS SEMANALES (CEO y Host) ââ -->
-    <div class="admin-panel" id="panel-semanal" style="display:none">
-        <div class="semanal-section">
-            <div class="semanal-header">
-                <h3>ð Puntos Semanales</h3>
-                <div style="display:flex;gap:0.6rem;align-items:center">
-                    <button class="btn-export" id="btnShareSemanal">ð¸ Compartir imagen</button>
-                    <button class="btn-refresh" id="btnRefreshSemanal">ð Actualizar</button>
-                </div>
-            </div>
-            <p class="semanal-desc">Puntos acumulados por sala esta semana Â· Visible para CEO y Hosts de Sala Â· Fuente: Google Sheets.</p>
-            <!-- Sub-tabs de sala -->
-            <div class="semanal-subtabs">
-                <button class="semanal-subtab active" data-sala="zguerra">âï¸ Zona de Guerra</button>
-                <button class="semanal-subtab" data-sala="zletal">ð¥ Zona Letal 9</button>
-                <button class="semanal-subtab" data-sala="zxtreme">â¡ Zona Xtreme 9</button>
-                <button class="semanal-subtab" data-sala="isla-exterminio">ð« Isla Exterminio</button>
-                <button class="semanal-subtab" data-sala="isla-aniquilacion">â¡ Isla Aniquilacion</button>
-                <button class="semanal-subtab" data-sala="isla-devastacion">ð¥ Isla Devastacion</button>
-                <button class="semanal-subtab" data-sala="isla-apocalipsis">â ï¸ Isla Apocalipsis</button>
-                <button class="semanal-subtab" data-sala="isla-extincion">ð¥ Isla Extincion</button>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-zguerra">
-                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-zletal" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-zxtreme" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-isla-exterminio" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-isla-aniquilacion" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-isla-devastacion" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-isla-apocalipsis" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
-            </div>
-            <div class="semanal-wrapper" id="semanalWrapper-isla-extincion" style="display:none">
-                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando...</p>
-            </div>
-
-        </div>
-    </div><!-- /panel-semanal -->
-
-    <!-- ââ PANEL: SANCIONES (solo CEO) ââ -->
-    <div class="admin-panel only-master" id="panel-sanciones" style="display:none">
-        <div class="sanciones-section">
-            <div class="sanciones-header">
-                <h3>ð¨ Control de Sanciones</h3>
-                <div class="sanciones-header-actions">
-                    <select id="sancionesFiltroSala" class="filter-select">
-                        <option value="all">Todas las salas</option>
-                        <option value="zguerra">âï¸ Zona de Guerra</option>
-                        <option value="zletal">ð¥ Zona Letal 9</option>
-                        <option value="zxtreme">â¡ Zona Xtreme 9</option>
-                        <option value="isladevast">ð¥ Isla Devastacion</option>
-                    </select>
-                    <button class="btn-refresh" id="btnRefreshSanciones">ð Actualizar</button>
-                </div>
-            </div>
-            <p class="sanciones-desc">Sanciones registradas en todas las salas Â· Solo visible para el CEO Â· Fuente: Google Sheets.</p>
-            <div id="sancionesWrapper">
-                <p style="color:var(--muted);text-align:center;padding:2rem">â³ Cargando sanciones...</p>
-            </div>
-        </div>
-    </div><!-- /panel-sanciones -->
-
-    <!-- ââ PANEL: FORMULARIO (solo CEO) ââ -->
-    <div class="admin-panel only-master" id="panel-formulario" style="display:none">
-        <div class="formulario-section">
-            <div class="formulario-header">
-                <h3>ð Registro de Equipos</h3>
-                <p class="formulario-desc">Formulario de registro para nuevos equipos. Solo accesible para el CEO.</p>
-            </div>
-            <div class="formulario-container">
-                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeAdpRzmX-iZX17r4SvcYryGYg0HnIJCOCjz4t7MDfkq1HyYg/viewform?embedded=true" width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0">Cargandoâ¦</iframe>
-            </div>
-        </div>
-    </div><!-- /panel-formulario -->
-
-</div>
-
-<!-- ââ MODAL: PERFIL DEL ADMIN ââ -->
-<div class="perfil-modal" id="perfilModal" style="display:none">
-    <div class="perfil-modal-content">
-        <div class="perfil-modal-header">
-            <h2>ð¤ Perfil del Admin</h2>
-            <button class="perfil-modal-close" id="btnCerrarPerfil">â</button>
-        </div>
-        <div class="perfil-modal-body">
-            <div class="perfil-field">
-                <label>Usuario:</label>
-                <p id="perfilUsuario">â</p>
-            </div>
-            <div class="perfil-field">
-                <label>Rol:</label>
-                <p id="perfilRol">â</p>
-            </div>
-            <div class="perfil-field">
-                <label>Tipo de Acceso:</label>
-                <p id="perfilTipo">â</p>
-            </div>
-            <div class="perfil-field">
-                <label>Estado de Sesión:</label>
-                <p id="perfilEstado">✅ Sesión activa</p>
-            </div>
-        </div>
-        <div class="perfil-modal-footer">
-            <button class="btn-primary" id="btnCerrarPerfilFooter">Cerrar</button>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="config-global.js"></script>
-<script src="admin.js"></script>
-
+    <script src="config-global.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>
-

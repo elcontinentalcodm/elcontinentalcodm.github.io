@@ -36,8 +36,12 @@
 
             <!-- ====== ZONAS PRINCIPALES ====== -->
             <!-- Sala 1: ZONA DE GUERRA - LUZ -->
-            <div class="room-card">
-                <div class="room-time">🕐 8:00 p.m.</div>
+            <div class="room-card" data-sala="Zona de Guerra" data-hora="20:00">
+                <div class="room-logo"><img src="logo de sala/Zona De Guerra.jpeg" alt="Zona de Guerra" class="logo-img"></div>
+                <div class="room-timer-section">
+                    <div class="room-time status-normal" id="timer-ZG">🕐 20:00</div>
+                    <div class="room-countdown" id="countdown-ZG">Próxima sala en...</div>
+                </div>
                 <div class="room-name">Zona de Guerra</div>
                 <div class="room-divider"></div>
                 <div class="host-info">
@@ -51,8 +55,12 @@
             </div>
 
             <!-- Sala 2: ZONA LETAL - EVA -->
-            <div class="room-card">
-                <div class="room-time">🕐 9:00 p.m.</div>
+            <div class="room-card" data-sala="Zona Letal" data-hora="21:00">
+                <div class="room-logo"><img src="logo de sala/Zona Letal.jpeg" alt="Zona Letal" class="logo-img"></div>
+                <div class="room-timer-section">
+                    <div class="room-time status-normal" id="timer-ZL">🕐 21:00</div>
+                    <div class="room-countdown" id="countdown-ZL">Próxima sala en...</div>
+                </div>
                 <div class="room-name">Zona Letal</div>
                 <div class="room-divider"></div>
                 <div class="host-info">
@@ -66,8 +74,12 @@
             </div>
 
             <!-- Sala 3: ZONA XTREME - TÓXICA -->
-            <div class="room-card">
-                <div class="room-time">🕐 9:00 p.m.</div>
+            <div class="room-card" data-sala="Zona Xtreme" data-hora="21:00">
+                <div class="room-logo"><img src="logo de sala/Zona Xtreme.jpeg" alt="Zona Xtreme" class="logo-img"></div>
+                <div class="room-timer-section">
+                    <div class="room-time status-normal" id="timer-ZX">🕐 21:00</div>
+                    <div class="room-countdown" id="countdown-ZX">Próxima sala en...</div>
+                </div>
                 <div class="room-name">Zona Xtreme</div>
                 <div class="room-divider"></div>
                 <div class="host-info">
@@ -87,8 +99,12 @@
             </div>
 
             <!-- Sala 4: ZONA DEVASTACION -->
-            <div class="room-card">
-                <div class="room-time">🕐 8:00 p.m.</div>
+            <div class="room-card" data-sala="Zona Devastacion" data-hora="20:00">
+                <div class="room-logo"><img src="logo de sala/Isla Devastacion.jpeg" alt="Zona Devastacion" class="logo-img"></div>
+                <div class="room-timer-section">
+                    <div class="room-time status-normal" id="timer-ZD">🕐 20:00</div>
+                    <div class="room-countdown" id="countdown-ZD">Próxima sala en...</div>
+                </div>
                 <div class="room-name">Zona Devastacion</div>
                 <div class="room-divider"></div>
                 <div class="host-info">
@@ -96,7 +112,7 @@
                     <div class="host-details">
                         <div class="host-label">Host:</div>
                         <div class="host-name">Eva</div>
-                    </div>
+                    </div> 
                 </div>
                 <a href="Zona Devastacion.html" class="btn-ingresar">Ingresar a la Sala</a>
             </div>
@@ -108,8 +124,12 @@
             </div>
 
             <!-- Sala 5: Isla Exterminio -->
-            <div class="room-card">
-                <div class="room-time">🕐 7:00 p.m.</div>
+            <div class="room-card" data-sala="Isla Exterminio" data-hora="19:00">
+                <div class="room-logo"><img src="logo de sala/Isla Exterminio.jpeg" alt="Isla Exterminio" class="logo-img"></div>
+                <div class="room-timer-section">
+                    <div class="room-time status-normal" id="timer-IE">🕐 19:00</div>
+                    <div class="room-countdown" id="countdown-IE">Próxima sala en...</div>
+                </div>
                 <div class="room-name">Isla Exterminio</div>
                 <div class="room-divider"></div>
                 <div class="host-info">
@@ -130,6 +150,7 @@
 
             <!-- Torneo BR -->
             <div class="room-card room-card-especial">
+                <div class="room-logo" style="font-size: 3rem;">🏆</div>
                 <div class="room-time">🎮 Torneo BR</div>
                 <div class="room-name">Torneo BR</div>
                 <div class="room-divider"></div>
@@ -178,21 +199,6 @@
 
     <script src="config-global.js"></script>
     <script src="settings.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', initHamburger);
-
-        // Estado dinámico Torneo BR (debe coincidir con la fecha en Torneo BR.html)
-        (function() {
-            const FECHA_BR = ""; // Ej: "2026-04-15"  mantener igual que en Torneo BR.html
-            const el = document.getElementById('salasBREstado');
-            if (!el) return;
-            if (!FECHA_BR) { el.textContent = "Próximo"; return; }
-            const pasado = new Date() > new Date(FECHA_BR + 'T23:59:59');
-            el.textContent = pasado ? "Finalizado" : "Próximo";
-        })();
-    </script>
+    <script src="salas.js"></script>
 </body>
 </html>
-
-
-

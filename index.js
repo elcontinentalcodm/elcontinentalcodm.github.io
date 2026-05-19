@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () { initIndex(); initHam
 
 async function initIndex() {
     try {
-        const data = await fetchSheetData();
+        const data = await fetchSheetData(CONFIG.CLANES_URL);
         const allClans = filterActiveClans(data);
 
         if (allClans.length === 0) {
@@ -37,16 +37,16 @@ async function initIndex() {
 
 function processAndSort(clans) {
     return clans.map(row => {
-        const oro    = parseInt(row[CONFIG.COLUMNS.ORO])    || 0;
-        const plata  = parseInt(row[CONFIG.COLUMNS.PLATA])  || 0;
-        const bronce = parseInt(row[CONFIG.COLUMNS.BRONCE]) || 0;
+        const oro    = parseInt(row[CONFIG.CLANES_COLUMNS.ORO])    || 0;
+        const plata  = parseInt(row[CONFIG.CLANES_COLUMNS.PLATA])  || 0;
+        const bronce = parseInt(row[CONFIG.CLANES_COLUMNS.BRONCE]) || 0;
         // PUNTOS = solo salas
         const total = calcularPuntos(row);
         return {
-            nombre: row[CONFIG.COLUMNS.NOMBRE_DE_CLAN],
-            tag:    row[CONFIG.COLUMNS.TAG_DEL_CLAN],
-            logo:   getLogoUrl(row[CONFIG.COLUMNS.ID], row[CONFIG.COLUMNS.LOGO]),
-            id:     row[CONFIG.COLUMNS.ID],
+            nombre: row[CONFIG.CLANES_COLUMNS.NOMBRE_DE_CLAN],
+            tag:    row[CONFIG.CLANES_COLUMNS.TAG_DEL_CLAN],
+            logo:   getLogoUrl(row[CONFIG.CLANES_COLUMNS.ID], row[CONFIG.CLANES_COLUMNS.LOGO]),
+            id:     row[CONFIG.CLANES_COLUMNS.ID],
             oro, plata, bronce,
             medallas: oro + plata + bronce,
             total,

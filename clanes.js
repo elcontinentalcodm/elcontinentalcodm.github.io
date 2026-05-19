@@ -14,7 +14,7 @@ async function initClanes() {
     const container = document.getElementById('clanesContainer');
     try {
         // Cargar hoja principal + hojas semanales en paralelo
-        const [mainData, semMap] = await Promise.all([fetchSheetData(), buildSemMap()]);
+        const [mainData, semMap] = await Promise.all([fetchSheetData(CONFIG.CLANES_URL), buildSemMap()]);
 
         const active = filterActiveClans(mainData);
         if (active.length === 0) { container.innerHTML = '<div class="no-clanes">No hay clanes registrados aún</div>'; return; }
@@ -83,14 +83,13 @@ function aplicarFiltros(container) {
 
 function processClansData(data, semMap) {
     return data.map(row => {
-        const oro    = parseInt(row[CONFIG.COLUMNS.ORO])    || 0;
-        const plata  = parseInt(row[CONFIG.COLUMNS.PLATA])  || 0;
-        const bronce = parseInt(row[CONFIG.COLUMNS.BRONCE]) || 0;
+        const oro    = parseInt(row[CONFIG.CLANES_COLUMNS.ORO])    || 0;
+        const plata  = parseInt(row[CONFIG.CLANES_COLUMNS.PLATA])  || 0;
+        const bronce = parseInt(row[CONFIG.CLANES_COLUMNS.BRONCE]) || 0;
 
-        // Buscar in mapa semanal por nombre del clan (col 1) y por nombre del equipo (col 18)
-        const k1 = _findSem(row[CONFIG.COLUMNS.NOMBRE_DE_CLAN], semMap);
-        const k2 = _findSem(row[11], semMap); // col 11 = "Nombre del Equipo"
-        const sem = semMap[k1] || semMap[k2] || { alc:0, alc2:0, alcm:0, zg:0, zl:0, zx:0 };
+        // Buscar en mapa semanal por nombre del clan
+        const k1 = _findSem(row[CONFIG.CLANES_COLUMNS.NOMBRE_DE_CLAN], semMap);
+        const sem = semMap[k1] || { alc:0, alc2:0, alcm:0, zg:0, zl:0, zx:0 };
 
         const alc  = sem.alc;
         const alc2 = sem.alc2;
@@ -100,10 +99,10 @@ function processClansData(data, semMap) {
         const zx   = sem.zx;
         const total = alc + alc2 + alcm + zg + zl + zx;
         return {
-            nombre: row[CONFIG.COLUMNS.NOMBRE_DE_CLAN],
-            tag:    row[CONFIG.COLUMNS.TAG_DEL_CLAN],
-            logo:   getLogoUrl(row[CONFIG.COLUMNS.ID], row[CONFIG.COLUMNS.LOGO]),
-            id:     row[CONFIG.COLUMNS.ID] || '—',
+            nombre: row[CONFIG.CLANES_COLUMNS.NOMBRE_DE_CLAN],
+            tag:    row[CONFIG.CLANES_COLUMNS.TAG_DEL_CLAN],
+            logo:   getLogoUrl(row[CONFIG.CLANES_COLUMNS.ID], row[CONFIG.CLANES_COLUMNS.LOGO]),
+            id:     row[CONFIG.CLANES_COLUMNS.ID] || '—',
             // SIN lider (sección pública)
             oro, plata, bronce,
             salas: { alc, alc2, alcm, zg, zl, zx },
