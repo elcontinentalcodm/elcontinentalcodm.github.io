@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuración - El Continental</title>
+    <meta property="og:title" content="Configuración - El Continental" />
+    <meta property="og:description" content="Configuración y preferencias de tu perfil en El Continental" />
+    <meta property="og:image" content="https://el-continental.com/imagen.jpg" />
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="logo de sala/logo de pagina.jpeg">
 </head>
@@ -157,7 +160,8 @@
                         <div class=\"option-header\">
                             <label for=\"volumeControl\">Volumen 🔊</label>
                         </div>
-                        <input type="range" id="volumeControl" class="settings-slider" min="0" max="100" value="50">
+
+                        <input type="range" id="volumeControl" class="settings-slider" min="0" max="100" value="50" aria-label="Volumen">
                         <div class="volume-display"><span id="volumeValue">50</span>%</div>
                         <p class="option-description">Ajusta el volumen de los sonidos</p>
                     </div>
@@ -171,7 +175,8 @@
                     <div class=\"settings-option\">
                         <div class=\"option-header\">
                             <label for=\"dataTracking\">Permitir Análisis Anónimo</label>
-                            <input type="checkbox" id="dataTracking" class="toggle-switch" checked>
+
+                            <input type="checkbox" id="dataTracking" class="toggle-switch" checked aria-label="Permitir análisis anónimo">
                             <span class="toggle-slider"></span>
                         </div>
                         <p class=\"option-description\">Ayuda a mejorar El Continental compartiendo datos de uso anónimos</p>

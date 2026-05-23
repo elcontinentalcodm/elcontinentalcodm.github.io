@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Admin - El Continental</title>
+    <meta property="og:title" content="Panel Admin - El Continental" />
+    <meta property="og:description" content="Panel de administración de El Continental" />
+    <meta property="og:image" content="https://el-continental.com/imagen.jpg" />
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="logo de sala/logo de pagina.jpeg">
     <style>
@@ -432,7 +435,7 @@
         </div>
 
         <!-- DASHBOARD -->
-        <div class="admin-dashboard" id="adminDashboard" style="display:none;">
+        <div class="admin-dashboard admin-dashboard-wrapper" id="adminDashboard">
             <!-- Header -->
             <div class="admin-header">
                 <div class="admin-title">🏢 PANEL ADMIN</div>
@@ -461,7 +464,8 @@
                     <h2>👥 Directorio de Clanes</h2>
                     <div class="filter-bar">
                         <input type="text" id="searchClanes" class="search-input" placeholder="🔍 Buscar clan, tag o líder...">
-                        <select id="filterEstado" class="filter-select">
+                        <label for="filterEstado">Filtrar por Estado</label>
+                        <select id="filterEstado" class="filter-select" aria-label="Filtrar por estado de asistencia">
                             <option value="all">Todos</option>
                             <option value="active">Activos</option>
                             <option value="inactive">Inactivos</option>
@@ -519,7 +523,7 @@
                 <!-- TAB: TOP 3 -->
                 <div class="tab-panel" id="tab-top3">
                     <h2>🏆 Top 3 Destacados</h2>
-                    <p style="color: var(--muted); margin-bottom: 1.5rem;">Los 3 clanes con más puntos generales.</p>
+                    <p class="admin-description-text">Los 3 clanes con más puntos generales.</p>
                     <div class="stats-grid" id="top3Container">
                         <div class="empty-state">⏳ Cargando...</div>
                     </div>
@@ -528,7 +532,7 @@
                 <!-- TAB: ASISTENCIA -->
                 <div class="tab-panel" id="tab-asistencia">
                     <h2>📋 Asistencia de Clanes</h2>
-                    <button class="btn-primary" id="refreshAsistencia" style="margin-bottom: 1.5rem;">🔄 Actualizar</button>
+                    <button class="btn-primary admin-refresh-button" id="refreshAsistencia">🔄 Actualizar</button>
                     <div id="asistenciaContainer">
                         <div class="empty-state">⏳ Cargando...</div>
                     </div>

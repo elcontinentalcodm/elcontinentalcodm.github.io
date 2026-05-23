@@ -45,6 +45,13 @@ function getCurrentMinutes() {
     return now.getHours() * 60 + now.getMinutes();
 }
 
+function isWeekday() {
+    // Retorna true si es lunes (1) a viernes (5)
+    const now = getCurrentMexicoTime();
+    const dayOfWeek = now.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
+    return dayOfWeek >= 1 && dayOfWeek <= 5;
+}
+
 function getMinutesUntilNextSala(salaHoraStr) {
     const salaMinutos = parseHora(salaHoraStr);
     const ahora = getCurrentMinutes();
@@ -65,6 +72,13 @@ function updateSalaTimer(card) {
     const countdownEl = card.querySelector('.room-countdown');
     
     if (!timerEl || !countdownEl) return;
+
+    // Verificar si es día de semana
+    if (!isWeekday()) {
+        timerEl.className = 'room-time status-normal';
+        countdownEl.textContent = '⏱️ Sin salas en fin de semana';
+        return;
+    }
 
     const minutosRestantes = getMinutesUntilNextSala(horaStr);
     
