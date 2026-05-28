@@ -165,10 +165,14 @@ function buildZonaXtremeRankingItems(dataSemanal) {
             const lugar = (r[lugarIdx] || '').toString().trim();
             const equipo = (r[equipoIdx] || '').toString().trim();
             
-            console.log(`   Lugar: "${lugar}", Equipo: "${equipo}", Puntos: "${r[puntosIdx]}"`);
+            // Columna H está en índice lugarIdx + 3 (Lugar[+0] → Equipo[+1] → Puntos[+2] → H[+3])
+            const colH = (r[lugarIdx + 3] || '').toString().trim();
+            const tieneX = /[X❌🆇✖]/.test(colH); // Detectar X, ❌, 🆇 o ✖
             
-            // Filtrar filas que empiezan con número seguido de °
-            return lugar && equipo && /^\d+°/.test(lugar);
+            console.log(`   Lugar: "${lugar}", Equipo: "${equipo}", Puntos: "${r[puntosIdx]}", Col H: "${colH}"`);
+            
+            // Filtrar filas que empiezan con número seguido de ° Y NO tengan X en columna H
+            return lugar && equipo && /^\d+°/.test(lugar) && !tieneX;
         })
         .map(r => {
             const nombre = (r[equipoIdx] || '').trim();
